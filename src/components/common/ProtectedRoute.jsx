@@ -5,10 +5,10 @@ import { useUserProfileContext } from '../../contexts/UserProfileContext';
 
 export default function ProtectedRoute({ children }) {
     const { currentUser, loading } = useAuth();
-    const { profile } = useUserProfileContext();
+    const { profile, isLoadingProfile } = useUserProfileContext();
     const location = useLocation();
 
-    if (loading) {
+    if (loading || isLoadingProfile) {
         return <div className="flex justify-center items-center h-screen">Loading...</div>;
     }
 
