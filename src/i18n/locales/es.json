@@ -144,11 +144,12 @@
         "customPromptPlaceholder": "Use marcadores: {item.name}, {item.color}, {item.category}, {item.style}",
         "customPromptHelp": "Describe cómo quieres que la prenda aparezca en la persona de la foto",
         "errors": {
-            "quotaExceeded": "Límite de cuota de API alcanzado. Por favor, espera {{seconds}} segundos antes de intentar nuevamente. Considera actualizar a un plan de pago si necesitas más capacidad.",
-            "retryIn": "Puedes intentar nuevamente en aproximadamente {{seconds}} segundos.",
-            "genericError": "Error al generar imagen. Por favor, intenta nuevamente.",
+            "quotaExceeded": "Cuota excedida. Inténtalo de nuevo en {{seconds}} segundos.",
+            "genericError": "Ocurrió un error al generar la imagen.",
+            "saveFailed": "Error al guardar en la galería. Inténtalo de nuevo.",
             "noImage": "No se generó ninguna imagen. Por favor, intenta nuevamente."
-        }
+        },
+        "saveSuccess": "¡Look guardado en la galería!"
     },
     "history": {
         "title": "Historial de Interacciones",

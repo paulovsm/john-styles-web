@@ -147,8 +147,10 @@
             "quotaExceeded": "API quota limit reached. Please wait {{seconds}} seconds before trying again. Consider upgrading to a paid plan if you need more capacity.",
             "retryIn": "You can retry in approximately {{seconds}} seconds.",
             "genericError": "Failed to generate image. Please try again.",
-            "noImage": "No image was generated. Please try again."
-        }
+            "noImage": "No image was generated. Please try again.",
+            "saveFailed": "Failed to save to gallery. Please try again."
+        },
+        "saveSuccess": "Look saved to gallery!"
     },
     "history": {
         "title": "Interaction History",

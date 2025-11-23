@@ -8,6 +8,7 @@ import WardrobePage from './pages/WardrobePage';
 import HistoryPage from './pages/HistoryPage';
 import TryOnPage from './pages/TryOnPage';
 import OnboardingPage from './pages/OnboardingPage';
+import GalleryPage from './pages/GalleryPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 const router = createBrowserRouter([
@@ -64,6 +65,14 @@ const router = createBrowserRouter([
         element: (
             <ProtectedRoute>
                 <OnboardingPage />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/gallery',
+        element: (
+            <ProtectedRoute>
+                <GalleryPage />
             </ProtectedRoute>
         ),
     },

@@ -16,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
+const storage = getStorage(app, firebaseConfig.storageBucket);
 
 // Disable offline persistence to ensure Firestore connects online
 // (We're using localStorage for offline capability anyway)

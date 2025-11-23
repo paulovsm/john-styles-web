@@ -7,16 +7,21 @@ import { useWardrobeContext } from '../contexts/WardrobeContext';
 import { geminiService } from '../services/api/geminiService';
 import { CloudUpload, AutoAwesome } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { firestoreService } from '../services/storage/firestoreService';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function TryOnPage() {
     const { items } = useWardrobeContext();
+    const { currentUser } = useAuth();
     const { t } = useTranslation();
     const [userPhoto, setUserPhoto] = useState(null);
     const [userPhotoPreview, setUserPhotoPreview] = useState('');
     const [selectedItem, setSelectedItem] = useState(null);
     const [generatedImage, setGeneratedImage] = useState('');
     const [generating, setGenerating] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [retryAfter, setRetryAfter] = useState(null);
     const [advancedMode, setAdvancedMode] = useState(false);
     const [customPrompt, setCustomPrompt] = useState('');
@@ -38,6 +43,50 @@ export default function TryOnPage() {
             .replace(/{item\.color}/g, item.colors?.[0] || '')
             .replace(/{item\.category}/g, item.category || '')
             .replace(/{item\.style}/g, item.styles?.[0] || '');
+    };
+
+    const handleSaveToGallery = async () => {
+        if (!generatedImage || !currentUser) return;
+
+        setSaving(true);
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        try {
+            // Convert generated image (URL or Base64) to Blob
+            let imageBlob;
+            if (generatedImage.startsWith('data:')) {
+                const res = await fetch(generatedImage);
+                imageBlob = await res.blob();
+            } else {
+                // If it's a URL, we might need to proxy it or fetch it if CORS allows
+                // For now assuming it's fetchable
+                const res = await fetch(generatedImage);
+                imageBlob = await res.blob();
+            }
+
+            // Upload to Storage
+            const storageUrl = await firestoreService.uploadGalleryImage(imageBlob);
+
+            // Save metadata to Firestore
+            await firestoreService.saveGalleryItem({
+                imageUrl: storageUrl,
+                itemsUsed: [selectedItem.id],
+                prompt: advancedMode ? customPrompt : 'Default prompt',
+                originalPhoto: userPhotoPreview // Optional: save original photo URL if we uploaded it too
+            });
+
+            setSuccessMessage(t('tryOn.saveSuccess'));
+
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccessMessage(''), 3000);
+
+        } catch (error) {
+            console.error('Error saving to gallery:', error);
+            setErrorMessage(t('tryOn.errors.saveFailed') || 'Failed to save to gallery');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleGenerate = async () => {
@@ -190,10 +239,13 @@ export default function TryOnPage() {
                         </Card.Body>
                     </Card>
 
-                    {/* Error Message Display */}
-                    {errorMessage && (
-                        <div className="bg-status-error/10 border border-status-error text-status-error px-4 py-3 rounded-md">
-                            <p className="text-sm font-medium">{errorMessage}</p>
+                    {/* Error/Success Message Display */}
+                    {(errorMessage || successMessage) && (
+                        <div className={`px-4 py-3 rounded-md mb-4 ${errorMessage
+                            ? 'bg-status-error/10 border border-status-error text-status-error'
+                            : 'bg-status-success/10 border border-status-success text-status-success'
+                            }`}>
+                            <p className="text-sm font-medium">{errorMessage || successMessage}</p>
                             {retryAfter && (
                                 <p className="text-xs mt-1">
                                     {t('tryOn.errors.retryIn', { seconds: retryAfter })}
@@ -229,7 +281,12 @@ export default function TryOnPage() {
                                 <Button variant="outline" onClick={() => setGeneratedImage('')}>
                                     {t('tryOn.tryAnother')}
                                 </Button>
-                                <Button variant="primary">
+                                <Button
+                                    variant="primary"
+                                    onClick={handleSaveToGallery}
+                                    disabled={saving}
+                                >
+                                    {saving ? <Loading type="spinner" size={20} className="mr-2" /> : <CloudUpload className="mr-2" />}
                                     {t('tryOn.saveGallery')}
                                 </Button>
                             </div>

@@ -6,7 +6,10 @@ import {
     collection,
     getDocs,
     deleteDoc,
-    serverTimestamp
+    addDoc,
+    serverTimestamp,
+    query,
+    orderBy
 } from 'firebase/firestore';
 import {
     ref,
@@ -53,7 +56,7 @@ class FirestoreService {
             }
 
             if (error.code === 'permission-denied') {
-                console.error('� Firestore Permission Denied. Check Security Rules in Firebase Console!');
+                console.error('🔒 Firestore Permission Denied. Check Security Rules in Firebase Console!');
                 console.error('User:', this.getCurrentUserId());
                 return null;
             }
@@ -117,19 +120,19 @@ class FirestoreService {
         } catch (error) {
             if (error.code === 'unavailable') {
                 console.log('📡 Firestore unavailable - using local data');
-                return [];
+                return null;
             }
 
             if (error.code === 'permission-denied') {
                 console.error('🔒 Firestore Permission Denied for wardrobe. Check Security Rules!');
-                return [];
+                return null;
             }
 
             console.error('Error getting wardrobe from Firestore:', {
                 code: error.code,
                 message: error.message
             });
-            return [];
+            return null;
         }
     }
 
@@ -204,19 +207,19 @@ class FirestoreService {
         } catch (error) {
             if (error.code === 'unavailable') {
                 console.log('📡 Firestore unavailable - using local data');
-                return [];
+                return null;
             }
 
             if (error.code === 'permission-denied') {
                 console.error('🔒 Firestore Permission Denied for chat history. Check Security Rules!');
-                return [];
+                return null;
             }
 
             console.error('Error getting chat history from Firestore:', {
                 code: error.code,
                 message: error.message
             });
-            return [];
+            return null;
         }
     }
 
@@ -310,6 +313,84 @@ class FirestoreService {
                 return true;
             }
             throw error;
+        }
+    }
+
+    /**
+     * Upload a gallery image to Firebase Storage
+     * @param {Blob|File} imageBlob - Image file
+     * @param {string} userId - User ID
+     * @returns {Promise<string>} Download URL of uploaded image
+     */
+    async uploadGalleryImage(imageBlob, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) {
+                throw new Error('Cannot upload gallery image: user not authenticated');
+            }
+
+            const timestamp = Date.now();
+            const storageRef = ref(storage, `users/${uid}/gallery/${timestamp}.jpg`);
+            await uploadBytes(storageRef, imageBlob);
+            const downloadURL = await getDownloadURL(storageRef);
+
+            return downloadURL;
+        } catch (error) {
+            console.error('Error uploading gallery image to Storage:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Save a gallery item to Firestore
+     * @param {Object} item - Gallery item data
+     * @param {string} userId - User ID
+     * @returns {Promise<boolean>} Success status
+     */
+    async saveGalleryItem(item, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) {
+                console.warn('Cannot save gallery item: user not authenticated');
+                return false;
+            }
+
+            const collectionRef = collection(db, 'users', uid, 'gallery');
+            await addDoc(collectionRef, {
+                ...item,
+                createdAt: serverTimestamp()
+            });
+
+            return true;
+        } catch (error) {
+            console.error('Error saving gallery item to Firestore:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get gallery items from Firestore
+     * @param {string} userId - User ID
+     * @returns {Promise<Array>} Array of gallery items
+     */
+    async getGalleryItems(userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) return [];
+
+            const collectionRef = collection(db, 'users', uid, 'gallery');
+            const q = query(collectionRef, orderBy('createdAt', 'desc'));
+            const querySnapshot = await getDocs(q);
+
+            const items = [];
+            querySnapshot.forEach((doc) => {
+                items.push({ id: doc.id, ...doc.data() });
+            });
+
+            return items;
+        } catch (error) {
+            console.error('Error getting gallery items from Firestore:', error);
+            return null;
         }
     }
 }

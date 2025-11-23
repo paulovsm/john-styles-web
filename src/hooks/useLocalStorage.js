@@ -13,6 +13,16 @@ export function useLocalStorage(key, initialValue) {
         }
     });
 
+    // Subscribe to external changes (e.g. from cloud sync)
+    useEffect(() => {
+        const unsubscribe = storageService.subscribe((changedKey, newValue) => {
+            if (changedKey === key) {
+                setStoredValue(newValue);
+            }
+        });
+        return unsubscribe;
+    }, [key]);
+
     // Return a wrapped version of useState's setter function that ...
     // ... persists the new value to localStorage.
     const setValue = (value) => {

@@ -2,14 +2,24 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Menu, Close, Logout, Person } from '@mui/icons-material';
+import { Menu, Close, Logout, Person, Sync } from '@mui/icons-material';
 import LanguageSelector from '../common/LanguageSelector';
+import { useSyncStatus } from '../../hooks/useSyncStatus';
 
 export default function Header() {
     const { currentUser, logout } = useAuth();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { isSyncing, syncNow } = useSyncStatus();
+
+    const handleSync = async () => {
+        try {
+            await syncNow();
+        } catch (error) {
+            console.error("Sync failed", error);
+        }
+    };
 
     async function handleLogout() {
         try {
@@ -47,9 +57,20 @@ export default function Header() {
                             <Link to="/history" className="border-transparent text-grey-medium hover:border-fleek-navy hover:text-fleek-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 {t('nav.history')}
                             </Link>
+                            <Link to="/gallery" className="border-transparent text-grey-medium hover:border-fleek-navy hover:text-fleek-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                {t('nav.gallery', 'Galeria')}
+                            </Link>
                         </div>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-2">
+                        <button
+                            onClick={handleSync}
+                            className={`p-1 rounded-full text-grey-medium hover:text-fleek-navy focus:outline-none ${isSyncing ? 'animate-spin' : ''}`}
+                            title={t('common.sync', 'Sincronizar')}
+                            disabled={isSyncing}
+                        >
+                            <Sync />
+                        </button>
                         <LanguageSelector />
                         {currentUser ? (
                             <div className="ml-3 relative flex items-center space-x-4">
@@ -111,6 +132,9 @@ export default function Header() {
                         </Link>
                         <Link to="/history" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-fleek-navy hover:text-fleek-navy">
                             {t('nav.history')}
+                        </Link>
+                        <Link to="/gallery" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-fleek-navy hover:text-fleek-navy">
+                            {t('nav.gallery', 'Galeria')}
                         </Link>
                     </div>
                     <div className="pt-4 pb-4 border-t border-grey-light">
