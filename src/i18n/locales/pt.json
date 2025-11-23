@@ -1,0 +1,195 @@
+{
+    "app": {
+        "name": "John Styles",
+        "tagline": "Seu Assistente Pessoal de Moda"
+    },
+    "nav": {
+        "dashboard": "Painel",
+        "chat": "Chat",
+        "wardrobe": "Guarda-roupa",
+        "tryOn": "Experimentar",
+        "history": "Histórico"
+    },
+    "auth": {
+        "login": "Entrar",
+        "logout": "Sair",
+        "signInWith": "Entrar com {{provider}}",
+        "welcome": "Bem-vindo de volta"
+    },
+    "landing": {
+        "hero": {
+            "title": "Eleve seu estilo com",
+            "subtitle": "Inteligência Artificial",
+            "description": "John Styles é seu assistente pessoal de moda. Receba recomendações personalizadas de roupas, organize seu guarda-roupa e visualize novos looks instantaneamente.",
+            "getStarted": "Começar",
+            "login": "Entrar"
+        },
+        "features": {
+            "title": "Tudo que você precisa para ficar incrível",
+            "subtitle": "John Styles combina IA avançada com expertise em moda para ajudá-lo a construir um guarda-roupa que você ama.",
+            "aiAnalysis": {
+                "title": "Análise de Estilo com IA",
+                "description": "Receba conselhos de moda personalizados baseados em suas preferências únicas e tipo de corpo."
+            },
+            "virtualWardrobe": {
+                "title": "Guarda-roupa Virtual",
+                "description": "Digitalize seu armário e organize seus looks sem esforço."
+            },
+            "virtualTryOn": {
+                "title": "Prova Virtual",
+                "description": "Visualize como novas roupas ficarão em você antes de comprar."
+            }
+        }
+    },
+    "dashboard": {
+        "welcome": "Bem-vindo de volta, {{name}}",
+        "subtitle": "Aqui está o que está acontecendo com seu estilo hoje.",
+        "wardrobeSummary": "Resumo do Guarda-roupa",
+        "quickActions": "Ações Rápidas",
+        "totalItems": "Total de Itens",
+        "tops": "Blusas",
+        "bottoms": "Calças",
+        "shoes": "Sapatos",
+        "askJohn": "Perguntar ao John Styles",
+        "addNewItem": "Adicionar Novo Item",
+        "viewHistory": "Ver Histórico",
+        "myProfile": "Meu Perfil"
+    },
+    "chat": {
+        "title": "Chat com John Styles",
+        "beta": "Beta",
+        "placeholder": "Pergunte ao John Styles sobre seu look...",
+        "greeting": "Olá! Sou John Styles, seu assistente pessoal de moda. Como posso ajudá-lo a ficar incrível hoje?",
+        "typing": "John está digitando...",
+        "error": "Desculpe, encontrei um erro. Por favor, tente novamente.",
+        "noResponse": "Desculpe, não entendi."
+    },
+    "wardrobe": {
+        "title": "Meu Guarda-roupa",
+        "addItem": "Adicionar Item",
+        "noItems": "Nenhum item",
+        "noItemsDescription": "Comece adicionando um novo item ao seu guarda-roupa.",
+        "filters": {
+            "search": "Buscar itens...",
+            "allCategories": "Todas as Categorias",
+            "allStyles": "Todos os Estilos",
+            "allColors": "Todas as Cores",
+            "categories": {
+                "tops": "Blusas",
+                "bottoms": "Calças",
+                "shoes": "Sapatos",
+                "accessories": "Acessórios",
+                "outerwear": "Casacos"
+            },
+            "styles": {
+                "casual": "Casual",
+                "formal": "Formal",
+                "business": "Executivo",
+                "sporty": "Esportivo",
+                "chic": "Chique",
+                "boho": "Boho"
+            },
+            "colors": {
+                "black": "Preto",
+                "white": "Branco",
+                "blue": "Azul",
+                "red": "Vermelho",
+                "green": "Verde",
+                "yellow": "Amarelo",
+                "pink": "Rosa",
+                "purple": "Roxo",
+                "grey": "Cinza",
+                "brown": "Marrom",
+                "beige": "Bege"
+            }
+        },
+        "addModal": {
+            "title": "Adicionar Novo Item",
+            "titleEdit": "Editar Item",
+            "itemImage": "Imagem do Item",
+            "uploadImage": "Enviar arquivo",
+            "dragDrop": "ou arraste e solte",
+            "fileTypes": "PNG, JPG, GIF até 10MB",
+            "analyzeAI": "Analisar com IA",
+            "name": "Nome",
+            "namePlaceholder": "ex: Jaqueta Jeans Azul",
+            "description": "Descrição",
+            "descriptionPlaceholder": "Insira uma breve descrição",
+            "category": "Categoria",
+            "color": "Cor",
+            "colorPlaceholder": "ex: Azul",
+            "style": "Estilo",
+            "stylePlaceholder": "ex: Casual",
+            "brand": "Marca",
+            "brandPlaceholder": "Opcional",
+            "cancel": "Cancelar",
+            "save": "Salvar Item"
+        }
+    },
+    "tryOn": {
+        "title": "Prova Virtual",
+        "uploadPhoto": "1. Envie Sua Foto",
+        "uploadPhotoDescription": "Foto de corpo inteiro ou parte superior recomendada",
+        "selectItem": "2. Selecione um Item",
+        "noItemsWardrobe": "Nenhum item no guarda-roupa. Adicione itens primeiro.",
+        "generate": "Gerar Prova",
+        "generating": "Gerando seu look...",
+        "generatingDescription": "Isso pode levar alguns momentos.",
+        "yourLook": "Seu Look",
+        "tryAnother": "Tentar Outro",
+        "saveGallery": "Salvar na Galeria",
+        "placeholder": "Envie uma foto e selecione um item para ver a mágica acontecer.",
+        "advancedMode": "Modo Avançado",
+        "customPrompt": "Prompt Personalizado",
+        "customPromptPlaceholder": "Use marcadores: {item.name}, {item.color}, {item.category}, {item.style}",
+        "customPromptHelp": "Descreva como você quer que a peça de roupa apareça na pessoa da foto",
+        "errors": {
+            "quotaExceeded": "Limite de quota da API atingido. Por favor, aguarde {{seconds}} segundos antes de tentar novamente. Considere atualizar para um plano pago se você precisar de mais capacidade.",
+            "retryIn": "Você pode tentar novamente em aproximadamente {{seconds}} segundos.",
+            "genericError": "Falha ao gerar imagem. Por favor, tente novamente.",
+            "noImage": "Nenhuma imagem foi gerada. Tente novamente."
+        }
+    },
+    "history": {
+        "title": "Histórico de Interações",
+        "noHistory": "Nenhum histórico disponível ainda.",
+        "you": "Você",
+        "johnStyles": "John Styles"
+    },
+    "common": {
+        "loading": "Carregando...",
+        "error": "Erro",
+        "success": "Sucesso",
+        "delete": "Excluir",
+        "edit": "Editar",
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "close": "Fechar",
+        "upload": "Enviar",
+        "remove": "Remover"
+    },
+    "onboarding": {
+        "title": "Bem-vindo ao John Styles",
+        "subtitle": "Vamos conhecer seu estilo. Descreva suas preferências de moda, cores favoritas, ocasiões em que se veste, marcas que ama e coisas que não gosta.",
+        "placeholder": "Ex: Adoro roupas casuais, principalmente jeans e camisetas. Minhas cores favoritas são azul e preto. Visto-me para o trabalho que é casual executivo. Não gosto de cores vivas e roupas justas.",
+        "analyzeButton": "Analisar Meu Estilo",
+        "analyzing": "Analisando...",
+        "resultsTitle": "Seu Perfil de Estilo",
+        "favoriteColors": "Cores Favoritas",
+        "preferredItems": "Itens Preferidos",
+        "dislikes": "O que não gosto",
+        "occasions": "Ocasiões",
+        "bodyType": "Tipo de Corpo",
+        "favoriteBrands": "Marcas Favoritas",
+        "styleGoals": "Objetivos de Estilo",
+        "editButton": "Editar Descrição",
+        "saveButton": "Salvar Perfil",
+        "noneDetected": "Nenhum detectado",
+        "unspecified": "Não especificado",
+        "noneSpecified": "Nenhum especificado",
+        "error": "Falha ao analisar perfil. Por favor, tente novamente.",
+        "reanalyzeButton": "Reanalisar com IA",
+        "cancelButton": "Cancelar",
+        "addTagPlaceholder": "Adicionar..."
+    }
+}
