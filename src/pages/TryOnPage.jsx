@@ -9,6 +9,7 @@ import { CloudUpload, AutoAwesome } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
+import { compressImage } from '../utils/imageUtils';
 
 export default function TryOnPage() {
     const { items } = useWardrobeContext();
@@ -26,13 +27,23 @@ export default function TryOnPage() {
     const [advancedMode, setAdvancedMode] = useState(false);
     const [customPrompt, setCustomPrompt] = useState('');
 
-    const handlePhotoChange = (e) => {
+    const handlePhotoChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            setUserPhoto(file);
-            const reader = new FileReader();
-            reader.onloadend = () => setUserPhotoPreview(reader.result);
-            reader.readAsDataURL(file);
+            try {
+                const compressedFile = await compressImage(file);
+                setUserPhoto(compressedFile);
+                const reader = new FileReader();
+                reader.onloadend = () => setUserPhotoPreview(reader.result);
+                reader.readAsDataURL(compressedFile);
+            } catch (error) {
+                console.error("Error compressing image:", error);
+                // Fallback to original file if compression fails
+                setUserPhoto(file);
+                const reader = new FileReader();
+                reader.onloadend = () => setUserPhotoPreview(reader.result);
+                reader.readAsDataURL(file);
+            }
         }
     };
 

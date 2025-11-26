@@ -5,6 +5,7 @@ import Button from '../common/Button';
 import Loading from '../common/Loading';
 import { geminiService } from '../../services/api/geminiService';
 import { AutoAwesome, CloudUpload } from '@mui/icons-material';
+import { compressImage } from '../../utils/imageUtils';
 
 import { useTranslation } from 'react-i18next';
 
@@ -50,15 +51,26 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         }
     }, [isOpen, item]);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
-            setFile(selectedFile);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreview(reader.result);
-            };
-            reader.readAsDataURL(selectedFile);
+            try {
+                const compressedFile = await compressImage(selectedFile);
+                setFile(compressedFile);
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreview(reader.result);
+                };
+                reader.readAsDataURL(compressedFile);
+            } catch (error) {
+                console.error("Error compressing image:", error);
+                setFile(selectedFile);
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreview(reader.result);
+                };
+                reader.readAsDataURL(selectedFile);
+            }
         }
     };
 

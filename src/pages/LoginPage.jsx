@@ -5,11 +5,17 @@ import { useTranslation } from 'react-i18next';
 import { Google, Facebook, Apple } from '@mui/icons-material';
 
 export default function LoginPage() {
-    const { loginWithGoogle, loginWithFacebook, loginWithApple } = useAuth();
+    const { loginWithGoogle, loginWithFacebook, loginWithApple, currentUser } = useAuth();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    React.useEffect(() => {
+        if (currentUser) {
+            navigate('/dashboard', { replace: true });
+        }
+    }, [currentUser, navigate]);
 
     async function handleLogin(providerMethod) {
         try {

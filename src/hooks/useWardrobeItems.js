@@ -10,21 +10,17 @@ export function useWardrobeItems() {
     };
 
     const removeItem = async (id) => {
-        try {
-            // Delete from Firestore
-            await firestoreService.deleteWardrobeItem(id);
-            // Try to delete image if it exists (don't block if fails)
-            try {
-                await firestoreService.deleteImage(id);
-            } catch (e) {
-                console.warn('Failed to delete image for item:', id, e);
-            }
-        } catch (error) {
-            console.error('Error deleting item from Firestore:', error);
-        }
-
-        // Update local state
+        // Update local state - this triggers useLocalStorage which triggers hybridStorageService
+        // hybridStorageService will then handle the cloud sync (including deletion)
         setItems(prev => prev.filter(item => item.id !== id));
+
+        // We can optionally try to delete the image directly here if we want immediate cleanup,
+        // or let the service handle it. For now, let's keep image deletion here as it's separate from the data sync.
+        try {
+            await firestoreService.deleteImage(id);
+        } catch (e) {
+            console.warn('Failed to delete image for item:', id, e);
+        }
     };
 
     const updateItem = (id, updates) => {

@@ -1,4 +1,5 @@
 const API_BASE_URL = '/api';
+import { compressImage } from '../../utils/imageUtils';
 
 export const geminiService = {
     /**
@@ -40,10 +41,13 @@ export const geminiService = {
      */
     async analyzeImage(imageFile, language = 'en') {
         try {
+            // Compress image before sending
+            const compressedFile = await compressImage(imageFile);
+
             // Convert file to base64
             const base64Image = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.readAsDataURL(imageFile);
+                reader.readAsDataURL(compressedFile);
                 reader.onload = () => resolve(reader.result.split(',')[1]);
                 reader.onerror = error => reject(error);
             });

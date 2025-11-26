@@ -393,6 +393,44 @@ class FirestoreService {
             return null;
         }
     }
+    /**
+     * Sync entire wardrobe list (handles additions, updates, and deletions)
+     * @param {Array} items - Current local wardrobe items
+     * @param {string} userId - User ID
+     * @returns {Promise<boolean>} Success status
+     */
+    async syncWardrobeItems(items, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) {
+                console.warn('Cannot sync wardrobe: user not authenticated');
+                return false;
+            }
+
+            // 1. Get all existing items from Firestore to identify deletions
+            const collectionRef = collection(db, 'users', uid, 'wardrobe');
+            const querySnapshot = await getDocs(collectionRef);
+            const cloudItemIds = new Set();
+            querySnapshot.forEach(doc => cloudItemIds.add(doc.id));
+
+            // 2. Identify items to delete (in cloud but not in local list)
+            const localItemIds = new Set(items.map(item => item.id));
+            const itemsToDelete = [...cloudItemIds].filter(id => !localItemIds.has(id));
+
+            // 3. Perform updates/adds
+            const savePromises = items.map(item => this.saveWardrobeItem(item, uid));
+
+            // 4. Perform deletions
+            const deletePromises = itemsToDelete.map(id => this.deleteWardrobeItem(id, uid));
+
+            await Promise.all([...savePromises, ...deletePromises]);
+
+            return true;
+        } catch (error) {
+            console.error('Error syncing wardrobe items:', error);
+            throw error;
+        }
+    }
 }
 
 export const firestoreService = new FirestoreService();
