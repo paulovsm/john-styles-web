@@ -5,7 +5,7 @@ import Loading from '../components/common/Loading';
 import Card from '../components/common/Card';
 import { useWardrobeContext } from '../contexts/WardrobeContext';
 import { geminiService } from '../services/api/geminiService';
-import { CloudUpload, AutoAwesome } from '@mui/icons-material';
+import { CloudUpload, AutoAwesome, Check } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,6 +21,7 @@ export default function TryOnPage() {
     const [generatedImage, setGeneratedImage] = useState('');
     const [generating, setGenerating] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [retryAfter, setRetryAfter] = useState(null);
@@ -88,9 +89,13 @@ export default function TryOnPage() {
             });
 
             setSuccessMessage(t('tryOn.saveSuccess'));
+            setSaved(true);
 
             // Clear success message after 3 seconds
-            setTimeout(() => setSuccessMessage(''), 3000);
+            setTimeout(() => {
+                setSuccessMessage('');
+                setSaved(false);
+            }, 3000);
 
         } catch (error) {
             console.error('Error saving to gallery:', error);
@@ -295,10 +300,11 @@ export default function TryOnPage() {
                                 <Button
                                     variant="primary"
                                     onClick={handleSaveToGallery}
-                                    disabled={saving}
+                                    disabled={saving || saved}
+                                    className={saved ? "bg-status-success border-status-success hover:bg-status-success" : ""}
                                 >
-                                    {saving ? <Loading type="spinner" size={20} className="mr-2" /> : <CloudUpload className="mr-2" />}
-                                    {t('tryOn.saveGallery')}
+                                    {saving ? <Loading type="spinner" size={20} className="mr-2" /> : saved ? <Check className="mr-2" /> : <CloudUpload className="mr-2" />}
+                                    {saved ? t('common.saved', 'Salvo!') : t('tryOn.saveGallery')}
                                 </Button>
                             </div>
                         </div>

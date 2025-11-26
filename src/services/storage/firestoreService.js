@@ -393,6 +393,44 @@ class FirestoreService {
             return null;
         }
     }
+
+    /**
+     * Delete a gallery item from Firestore and Storage
+     * @param {Object} item - Gallery item object (must contain id and imageUrl)
+     * @param {string} userId - User ID
+     * @returns {Promise<boolean>} Success status
+     */
+    async deleteGalleryItem(item, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) {
+                console.warn('Cannot delete gallery item: user not authenticated');
+                return false;
+            }
+
+            // Delete from Firestore
+            const docRef = doc(db, 'users', uid, 'gallery', item.id);
+            await deleteDoc(docRef);
+
+            // Delete from Storage if URL exists
+            if (item.imageUrl) {
+                try {
+                    // Create a reference from the HTTPS URL
+                    // Note: This requires the storage instance to be passed as the first argument
+                    const imageRef = ref(storage, item.imageUrl);
+                    await deleteObject(imageRef);
+                } catch (storageError) {
+                    console.warn('Warning: Could not delete image from storage (might be already deleted or invalid URL):', storageError);
+                    // We continue returning true because the primary record (Firestore) is gone
+                }
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error deleting gallery item:', error);
+            throw error;
+        }
+    }
     /**
      * Sync entire wardrobe list (handles additions, updates, and deletions)
      * @param {Array} items - Current local wardrobe items

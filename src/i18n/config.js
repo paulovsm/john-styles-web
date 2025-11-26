@@ -14,8 +14,8 @@ i18n
     .use(initReactI18next)
     .init({
         resources,
-        lng: navigator.language.split('-')[0] || 'en', // Detect browser language
-        fallbackLng: 'en',
+        lng: 'pt', // Force default to Portuguese
+        fallbackLng: 'pt',
         interpolation: {
             escapeValue: false
         }
