@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { prompt, userImage, itemImage } = req.body;
+    const { prompt, userImage, itemImages, itemImage } = req.body;
 
     if (!prompt) {
         return res.status(400).json({ error: 'Missing prompt' });
@@ -62,7 +62,14 @@ export default async function handler(req, res) {
             contents.push(processImage(userImage));
         }
 
-        if (itemImage) {
+        // Handle multiple item images
+        if (itemImages && Array.isArray(itemImages)) {
+            itemImages.forEach(img => {
+                if (img) contents.push(processImage(img));
+            });
+        }
+        // Backward compatibility or single item fallback
+        else if (itemImage) {
             contents.push(processImage(itemImage));
         }
 

@@ -76,16 +76,19 @@ export const geminiService = {
     /**
      * Generates an image based on a prompt (Mock/Placeholder for now).
      * @param {string} prompt - The image generation prompt.
+     * @param {string} userImage - The user's photo (base64 or URL).
+     * @param {Array<string>} itemImages - Array of item images (base64 or URL).
      * @returns {Promise<string>} - The URL of the generated image.
      */
-    async generateImage(prompt, userImage = null, itemImage = null) {
+    async generateImage(prompt, userImage = null, itemImages = []) {
         try {
             const body = { prompt };
             if (userImage) {
                 body.userImage = userImage;
             }
-            if (itemImage) {
-                body.itemImage = itemImage;
+            if (itemImages && itemImages.length > 0) {
+                // Ensure it's an array
+                body.itemImages = Array.isArray(itemImages) ? itemImages : [itemImages];
             }
 
             const response = await fetch(`${API_BASE_URL}/gemini-image-generate`, {

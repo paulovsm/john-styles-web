@@ -469,6 +469,112 @@ class FirestoreService {
             throw error;
         }
     }
+    /**
+     * Check if user has reached the daily limit for a specific feature
+     * @param {string} limitType - 'wardrobeAnalysis' or 'lookGeneration'
+     * @param {string} userId - User ID
+     * @returns {Promise<{allowed: boolean, remaining: number, error: string}>} Status object
+     */
+    async checkUsageLimit(limitType, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) return { allowed: false, remaining: 0, error: 'User not authenticated' };
+
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const docRef = doc(db, 'users', uid, 'data', 'usageLimits');
+            const docSnap = await getDoc(docRef);
+
+            const limits = {
+                wardrobeAnalysis: 5,
+                lookGeneration: 5
+            };
+
+            const defaultData = {
+                lastReset: today,
+                wardrobeAnalysis: 0,
+                lookGeneration: 0
+            };
+
+            let data = defaultData;
+
+            if (docSnap.exists()) {
+                const currentData = docSnap.data();
+                // Check if we need to reset (if lastReset is not today)
+                if (currentData.lastReset !== today) {
+                    // It's a new day, use default data (0 usage) but keep today as lastReset
+                    data = defaultData;
+                    // We should update the doc to reset it effectively in DB, 
+                    // but we can do it lazily on increment. 
+                    // However, for display purposes, we return the reset state.
+                } else {
+                    data = currentData;
+                }
+            }
+
+            const currentUsage = data[limitType] || 0;
+            const limit = limits[limitType] || 5;
+            const remaining = Math.max(0, limit - currentUsage);
+
+            return {
+                allowed: currentUsage < limit,
+                remaining,
+                limit
+            };
+
+        } catch (error) {
+            console.error(`Error checking usage limit for ${limitType}:`, error);
+            // Fail safe: allow if error? Or block? 
+            // Better to block or return error to let UI decide. 
+            // For now, let's return allowed: true to not break app on error, but log it.
+            // actually, let's return false with error message to be safe.
+            return { allowed: false, remaining: 0, error: error.message };
+        }
+    }
+
+    /**
+     * Increment usage count for a specific feature
+     * @param {string} limitType - 'wardrobeAnalysis' or 'lookGeneration'
+     * @param {string} userId - User ID
+     * @returns {Promise<boolean>} Success status
+     */
+    async incrementUsage(limitType, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) return false;
+
+            const today = new Date().toISOString().split('T')[0];
+            const docRef = doc(db, 'users', uid, 'data', 'usageLimits');
+
+            // We use a transaction or just set/update. 
+            // Since we want to handle the "reset if new day" logic atomically during write:
+
+            const docSnap = await getDoc(docRef);
+            let data = {
+                lastReset: today,
+                wardrobeAnalysis: 0,
+                lookGeneration: 0
+            };
+
+            if (docSnap.exists()) {
+                const currentData = docSnap.data();
+                if (currentData.lastReset === today) {
+                    data = currentData;
+                }
+                // If date is different, we use the fresh 'data' object with 0 counts
+            }
+
+            // Increment specific type
+            data[limitType] = (data[limitType] || 0) + 1;
+            data.lastReset = today; // Ensure date is today
+
+            await setDoc(docRef, data, { merge: true });
+            return true;
+
+        } catch (error) {
+            console.error(`Error incrementing usage for ${limitType}:`, error);
+            return false;
+        }
+    }
 }
 
 export const firestoreService = new FirestoreService();

@@ -124,6 +124,9 @@
             "brandPlaceholder": "Opcional",
             "cancel": "Cancelar",
             "save": "Salvar Item"
+        },
+        "errors": {
+            "limitReached": "Limite diário de análise atingido (5/5). Por favor, tente novamente amanhã."
         }
     },
     "tryOn": {
@@ -147,7 +150,8 @@
             "quotaExceeded": "Cota excedida. Tente novamente em {{seconds}} segundos.",
             "genericError": "Ocorreu um erro ao gerar a imagem.",
             "saveFailed": "Falha ao salvar na galeria. Tente novamente.",
-            "noImage": "Nenhuma imagem foi gerada. Tente novamente."
+            "noImage": "Nenhuma imagem foi gerada. Tente novamente.",
+            "limitReached": "Limite diário de geração atingido (5/5). Por favor, tente novamente amanhã."
         },
         "saveSuccess": "Look salvo na galeria!"
     },

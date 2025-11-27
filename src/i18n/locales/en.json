@@ -124,6 +124,9 @@
             "brandPlaceholder": "Optional",
             "cancel": "Cancel",
             "save": "Save Item"
+        },
+        "errors": {
+            "limitReached": "Daily analysis limit reached (5/5). Please try again tomorrow."
         }
     },
     "tryOn": {
@@ -148,7 +151,8 @@
             "retryIn": "You can retry in approximately {{seconds}} seconds.",
             "genericError": "Failed to generate image. Please try again.",
             "noImage": "No image was generated. Please try again.",
-            "saveFailed": "Failed to save to gallery. Please try again."
+            "saveFailed": "Failed to save to gallery. Please try again.",
+            "limitReached": "Daily generation limit reached (5/5). Please try again tomorrow."
         },
         "saveSuccess": "Look saved to gallery!"
     },

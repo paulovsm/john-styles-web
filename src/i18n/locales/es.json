@@ -124,6 +124,9 @@
             "brandPlaceholder": "Opcional",
             "cancel": "Cancelar",
             "save": "Guardar Artículo"
+        },
+        "errors": {
+            "limitReached": "Límite diario de análisis alcanzado (5/5). Por favor, inténtalo de nuevo mañana."
         }
     },
     "tryOn": {
@@ -147,7 +150,8 @@
             "quotaExceeded": "Cuota excedida. Inténtalo de nuevo en {{seconds}} segundos.",
             "genericError": "Ocurrió un error al generar la imagen.",
             "saveFailed": "Error al guardar en la galería. Inténtalo de nuevo.",
-            "noImage": "No se generó ninguna imagen. Por favor, intenta nuevamente."
+            "noImage": "No se generó ninguna imagen. Por favor, intenta nuevamente.",
+            "limitReached": "Límite diario de generación alcanzado (5/5). Por favor, inténtalo de nuevo mañana."
         },
         "saveSuccess": "¡Look guardado en la galería!"
     },

@@ -11,13 +11,15 @@ import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import { compressImage } from '../utils/imageUtils';
 
+
+
 export default function TryOnPage() {
     const { items } = useWardrobeContext();
     const { currentUser } = useAuth();
     const { t } = useTranslation();
     const [userPhoto, setUserPhoto] = useState(null);
     const [userPhotoPreview, setUserPhotoPreview] = useState('');
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItems, setSelectedItems] = useState([]);
     const [generatedImage, setGeneratedImage] = useState('');
     const [generating, setGenerating] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -48,13 +50,35 @@ export default function TryOnPage() {
         }
     };
 
-    const replacePlaceholders = (prompt, item) => {
+    const handleItemClick = (item) => {
+        setSelectedItems(prevItems => {
+            const isSelected = prevItems.find(i => i.id === item.id);
+
+            if (isSelected) {
+                // Deselect if already selected
+                return prevItems.filter(i => i.id !== item.id);
+            } else {
+                // Check if an item of the same category is already selected
+                const otherItems = prevItems.filter(i => i.category !== item.category);
+                // Add new item, replacing any existing item of the same category
+                return [...otherItems, item];
+            }
+        });
+    };
+
+    const replacePlaceholders = (prompt, items) => {
+        // Simple join for multiple items for now, or just use the first one if the prompt expects single item fields
+        // Ideally prompt should be constructed dynamically
+        const itemNames = items.map(i => i.name).join(', ');
+        const itemDescriptions = items.map(i => i.description).join('; ');
+
         return prompt
-            .replace(/{item\.name}/g, item.name || '')
-            .replace(/{item\.description}/g, item.description || '')
-            .replace(/{item\.color}/g, item.colors?.[0] || '')
-            .replace(/{item\.category}/g, item.category || '')
-            .replace(/{item\.style}/g, item.styles?.[0] || '');
+            .replace(/{item\.name}/g, itemNames || '')
+            .replace(/{item\.description}/g, itemDescriptions || '')
+            // Fallback for singular placeholders - use first item
+            .replace(/{item\.color}/g, items[0]?.colors?.[0] || '')
+            .replace(/{item\.category}/g, items[0]?.category || '')
+            .replace(/{item\.style}/g, items[0]?.styles?.[0] || '');
     };
 
     const handleSaveToGallery = async () => {
@@ -83,7 +107,7 @@ export default function TryOnPage() {
             // Save metadata to Firestore
             await firestoreService.saveGalleryItem({
                 imageUrl: storageUrl,
-                itemsUsed: [selectedItem.id],
+                itemsUsed: selectedItems.map(i => i.id),
                 prompt: advancedMode ? customPrompt : 'Default prompt',
                 originalPhoto: userPhotoPreview // Optional: save original photo URL if we uploaded it too
             });
@@ -106,31 +130,48 @@ export default function TryOnPage() {
     };
 
     const handleGenerate = async () => {
-        if (!userPhoto || !selectedItem) return;
+        if (!userPhoto || selectedItems.length === 0) return;
 
         setGenerating(true);
         setErrorMessage('');
         setRetryAfter(null);
 
         try {
+            // Check usage limit first
+            const usageStatus = await firestoreService.checkUsageLimit('lookGeneration');
+            if (!usageStatus.allowed) {
+                setErrorMessage(t('tryOn.errors.limitReached'));
+                setGenerating(false);
+                return;
+            }
+
             let prompt;
 
             if (advancedMode && customPrompt.trim()) {
                 // Use custom prompt with placeholders replaced
-                prompt = replacePlaceholders(customPrompt, selectedItem);
+                prompt = replacePlaceholders(customPrompt, selectedItems);
             } else {
-                // Use optimized default prompt
-                const itemColor = selectedItem.colors?.[0] || '';
-                const itemCategory = selectedItem.category || '';
-                const itemName = selectedItem.name || '';
-                const itemDescription = selectedItem.description || '';
+                // Construct prompt for multiple items
+                const itemsDescription = selectedItems.map(item => {
+                    const itemColor = item.colors?.[0] || '';
+                    const itemCategory = item.category || '';
+                    const itemName = item.name || '';
+                    //const itemDescription = item.description || '';
+                    //return `${itemColor} ${itemCategory} (${itemName})`;
+                    return `${itemCategory} (${itemName})`;
+                }).join(', ');
 
-                //prompt = `Keep this person's appearance exactly as shown in the image. Dress person with the ${itemColor} ${itemCategory} (${itemName} - ${itemDescription}), replace the current outfit if needed. Maintain photorealistic quality, natural lighting, and the original photo composition. The clothing item should fit naturally on the person.`;
-                prompt = `Keep this person's appearance exactly as shown in the image. Dress person with the ${itemName}. Replace the current outfit if needed. Maintain photorealistic quality, natural lighting, and the original photo composition. The clothing item should fit naturally on the person.`;
+                prompt = `Keep this person's appearance exactly as shown in the image. Dress person with the following items: ${itemsDescription}. Replace the current outfit if needed. Maintain photorealistic quality, natural lighting, and the original photo composition. The clothing items should fit naturally on the person.`;
             }
 
-            const imageUrl = await geminiService.generateImage(prompt, userPhotoPreview, selectedItem.image);
+            // Extract images from selected items
+            const itemImages = selectedItems.map(item => item.image);
+
+            const imageUrl = await geminiService.generateImage(prompt, userPhotoPreview, itemImages);
             setGeneratedImage(imageUrl);
+
+            // Increment usage on success
+            await firestoreService.incrementUsage('lookGeneration');
         } catch (error) {
             console.error("Try-on generation failed", error);
 
@@ -197,7 +238,7 @@ export default function TryOnPage() {
                         </Card.Body>
                     </Card>
 
-                    {/* Step 2: Select Item */}
+                    {/* Step 2: Select Items */}
                     <Card>
                         <Card.Body>
                             <Card.Title className="mb-4">{t('tryOn.selectItem')}</Card.Title>
@@ -205,17 +246,37 @@ export default function TryOnPage() {
                                 <p className="text-sm text-grey-medium">{t('tryOn.noItemsWardrobe')}</p>
                             ) : (
                                 <div className="grid grid-cols-3 gap-4 max-h-64 overflow-y-auto">
-                                    {items.map((item) => (
-                                        <div
-                                            key={item.id}
-                                            onClick={() => setSelectedItem(item)}
-                                            className={`cursor-pointer border-2 rounded-md overflow-hidden ${selectedItem?.id === item.id ? 'border-fleek-navy ring-2 ring-fleek-navy ring-opacity-50' : 'border-transparent'
-                                                }`}
-                                        >
-                                            <img src={item.image} alt={item.name} className="w-full h-24 object-cover" />
-                                            <p className="text-xs p-1 truncate text-center">{item.name}</p>
-                                        </div>
-                                    ))}
+                                    {items.map((item) => {
+                                        const isSelected = selectedItems.some(i => i.id === item.id);
+                                        return (
+                                            <div
+                                                key={item.id}
+                                                onClick={() => handleItemClick(item)}
+                                                className={`cursor-pointer border-2 rounded-md overflow-hidden relative ${isSelected ? 'border-fleek-navy ring-2 ring-fleek-navy ring-opacity-50' : 'border-transparent'
+                                                    }`}
+                                            >
+                                                <img src={item.image} alt={item.name} className="w-full h-24 object-cover" />
+                                                <p className="text-xs p-1 truncate text-center">{item.name}</p>
+                                                {isSelected && (
+                                                    <div className="absolute top-1 right-1 bg-fleek-navy text-white-pure rounded-full p-0.5">
+                                                        <Check style={{ fontSize: 12 }} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                            {selectedItems.length > 0 && (
+                                <div className="mt-4 pt-4 border-t border-grey-light">
+                                    <p className="text-sm font-medium text-fleek-navy mb-2">Selected Items:</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedItems.map(item => (
+                                            <span key={item.id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-fleek-navy/10 text-fleek-navy">
+                                                {item.category}: {item.name}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </Card.Body>
@@ -273,7 +334,7 @@ export default function TryOnPage() {
                     <Button
                         variant="primary"
                         className="w-full py-3"
-                        disabled={!userPhoto || !selectedItem || generating || !!retryAfter}
+                        disabled={!userPhoto || selectedItems.length === 0 || generating || !!retryAfter}
                         onClick={handleGenerate}
                     >
                         {generating ? <Loading type="spinner" size={20} className="mr-2" /> : <AutoAwesome className="mr-2" />}

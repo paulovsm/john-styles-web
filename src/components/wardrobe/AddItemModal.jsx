@@ -4,6 +4,7 @@ import Input from '../common/Input';
 import Button from '../common/Button';
 import Loading from '../common/Loading';
 import { geminiService } from '../../services/api/geminiService';
+import { firestoreService } from '../../services/storage/firestoreService';
 import { AutoAwesome, CloudUpload } from '@mui/icons-material';
 import { compressImage } from '../../utils/imageUtils';
 
@@ -79,8 +80,24 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
 
         setAnalyzing(true);
         try {
+            // Check usage limit first
+            const usageStatus = await firestoreService.checkUsageLimit('wardrobeAnalysis');
+            if (!usageStatus.allowed) {
+                // Ideally use a toast or alert. For now, using console and maybe setting an error state if UI supported it.
+                // Since there's no error state for this modal shown in previous code, I'll alert or log.
+                // Actually, I should probably add a small error message in the UI.
+                // Let's use alert for now as a quick feedback, or better, set a local error state if I can find one.
+                // Looking at the file, there is no error state. I will add one or just alert.
+                // Given the instructions "Implement a limitation", blocking is key.
+                alert(t('wardrobe.errors.limitReached'));
+                return;
+            }
+
             const analysis = await geminiService.analyzeImage(file, i18n.language);
             console.log("Gemini Analysis Result:", analysis);
+
+            // Increment usage on success
+            await firestoreService.incrementUsage('wardrobeAnalysis');
 
             // Map Gemini response to our internal categories
             let mappedCategory = 'tops'; // Default
