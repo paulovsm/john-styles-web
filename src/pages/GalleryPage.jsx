@@ -10,7 +10,7 @@ import { Collections, CalendarToday, Style, Delete } from '@mui/icons-material';
 
 export default function GalleryPage() {
     const { currentUser } = useAuth();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const toast = useToast();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -34,10 +34,11 @@ export default function GalleryPage() {
         loadGallery();
     }, [currentUser]);
 
+    const LOCALES = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' };
     const formatDate = (timestamp) => {
         if (!timestamp) return '';
         const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-        return new Intl.DateTimeFormat('pt-BR', {
+        return new Intl.DateTimeFormat(LOCALES[i18n.language] || 'pt-BR', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',

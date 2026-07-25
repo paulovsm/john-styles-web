@@ -10,12 +10,23 @@ const resources = {
     es: { translation: es }
 };
 
+// Restore the user's previously selected language (LanguageSelector persists it).
+const SUPPORTED = ['en', 'pt', 'es'];
+let savedLanguage = 'pt';
+try {
+    const stored = localStorage.getItem('language');
+    if (stored && SUPPORTED.includes(stored)) savedLanguage = stored;
+} catch {
+    // localStorage unavailable — fall back to default
+}
+
 i18n
     .use(initReactI18next)
     .init({
         resources,
-        lng: 'pt', // Force default to Portuguese
+        lng: savedLanguage,
         fallbackLng: 'pt',
+        supportedLngs: SUPPORTED,
         interpolation: {
             escapeValue: false
         }
