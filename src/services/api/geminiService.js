@@ -137,7 +137,10 @@ export const geminiService = {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to analyze profile');
+                const enrichedError = new Error(errorData.error || 'Failed to analyze profile');
+                enrichedError.details = errorData.details;
+                enrichedError.status = response.status;
+                throw enrichedError;
             }
 
             const data = await response.json();

@@ -38,7 +38,8 @@ export default function OnboardingPage() {
             setAnalyzedData(data);
             setIsAnalyzing(false);
         } catch (err) {
-            setError(t('onboarding.error'));
+            const detail = err?.details || err?.message;
+            setError(detail ? `${t('onboarding.error')} (${detail})` : t('onboarding.error'));
             console.error(err);
         } finally {
             setLoading(false);

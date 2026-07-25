@@ -5,7 +5,7 @@ export class BaseAgent {
         this.name = name;
     }
 
-    async callGemini(messages, model = 'gemini-2.5-flash-preview-09-2025') {
+    async callGemini(messages, model = 'gemini-3.6-flash') {
         try {
             // Format messages for Gemini API if needed, or pass directly if service handles it
             // The current geminiService.sendMessage takes (text, history)

@@ -42,7 +42,7 @@ export default async function handler(req, res) {
             }));
 
             const chat = ai.chats.create({
-                model: "gemini-2.5-flash-preview-09-2025",
+                model: "gemini-3.6-flash",
                 history: chatHistory
             });
 
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
             }
 
             const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash-preview-09-2025",
+                model: "gemini-3.6-flash",
                 config: {
                     systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
                 },
