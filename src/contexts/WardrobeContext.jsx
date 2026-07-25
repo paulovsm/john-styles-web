@@ -1,6 +1,9 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect, useRef } from 'react';
 import { useWardrobeItems } from '../hooks/useWardrobeItems';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext';
+import { useUserProfileContext } from './UserProfileContext';
+import { DEMO_WARDROBE } from '../data/demoWardrobe';
 
 const WardrobeContext = createContext();
 
@@ -9,8 +12,25 @@ export function useWardrobeContext() {
 }
 
 export function WardrobeProvider({ children }) {
-    const { items: rawItems, addItem, removeItem, updateItem } = useWardrobeItems();
+    const { items: rawItems, setItems, addItem, removeItem, updateItem } = useWardrobeItems();
     const { t } = useTranslation();
+    const { currentUser } = useAuth();
+    const { profile, updateProfile, isLoadingProfile } = useUserProfileContext();
+
+    // Seed a demo wardrobe on a new user's first access so they can try the
+    // product immediately (kills the cold start). Runs once; existing users
+    // are marked as already-seeded and never get demo items.
+    const seededRef = useRef(false);
+    useEffect(() => {
+        if (seededRef.current || !currentUser || isLoadingProfile) return;
+        if (profile?.seededDemo) { seededRef.current = true; return; }
+
+        seededRef.current = true;
+        if (rawItems.length === 0) {
+            setItems((prev) => [...prev, ...DEMO_WARDROBE]);
+        }
+        updateProfile({ seededDemo: true });
+    }, [currentUser, isLoadingProfile, profile?.seededDemo, rawItems.length, setItems, updateProfile]);
 
     // Safety net: never render the same item id twice (guards against any
     // sync race / legacy duplicate leaking into the list). Keeps the last
