@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import Loading from '../components/common/Loading';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { Collections, CalendarToday, Style, Delete } from '@mui/icons-material';
 
 export default function GalleryPage() {
     const { currentUser } = useAuth();
     const { t } = useTranslation();
+    const toast = useToast();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [pendingDelete, setPendingDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         async function loadGallery() {
@@ -41,15 +46,19 @@ export default function GalleryPage() {
         }).format(date);
     };
 
-    const handleDelete = async (item) => {
-        if (window.confirm(t('gallery.deleteConfirm', 'Tem certeza que deseja excluir este look?'))) {
-            try {
-                await firestoreService.deleteGalleryItem(item, currentUser.uid);
-                setItems(items.filter(i => i.id !== item.id));
-            } catch (error) {
-                console.error('Error deleting item:', error);
-                alert(t('gallery.deleteError', 'Erro ao excluir o look. Tente novamente.'));
-            }
+    const confirmDelete = async () => {
+        if (!pendingDelete) return;
+        setDeleting(true);
+        try {
+            await firestoreService.deleteGalleryItem(pendingDelete, currentUser.uid);
+            setItems(items.filter(i => i.id !== pendingDelete.id));
+            toast.success(t('gallery.deleteSuccess', 'Look excluído.'));
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            toast.error(t('gallery.deleteError', 'Erro ao excluir o look. Tente novamente.'));
+        } finally {
+            setDeleting(false);
+            setPendingDelete(null);
         }
     };
 
@@ -81,8 +90,9 @@ export default function GalleryPage() {
                                     loading="lazy"
                                 />
                                 <button
-                                    onClick={() => handleDelete(item)}
+                                    onClick={() => setPendingDelete(item)}
                                     className="absolute top-2 right-2 p-2 bg-white-pure/80 rounded-full text-grey-dark hover:text-status-error hover:bg-white-pure transition-colors shadow-sm"
+                                    aria-label={t('common.delete', 'Excluir')}
                                     title={t('common.delete', 'Excluir')}
                                 >
                                     <Delete className="h-5 w-5" />
@@ -104,6 +114,17 @@ export default function GalleryPage() {
                     ))}
                 </div>
             )}
+
+            <ConfirmDialog
+                isOpen={!!pendingDelete}
+                onCancel={() => setPendingDelete(null)}
+                onConfirm={confirmDelete}
+                title={t('gallery.deleteTitle', 'Excluir look')}
+                message={t('gallery.deleteConfirm', 'Tem certeza que deseja excluir este look?')}
+                confirmLabel={t('common.delete', 'Excluir')}
+                danger
+                loading={deleting}
+            />
         </MainLayout>
     );
 }
