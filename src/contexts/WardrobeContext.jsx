@@ -9,8 +9,17 @@ export function useWardrobeContext() {
 }
 
 export function WardrobeProvider({ children }) {
-    const { items, addItem, removeItem, updateItem } = useWardrobeItems();
+    const { items: rawItems, addItem, removeItem, updateItem } = useWardrobeItems();
     const { t } = useTranslation();
+
+    // Safety net: never render the same item id twice (guards against any
+    // sync race / legacy duplicate leaking into the list). Keeps the last
+    // occurrence so freshly-updated data wins.
+    const items = useMemo(() => {
+        const byId = new Map();
+        for (const item of rawItems) byId.set(item.id, item);
+        return Array.from(byId.values());
+    }, [rawItems]);
     const [filters, setFilters] = useState({
         category: 'all',
         color: 'all',

@@ -84,9 +84,10 @@ export default function Header() {
                                 </button>
                                 {currentUser.photoURL ? (
                                     <img
-                                        className="h-8 w-8 rounded-full"
+                                        className="h-8 w-8 rounded-full object-cover"
                                         src={currentUser.photoURL}
-                                        alt="User avatar"
+                                        alt={t('common.userAvatar', 'Foto do usuário')}
+                                        referrerPolicy="no-referrer"
                                     />
                                 ) : (
                                     <div className="h-8 w-8 rounded-full bg-fleek-navy flex items-center justify-center text-white-pure">
@@ -142,7 +143,7 @@ export default function Header() {
                             <div className="flex items-center px-4">
                                 <div className="flex-shrink-0">
                                     {currentUser.photoURL ? (
-                                        <img className="h-10 w-10 rounded-full" src={currentUser.photoURL} alt="" />
+                                        <img className="h-10 w-10 rounded-full object-cover" src={currentUser.photoURL} alt={t('common.userAvatar', 'Foto do usuário')} referrerPolicy="no-referrer" />
                                     ) : (
                                         <div className="h-10 w-10 rounded-full bg-fleek-navy flex items-center justify-center text-white-pure">
                                             <Person />
