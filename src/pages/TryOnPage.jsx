@@ -10,6 +10,8 @@ import { CloudUpload, AutoAwesome, Check } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
+import { useUserProfileContext } from '../contexts/UserProfileContext';
+import { useToast } from '../contexts/ToastContext';
 import { compressImage, toDataUrl } from '../utils/imageUtils';
 
 
@@ -17,9 +19,11 @@ import { compressImage, toDataUrl } from '../utils/imageUtils';
 export default function TryOnPage() {
     const { items } = useWardrobeContext();
     const { currentUser } = useAuth();
+    const { profile, updateProfile } = useUserProfileContext();
+    const toast = useToast();
     const { t } = useTranslation();
-    const [userPhoto, setUserPhoto] = useState(null);
     const [userPhotoPreview, setUserPhotoPreview] = useState('');
+    const [savingPhoto, setSavingPhoto] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
     const [generatedImage, setGeneratedImage] = useState('');
     const [generating, setGenerating] = useState(false);
@@ -32,24 +36,42 @@ export default function TryOnPage() {
     const [customPrompt, setCustomPrompt] = useState('');
     const [usageRefresh, setUsageRefresh] = useState(0);
 
+    // Preload the user's saved model photo so they don't re-upload each session.
+    React.useEffect(() => {
+        if (profile?.modelPhotoUrl && !userPhotoPreview) {
+            setUserPhotoPreview(profile.modelPhotoUrl);
+        }
+    }, [profile?.modelPhotoUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const persistModelPhoto = async (blob) => {
+        if (!currentUser) return;
+        setSavingPhoto(true);
+        try {
+            const url = await firestoreService.uploadModelPhoto(blob);
+            updateProfile({ modelPhotoUrl: url });
+            toast.success(t('tryOn.photoSaved', 'Foto salva no seu perfil.'));
+        } catch (error) {
+            console.error('Error saving model photo:', error);
+            // Non-fatal: the user can still generate with the local preview.
+        } finally {
+            setSavingPhoto(false);
+        }
+    };
+
     const handlePhotoChange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            try {
-                const compressedFile = await compressImage(file);
-                setUserPhoto(compressedFile);
-                const reader = new FileReader();
-                reader.onloadend = () => setUserPhotoPreview(reader.result);
-                reader.readAsDataURL(compressedFile);
-            } catch (error) {
-                console.error("Error compressing image:", error);
-                // Fallback to original file if compression fails
-                setUserPhoto(file);
-                const reader = new FileReader();
-                reader.onloadend = () => setUserPhotoPreview(reader.result);
-                reader.readAsDataURL(file);
-            }
+        if (!file) return;
+        let usable = file;
+        try {
+            usable = await compressImage(file);
+        } catch (error) {
+            console.error('Error compressing image:', error);
         }
+        const reader = new FileReader();
+        reader.onloadend = () => setUserPhotoPreview(reader.result);
+        reader.readAsDataURL(usable);
+        // Persist as the reusable model photo (async, non-blocking).
+        persistModelPhoto(usable);
     };
 
     const handleItemClick = (item) => {
@@ -132,7 +154,7 @@ export default function TryOnPage() {
     };
 
     const handleGenerate = async () => {
-        if (!userPhoto || selectedItems.length === 0) return;
+        if (!userPhotoPreview || selectedItems.length === 0) return;
 
         setGenerating(true);
         setErrorMessage('');
@@ -161,7 +183,9 @@ export default function TryOnPage() {
                 selectedItems.map(item => toDataUrl(item.image))
             );
 
-            const imageUrl = await geminiService.generateImage(prompt, userPhotoPreview, itemImages);
+            // The photo may be a saved model URL; convert to base64 for the API.
+            const userImageData = await toDataUrl(userPhotoPreview);
+            const imageUrl = await geminiService.generateImage(prompt, userImageData, itemImages);
             setGeneratedImage(imageUrl);
             setUsageRefresh((n) => n + 1); // refresh the remaining-usage counter
         } catch (error) {
@@ -205,12 +229,18 @@ export default function TryOnPage() {
                             <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-grey-light border-dashed rounded-md relative">
                                 {userPhotoPreview ? (
                                     <div className="relative">
-                                        <img src={userPhotoPreview} alt="User" className="mx-auto h-64 object-cover rounded-md" />
+                                        <img src={userPhotoPreview} alt={t('tryOn.uploadPhoto')} className="mx-auto h-64 object-cover rounded-md" />
+                                        {savingPhoto && (
+                                            <span className="absolute bottom-1 left-1 text-[10px] bg-brand-navy/80 text-white-pure px-2 py-0.5 rounded-full">
+                                                {t('common.saving', 'Salvando...')}
+                                            </span>
+                                        )}
                                         <button
-                                            onClick={() => { setUserPhoto(null); setUserPhotoPreview(''); }}
+                                            onClick={() => setUserPhotoPreview('')}
+                                            aria-label={t('common.remove', 'Remover')}
                                             className="absolute top-0 right-0 -mt-2 -mr-2 bg-white-pure rounded-full p-1 shadow-md text-grey-medium hover:text-status-error"
                                         >
-                                            <span className="sr-only">Remove</span>
+                                            <span className="sr-only">{t('common.remove', 'Remover')}</span>
                                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                             </svg>
@@ -330,7 +360,7 @@ export default function TryOnPage() {
                     <Button
                         variant="primary"
                         className="w-full py-3"
-                        disabled={!userPhoto || selectedItems.length === 0 || generating || !!retryAfter}
+                        disabled={!userPhotoPreview || selectedItems.length === 0 || generating || !!retryAfter}
                         onClick={handleGenerate}
                     >
                         {generating ? <Loading type="spinner" size={20} className="mr-2" /> : <AutoAwesome className="mr-2" />}

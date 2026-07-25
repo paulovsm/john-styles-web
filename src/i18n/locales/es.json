@@ -161,7 +161,8 @@
       "limitReached": "Límite diario de generación alcanzado (5/5). Por favor, inténtalo de nuevo mañana.",
       "retryIn": "Puedes reintentar en aproximadamente {{seconds}} segundos."
     },
-    "saveSuccess": "¡Look guardado en la galería!"
+    "saveSuccess": "¡Look guardado en la galería!",
+    "photoSaved": "Foto guardada en tu perfil."
   },
   "history": {
     "title": "Historial de Interacciones",
@@ -185,7 +186,8 @@
     "selectLanguage": "Seleccionar idioma",
     "sync": "Sincronizar",
     "userAvatar": "Foto del usuario",
-    "saved": "¡Guardado!"
+    "saved": "¡Guardado!",
+    "saving": "Guardando..."
   },
   "onboarding": {
     "title": "Bienvenido a John Styles",

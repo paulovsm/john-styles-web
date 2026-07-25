@@ -342,6 +342,27 @@ class FirestoreService {
     }
 
     /**
+     * Upload the user's persistent model photo (reused across try-ons).
+     * @param {Blob|File} imageBlob - Image file
+     * @param {string} userId - User ID
+     * @returns {Promise<string>} Download URL
+     */
+    async uploadModelPhoto(imageBlob, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) throw new Error('Cannot upload model photo: user not authenticated');
+
+            // Cache-bust so a replaced photo isn't served stale from the CDN.
+            const storageRef = ref(storage, `users/${uid}/model/photo_${Date.now()}.jpg`);
+            await uploadBytes(storageRef, imageBlob);
+            return await getDownloadURL(storageRef);
+        } catch (error) {
+            console.error('Error uploading model photo to Storage:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Save a gallery item to Firestore
      * @param {Object} item - Gallery item data
      * @param {string} userId - User ID

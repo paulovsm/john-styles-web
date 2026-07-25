@@ -161,7 +161,8 @@
       "saveFailed": "Failed to save to gallery. Please try again.",
       "limitReached": "Daily generation limit reached (5/5). Please try again tomorrow."
     },
-    "saveSuccess": "Look saved to gallery!"
+    "saveSuccess": "Look saved to gallery!",
+    "photoSaved": "Photo saved to your profile."
   },
   "history": {
     "title": "Interaction History",
@@ -185,7 +186,8 @@
     "selectLanguage": "Select language",
     "sync": "Sync",
     "userAvatar": "User photo",
-    "saved": "Saved!"
+    "saved": "Saved!",
+    "saving": "Saving..."
   },
   "onboarding": {
     "title": "Welcome to John Styles",
