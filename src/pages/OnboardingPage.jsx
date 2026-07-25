@@ -91,7 +91,7 @@ export default function OnboardingPage() {
                             {item}
                             <button
                                 onClick={() => removeTag(field, i)}
-                                className="text-grey-medium hover:text-red-500 ml-1"
+                                className="text-grey-medium hover:text-status-error ml-1"
                             >
                                 ×
                             </button>
@@ -111,7 +111,7 @@ export default function OnboardingPage() {
                             }
                         }}
                         placeholder={t('onboarding.addTagPlaceholder')}
-                        className="flex-1 px-3 py-1 border border-grey-light rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-fleek-navy"
+                        className="flex-1 px-3 py-1 border border-grey-light rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-navy"
                     />
                     <button
                         onClick={() => {
@@ -119,7 +119,7 @@ export default function OnboardingPage() {
                             setInput('');
                         }}
                         disabled={!input.trim()}
-                        className="px-3 py-1 bg-grey-light text-fleek-navy rounded-lg text-sm hover:bg-grey-medium/20 disabled:opacity-50"
+                        className="px-3 py-1 bg-grey-light text-brand-navy rounded-lg text-sm hover:bg-grey-medium/20 disabled:opacity-50"
                     >
                         +
                     </button>
@@ -131,26 +131,26 @@ export default function OnboardingPage() {
     return (
         <div className="min-h-screen bg-white-off flex flex-col items-center justify-center p-4">
             <div className="max-w-2xl w-full bg-white p-8 rounded-xl shadow-lg">
-                <h1 className="text-3xl font-serif font-bold text-fleek-navy mb-2">{t('onboarding.title')}</h1>
+                <h1 className="text-3xl font-serif font-bold text-brand-navy mb-2">{t('onboarding.title')}</h1>
                 <p className="text-grey-medium mb-6">{t('onboarding.subtitle')}</p>
 
                 {isAnalyzing || !analyzedData ? (
                     <div className="space-y-4">
                         <textarea
-                            className="w-full h-40 p-4 border border-grey-light rounded-lg focus:outline-none focus:ring-2 focus:ring-fleek-navy resize-none"
+                            className="w-full h-40 p-4 border border-grey-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none"
                             placeholder={t('onboarding.placeholder')}
                             value={text}
                             onChange={(e) => setText(e.target.value)}
                             disabled={loading}
                         />
 
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                        {error && <p className="text-status-error text-sm">{error}</p>}
 
                         <div className="flex gap-4">
                             {analyzedData && (
                                 <button
                                     onClick={() => setIsAnalyzing(false)}
-                                    className="flex-1 py-3 border border-fleek-navy text-fleek-navy rounded-lg font-medium hover:bg-fleek-navy/5 transition-colors"
+                                    className="flex-1 py-3 border border-brand-navy text-brand-navy rounded-lg font-medium hover:bg-brand-navy/5 transition-colors"
                                 >
                                     {t('onboarding.cancelButton')}
                                 </button>
@@ -160,7 +160,7 @@ export default function OnboardingPage() {
                                 disabled={!text.trim() || loading}
                                 className={`flex-1 py-3 rounded-lg font-medium transition-colors ${!text.trim() || loading
                                         ? 'bg-grey-light text-grey-medium cursor-not-allowed'
-                                        : 'bg-fleek-navy text-white-pure hover:bg-opacity-90'
+                                        : 'bg-brand-navy text-white-pure hover:bg-opacity-90'
                                     }`}
                             >
                                 {loading ? t('onboarding.analyzing') : t('onboarding.analyzeButton')}
@@ -170,7 +170,7 @@ export default function OnboardingPage() {
                 ) : (
                     <div className="space-y-6">
                         <div className="bg-grey-light/20 p-6 rounded-lg space-y-6">
-                            <h2 className="text-xl font-serif font-bold text-fleek-navy">{t('onboarding.resultsTitle')}</h2>
+                            <h2 className="text-xl font-serif font-bold text-brand-navy">{t('onboarding.resultsTitle')}</h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <TagInput
@@ -203,7 +203,7 @@ export default function OnboardingPage() {
                                         type="text"
                                         value={analyzedData.bodyType || ''}
                                         onChange={(e) => updateField('bodyType', e.target.value)}
-                                        className="w-full mt-2 px-3 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-1 focus:ring-fleek-navy"
+                                        className="w-full mt-2 px-3 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-navy"
                                         placeholder={t('onboarding.unspecified')}
                                     />
                                 </div>
@@ -221,7 +221,7 @@ export default function OnboardingPage() {
                                     <textarea
                                         value={analyzedData.styleGoals || ''}
                                         onChange={(e) => updateField('styleGoals', e.target.value)}
-                                        className="w-full mt-2 px-3 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-1 focus:ring-fleek-navy resize-none h-24"
+                                        className="w-full mt-2 px-3 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-navy resize-none h-24"
                                         placeholder={t('onboarding.noneSpecified')}
                                     />
                                 </div>
@@ -231,13 +231,13 @@ export default function OnboardingPage() {
                         <div className="flex gap-4">
                             <button
                                 onClick={() => setIsAnalyzing(true)}
-                                className="flex-1 py-3 border border-fleek-navy text-fleek-navy rounded-lg font-medium hover:bg-fleek-navy/5 transition-colors"
+                                className="flex-1 py-3 border border-brand-navy text-brand-navy rounded-lg font-medium hover:bg-brand-navy/5 transition-colors"
                             >
                                 {t('onboarding.reanalyzeButton')}
                             </button>
                             <button
                                 onClick={handleSave}
-                                className="flex-1 py-3 bg-fleek-navy text-white-pure rounded-lg font-medium hover:bg-opacity-90 transition-colors"
+                                className="flex-1 py-3 bg-brand-navy text-white-pure rounded-lg font-medium hover:bg-opacity-90 transition-colors"
                             >
                                 {t('onboarding.saveButton')}
                             </button>

@@ -18,7 +18,7 @@ export default function LanguageSelector() {
 
     return (
         <div className="relative group">
-            <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-grey-medium hover:text-fleek-navy hover:bg-white-off transition-colors">
+            <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-grey-medium hover:text-brand-navy hover:bg-white-off transition-colors">
                 <Language fontSize="small" />
                 <span className="text-sm font-medium">{languages.find(l => l.code === i18n.language)?.flag || '🌐'}</span>
             </button>
@@ -28,7 +28,7 @@ export default function LanguageSelector() {
                     <button
                         key={lang.code}
                         onClick={() => changeLanguage(lang.code)}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-white-off transition-colors flex items-center space-x-2 ${i18n.language === lang.code ? 'bg-fleek-navy/5 text-fleek-navy font-medium' : 'text-grey-dark'
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-white-off transition-colors flex items-center space-x-2 ${i18n.language === lang.code ? 'bg-brand-navy/5 text-brand-navy font-medium' : 'text-grey-dark'
                             }`}
                     >
                         <span>{lang.flag}</span>

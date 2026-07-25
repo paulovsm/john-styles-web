@@ -170,7 +170,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                 <div className="space-y-1 text-center">
                                     <CloudUpload className="mx-auto h-12 w-12 text-grey-medium" />
                                     <div className="flex text-sm text-grey-medium justify-center">
-                                        <span className="relative bg-white-pure rounded-md font-medium text-fleek-navy hover:text-fleek-navy focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-fleek-navy">
+                                        <span className="relative bg-white-pure rounded-md font-medium text-brand-navy hover:text-brand-navy focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-navy">
                                             <span>{t('wardrobe.addModal.uploadImage')}</span>
                                             <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/*" onChange={handleFileChange} />
                                         </span>
@@ -220,7 +220,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                         value={formData.description}
                         onChange={handleChange}
                         placeholder={t('wardrobe.addModal.descriptionPlaceholder') || 'Enter a brief description'}
-                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-fleek-navy focus:border-fleek-navy sm:text-sm min-h-[80px]"
+                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm min-h-[80px]"
                     />
                 </div>
 
@@ -230,7 +230,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
-                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-fleek-navy focus:border-fleek-navy sm:text-sm"
+                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
                     >
                         <option value="tops">{t('wardrobe.filters.categories.tops')}</option>
                         <option value="bottoms">{t('wardrobe.filters.categories.bottoms')}</option>

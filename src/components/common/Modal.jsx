@@ -49,13 +49,13 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
                             <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                                 <div className="flex justify-between items-center mb-4">
                                     {title && (
-                                        <h3 className="text-lg leading-6 font-medium text-fleek-navy" id="modal-title">
+                                        <h3 className="text-lg leading-6 font-medium text-brand-navy" id="modal-title">
                                             {title}
                                         </h3>
                                     )}
                                     <button
                                         onClick={onClose}
-                                        className="bg-white-pure rounded-md text-grey-medium hover:text-grey-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fleek-navy"
+                                        className="bg-white-pure rounded-md text-grey-medium hover:text-grey-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy"
                                     >
                                         <span className="sr-only">Close</span>
                                         <Close />

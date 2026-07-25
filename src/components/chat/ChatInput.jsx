@@ -23,12 +23,12 @@ export default function ChatInput({ onSend, disabled }) {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder={t('chat.placeholder')}
                     disabled={disabled}
-                    className="flex-1 px-4 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-2 focus:ring-fleek-navy focus:border-transparent disabled:bg-grey-light disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent disabled:bg-grey-light disabled:cursor-not-allowed"
                 />
                 <button
                     type="submit"
                     disabled={disabled || !message.trim()}
-                    className="px-4 py-2 bg-fleek-navy text-white-pure rounded-lg hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-brand-navy text-white-pure rounded-lg hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     <Send />
                 </button>

@@ -56,7 +56,7 @@ export default function GalleryPage() {
     return (
         <MainLayout>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-serif font-bold text-fleek-navy">{t('gallery.title', 'Galeria de Looks')}</h1>
+                <h1 className="text-2xl font-serif font-bold text-brand-navy">{t('gallery.title', 'Galeria de Looks')}</h1>
             </div>
 
             {loading ? (
@@ -66,7 +66,7 @@ export default function GalleryPage() {
             ) : items.length === 0 ? (
                 <div className="text-center py-12 bg-white-pure rounded-lg border border-grey-light">
                     <Collections className="h-16 w-16 mx-auto mb-4 text-grey-light" />
-                    <h3 className="text-lg font-medium text-fleek-navy mb-2">{t('gallery.emptyTitle', 'Sua galeria está vazia')}</h3>
+                    <h3 className="text-lg font-medium text-brand-navy mb-2">{t('gallery.emptyTitle', 'Sua galeria está vazia')}</h3>
                     <p className="text-grey-medium">{t('gallery.emptyDescription', 'Gere looks no Provador Virtual e salve-os aqui.')}</p>
                 </div>
             ) : (
@@ -95,7 +95,7 @@ export default function GalleryPage() {
                                 </div>
                                 {item.prompt && (
                                     <div className="mt-2 text-sm text-grey-dark line-clamp-2" title={item.prompt}>
-                                        <span className="font-medium text-fleek-navy mr-1"><Style className="h-3 w-3 inline mr-1" />Prompt:</span>
+                                        <span className="font-medium text-brand-navy mr-1"><Style className="h-3 w-3 inline mr-1" />Prompt:</span>
                                         {item.prompt}
                                     </div>
                                 )}

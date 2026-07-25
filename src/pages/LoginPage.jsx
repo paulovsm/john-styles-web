@@ -35,7 +35,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-white-off px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8 bg-white-pure p-10 rounded-xl shadow-lg border border-grey-light">
                 <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-serif font-bold text-fleek-navy">
+                    <h2 className="mt-6 text-3xl font-serif font-bold text-brand-navy">
                         {t('app.name')}
                     </h2>
                     <p className="mt-2 text-sm text-grey-medium">
@@ -53,10 +53,10 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithGoogle)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fleek-navy transition-colors"
+                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                            <Google className="h-5 w-5 text-grey-medium group-hover:text-fleek-navy" />
+                            <Google className="h-5 w-5 text-grey-medium group-hover:text-brand-navy" />
                         </span>
                         {t('auth.signInWith', { provider: 'Google' })}
                     </button>
@@ -64,7 +64,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithFacebook)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fleek-navy transition-colors"
+                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Facebook className="h-5 w-5 text-blue-600" />
@@ -75,7 +75,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithApple)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fleek-navy transition-colors"
+                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Apple className="h-5 w-5 text-black" />

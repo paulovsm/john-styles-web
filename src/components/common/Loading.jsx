@@ -5,7 +5,7 @@ export default function Loading({ type = 'spinner', className = '', ...props }) 
     if (type === 'spinner') {
         return (
             <div className={`flex justify-center items-center ${className}`} {...props}>
-                <CircularProgress className="text-fleek-navy" />
+                <CircularProgress className="text-brand-navy" />
             </div>
         );
     }

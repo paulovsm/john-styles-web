@@ -37,7 +37,7 @@ export default function WardrobePage() {
     return (
         <MainLayout>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-serif font-bold text-fleek-navy">{t('wardrobe.title')}</h1>
+                <h1 className="text-2xl font-serif font-bold text-brand-navy">{t('wardrobe.title')}</h1>
                 <Button onClick={() => { setEditingItem(null); setIsModalOpen(true); }}>
                     <Add className="mr-2 h-5 w-5" />
                     {t('wardrobe.addItem')}

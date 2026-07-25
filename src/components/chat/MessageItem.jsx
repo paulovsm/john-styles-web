@@ -15,11 +15,11 @@ export default function MessageItem({ message, userAvatar }) {
             )}
             <div
                 className={`max-w-[75%] rounded-lg px-4 py-3 shadow-sm ${isUser
-                    ? 'bg-fleek-navy text-white-pure rounded-br-none'
+                    ? 'bg-brand-navy text-white-pure rounded-br-none'
                     : 'bg-white-pure border border-grey-light text-grey-dark rounded-bl-none'
                     }`}
             >
-                <div className="text-sm prose prose-sm max-w-none prose-p:my-1 prose-a:text-blue-600">
+                <div className="text-sm prose prose-sm max-w-none prose-p:my-1 prose-a:text-brand-gold-dark">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
                 </div>
                 <div className={`text-xs mt-1 ${isUser ? 'text-grey-light' : 'text-grey-medium'}`}>

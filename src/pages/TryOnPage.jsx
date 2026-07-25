@@ -190,7 +190,7 @@ export default function TryOnPage() {
 
     return (
         <MainLayout>
-            <h1 className="text-2xl font-serif font-bold text-fleek-navy mb-6">{t('tryOn.title')}</h1>
+            <h1 className="text-2xl font-serif font-bold text-brand-navy mb-6">{t('tryOn.title')}</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column: Inputs */}
@@ -218,7 +218,7 @@ export default function TryOnPage() {
                                         <div className="space-y-1 text-center">
                                             <CloudUpload className="mx-auto h-12 w-12 text-grey-medium" />
                                             <div className="flex text-sm text-grey-medium justify-center">
-                                                <span className="relative bg-white-pure rounded-md font-medium text-fleek-navy hover:text-fleek-navy focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-fleek-navy">
+                                                <span className="relative bg-white-pure rounded-md font-medium text-brand-navy hover:text-brand-navy focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-navy">
                                                     <span>{t('wardrobe.addModal.uploadImage')}</span>
                                                     <input id="user-photo-upload" name="user-photo-upload" type="file" className="sr-only" accept="image/*" onChange={handlePhotoChange} />
                                                 </span>
@@ -245,13 +245,13 @@ export default function TryOnPage() {
                                             <div
                                                 key={item.id}
                                                 onClick={() => handleItemClick(item)}
-                                                className={`cursor-pointer border-2 rounded-md overflow-hidden relative ${isSelected ? 'border-fleek-navy ring-2 ring-fleek-navy ring-opacity-50' : 'border-transparent'
+                                                className={`cursor-pointer border-2 rounded-md overflow-hidden relative ${isSelected ? 'border-brand-navy ring-2 ring-brand-navy ring-opacity-50' : 'border-transparent'
                                                     }`}
                                             >
                                                 <img src={item.image} alt={item.name} className="w-full h-24 object-cover" />
                                                 <p className="text-xs p-1 truncate text-center">{item.name}</p>
                                                 {isSelected && (
-                                                    <div className="absolute top-1 right-1 bg-fleek-navy text-white-pure rounded-full p-0.5">
+                                                    <div className="absolute top-1 right-1 bg-brand-navy text-white-pure rounded-full p-0.5">
                                                         <Check style={{ fontSize: 12 }} />
                                                     </div>
                                                 )}
@@ -262,10 +262,10 @@ export default function TryOnPage() {
                             )}
                             {selectedItems.length > 0 && (
                                 <div className="mt-4 pt-4 border-t border-grey-light">
-                                    <p className="text-sm font-medium text-fleek-navy mb-2">Selected Items:</p>
+                                    <p className="text-sm font-medium text-brand-navy mb-2">Selected Items:</p>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedItems.map(item => (
-                                            <span key={item.id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-fleek-navy/10 text-fleek-navy">
+                                            <span key={item.id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-navy/10 text-brand-navy">
                                                 {item.category}: {item.name}
                                             </span>
                                         ))}
@@ -287,7 +287,7 @@ export default function TryOnPage() {
                                         onChange={(e) => setAdvancedMode(e.target.checked)}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-11 h-6 bg-grey-light peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-fleek-navy/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white-pure after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white-pure after:border-grey-light after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-fleek-navy"></div>
+                                    <div className="w-11 h-6 bg-grey-light peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-navy/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white-pure after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white-pure after:border-grey-light after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-navy"></div>
                                 </label>
                             </div>
                             {advancedMode && (
@@ -299,7 +299,7 @@ export default function TryOnPage() {
                                         value={customPrompt}
                                         onChange={(e) => setCustomPrompt(e.target.value)}
                                         placeholder={t('tryOn.customPromptPlaceholder')}
-                                        className="w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-fleek-navy focus:border-fleek-navy sm:text-sm min-h-[100px]"
+                                        className="w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm min-h-[100px]"
                                     />
                                     <p className="text-xs text-grey-medium">
                                         {t('tryOn.customPromptHelp')}
@@ -340,12 +340,12 @@ export default function TryOnPage() {
                     {generating ? (
                         <div className="text-center">
                             <Loading type="spinner" size={48} className="mb-4" />
-                            <p className="text-fleek-navy font-medium">{t('tryOn.generating')}</p>
+                            <p className="text-brand-navy font-medium">{t('tryOn.generating')}</p>
                             <p className="text-sm text-grey-medium mt-2">{t('tryOn.generatingDescription')}</p>
                         </div>
                     ) : generatedImage ? (
                         <div className="w-full">
-                            <h3 className="text-lg font-medium text-fleek-navy mb-4 text-center">{t('tryOn.yourLook')}</h3>
+                            <h3 className="text-lg font-medium text-brand-navy mb-4 text-center">{t('tryOn.yourLook')}</h3>
                             <img src={generatedImage} alt="Generated Try-On" className="w-full rounded-lg shadow-lg" />
                             <div className="mt-6 flex justify-center space-x-4">
                                 <Button variant="outline" onClick={() => setGeneratedImage('')}>

@@ -35,7 +35,7 @@ export default function Avatar({
                     alt={alt}
                 />
             ) : (
-                <div className={`${sizeStyles[size]} rounded-full bg-fleek-navy flex items-center justify-center text-white-pure font-medium`}>
+                <div className={`${sizeStyles[size]} rounded-full bg-brand-navy flex items-center justify-center text-white-pure font-medium`}>
                     {alt ? getInitials(alt) : <Person className="h-1/2 w-1/2" />}
                 </div>
             )}

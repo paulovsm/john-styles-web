@@ -6,12 +6,14 @@
 
 @layer base {
   :root {
-    --color-fleek-navy: #0F172A;
-    --color-authority-gold: #C5A059;
+    /* Brand tokens (kept in sync with tailwind.config.js) */
+    --color-brand-navy: #0F172A;
+    --color-brand-gold: #C5A059;
+    --color-brand-gold-dark: #8A6D2F;
   }
-  
+
   body {
-    @apply font-sans text-fleek-navy bg-white-pure;
+    @apply font-sans text-brand-navy bg-white-pure;
   }
 
   h1, h2, h3, h4, h5, h6 {

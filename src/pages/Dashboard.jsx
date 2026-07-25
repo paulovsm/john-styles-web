@@ -13,14 +13,14 @@ export default function Dashboard() {
         <MainLayout>
             <div className="mb-8 flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-serif font-bold text-fleek-navy">
+                    <h1 className="text-3xl font-serif font-bold text-brand-navy">
                         {t('dashboard.welcome', { name: currentUser?.displayName?.split(' ')[0] || 'User' })}
                     </h1>
                     <p className="mt-2 text-grey-medium">
                         {t('dashboard.subtitle')}
                     </p>
                 </div>
-                <a href="/onboarding" className="text-fleek-navy hover:text-opacity-80 font-medium underline">
+                <a href="/onboarding" className="text-brand-navy hover:text-opacity-80 font-medium underline">
                     {t('dashboard.myProfile')}
                 </a>
             </div>

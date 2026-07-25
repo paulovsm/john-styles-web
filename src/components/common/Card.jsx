@@ -39,7 +39,7 @@ Card.Body = function CardBody({ children, className = '' }) {
 
 Card.Title = function CardTitle({ children, className = '' }) {
     return (
-        <h3 className={`text-lg font-medium text-fleek-navy ${className}`}>
+        <h3 className={`text-lg font-medium text-brand-navy ${className}`}>
             {children}
         </h3>
     );

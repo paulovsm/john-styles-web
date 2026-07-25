@@ -16,9 +16,9 @@ export default function ChatInterface() {
 
     return (
         <div className="flex flex-col h-[calc(100vh-8rem)] bg-white-pure border border-grey-light rounded-xl shadow-sm overflow-hidden">
-            <div className="bg-fleek-navy px-4 py-3 flex items-center justify-between">
+            <div className="bg-brand-navy px-4 py-3 flex items-center justify-between">
                 <h2 className="text-white-pure font-medium">{t('chat.title')}</h2>
-                <span className="text-xs text-fleek-gold bg-fleek-navy/50 px-2 py-1 rounded-full border border-fleek-gold/30">
+                <span className="text-xs text-brand-gold bg-brand-navy/50 px-2 py-1 rounded-full border border-brand-gold/30">
                     {t('chat.beta')}
                 </span>
                 {agentState === 'processing' && (

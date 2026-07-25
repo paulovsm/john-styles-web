@@ -9,9 +9,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        fleek: {
+        brand: {
           navy: '#0F172A',
           gold: '#C5A059',
+          'gold-dark': '#8A6D2F', // darker gold that passes WCAG AA on white text
         },
         white: {
           DEFAULT: '#FFFFFF',
