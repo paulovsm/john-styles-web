@@ -4,9 +4,9 @@ import Input from '../common/Input';
 import Button from '../common/Button';
 import Loading from '../common/Loading';
 import { geminiService } from '../../services/api/geminiService';
-import { firestoreService } from '../../services/storage/firestoreService';
 import { AutoAwesome, CloudUpload } from '@mui/icons-material';
 import { compressImage } from '../../utils/imageUtils';
+import { mapCategory } from '../../utils/categoryMapper';
 
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +15,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState('');
     const [analyzing, setAnalyzing] = useState(false);
+    const [analyzeError, setAnalyzeError] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -79,65 +80,26 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         if (!file) return;
 
         setAnalyzing(true);
+        setAnalyzeError('');
         try {
-            // Check usage limit first
-            const usageStatus = await firestoreService.checkUsageLimit('wardrobeAnalysis');
-            if (!usageStatus.allowed) {
-                // Ideally use a toast or alert. For now, using console and maybe setting an error state if UI supported it.
-                // Since there's no error state for this modal shown in previous code, I'll alert or log.
-                // Actually, I should probably add a small error message in the UI.
-                // Let's use alert for now as a quick feedback, or better, set a local error state if I can find one.
-                // Looking at the file, there is no error state. I will add one or just alert.
-                // Given the instructions "Implement a limitation", blocking is key.
-                alert(t('wardrobe.errors.limitReached'));
-                return;
-            }
-
             const analysis = await geminiService.analyzeImage(file, i18n.language);
-            console.log("Gemini Analysis Result:", analysis);
-
-            // Increment usage on success
-            await firestoreService.incrementUsage('wardrobeAnalysis');
-
-            // Map Gemini response to our internal categories
-            let mappedCategory = 'tops'; // Default
-            if (analysis.category) {
-                const lowerCat = analysis.category.toLowerCase();
-                console.log("Gemini Category Raw:", analysis.category);
-                console.log("Gemini Category Lower:", lowerCat);
-
-                // Priority: Exact matches from the 5 expected categories
-                if (['tops', 'bottoms', 'shoes', 'accessories', 'outerwear'].includes(lowerCat)) {
-                    mappedCategory = lowerCat;
-                } else {
-                    // Fallback heuristic
-                    if (lowerCat.includes('shoe') || lowerCat.includes('sneaker') || lowerCat.includes('boot') || lowerCat.includes('sandal') || lowerCat.includes('heel')) {
-                        mappedCategory = 'shoes';
-                    } else if (lowerCat.includes('pant') || lowerCat.includes('jeans') || lowerCat.includes('short') || lowerCat.includes('trousers') || lowerCat.includes('skirt') || lowerCat.includes('legging')) {
-                        mappedCategory = 'bottoms';
-                    } else if (lowerCat.includes('access') || lowerCat.includes('hat') || lowerCat.includes('cap') || lowerCat.includes('scarf') || lowerCat.includes('belt') || lowerCat.includes('bag') || lowerCat.includes('glasses')) {
-                        mappedCategory = 'accessories';
-                    } else if (lowerCat.includes('outer') || lowerCat.includes('coat') || lowerCat.includes('jacket') || lowerCat.includes('blazer') || lowerCat.includes('cardigan')) {
-                        mappedCategory = 'outerwear';
-                    } else if (lowerCat.includes('top') || lowerCat.includes('shirt') || lowerCat.includes('blouse') || lowerCat.includes('sweater') || lowerCat.includes('hoodie') || lowerCat.includes('vest')) {
-                        mappedCategory = 'tops';
-                    }
-                }
-                console.log("Mapped Category:", mappedCategory);
-            }
 
             setFormData(prev => ({
                 ...prev,
                 name: analysis.name || prev.name,
                 description: analysis.description || prev.description,
-                category: mappedCategory,
+                category: mapCategory(analysis.category),
                 color: analysis.color || prev.color,
                 style: analysis.style || prev.style,
                 brand: analysis.brand || prev.brand
             }));
         } catch (error) {
             console.error("Analysis failed", error);
-            // Ideally show error notification
+            setAnalyzeError(
+                error.code === 'LIMIT_REACHED'
+                    ? t('wardrobe.errors.limitReached')
+                    : t('wardrobe.errors.analysisFailed', 'Falha ao analisar a imagem. Tente novamente.')
+            );
         } finally {
             setAnalyzing(false);
         }
@@ -210,6 +172,12 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                             {analyzing ? <Loading type="spinner" size={16} className="mr-2" /> : <AutoAwesome className="mr-1 h-4 w-4" />}
                             {t('wardrobe.addModal.analyzeAI')}
                         </Button>
+                    </div>
+                )}
+
+                {analyzeError && (
+                    <div role="alert" className="px-3 py-2 rounded-md bg-status-error/10 border border-status-error text-status-error text-sm">
+                        {analyzeError}
                     </div>
                 )}
 

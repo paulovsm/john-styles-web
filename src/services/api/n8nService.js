@@ -1,28 +1,22 @@
 import i18n from '../../i18n/config';
+import { authFetch } from './authFetch';
 
-const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || 'https://your-n8n-instance.com/webhook/john-styles-chat';
-
+/**
+ * Chat service. Talks to our authenticated /api/chat proxy, which forwards to
+ * the n8n agent server-side. The webhook URL is no longer exposed to the client
+ * and the endpoint requires a valid Firebase token.
+ */
 export const n8nService = {
     async sendMessage(message, context) {
         try {
-            // Remove image field from wardrobe items to reduce token usage
-            const wardrobeWithoutImages = context.wardrobeItems?.map(item => {
-                const { image, ...itemWithoutImage } = item;
-                return itemWithoutImage;
-            }) || [];
-
-            const response = await fetch(N8N_WEBHOOK_URL, {
+            const response = await authFetch('/api/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({
-                    userId: context.userId,
-                    message: message,
+                    message,
                     userProfile: context.userProfile,
-                    wardrobeItems: wardrobeWithoutImages,
-                    chatHistory: context.chatHistory
-                })
+                    wardrobeItems: context.wardrobeItems,
+                    chatHistory: context.chatHistory,
+                }),
             });
 
             if (!response.ok) {
@@ -30,11 +24,9 @@ export const n8nService = {
             }
 
             const data = await response.json();
-            // Assuming n8n returns { output: "Agent response text" } or similar
-            // Adjust based on actual n8n workflow output node
-            return data.output || data.text || data.content || i18n.t('chat.noResponse');
+            return data.content || i18n.t('chat.noResponse');
         } catch (error) {
-            console.error('n8n Service Error:', error);
+            console.error('Chat Service Error:', error);
             throw error;
         }
     }

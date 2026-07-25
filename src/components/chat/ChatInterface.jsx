@@ -3,7 +3,6 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useConversationContext } from '../../contexts/ConversationContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { geminiService } from '../../services/api/geminiService';
 import { useTranslation } from 'react-i18next';
 
 export default function ChatInterface() {

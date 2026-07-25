@@ -137,14 +137,6 @@ export default function TryOnPage() {
         setRetryAfter(null);
 
         try {
-            // Check usage limit first
-            const usageStatus = await firestoreService.checkUsageLimit('lookGeneration');
-            if (!usageStatus.allowed) {
-                setErrorMessage(t('tryOn.errors.limitReached'));
-                setGenerating(false);
-                return;
-            }
-
             let prompt;
 
             if (advancedMode && customPrompt.trim()) {
@@ -169,14 +161,15 @@ export default function TryOnPage() {
 
             const imageUrl = await geminiService.generateImage(prompt, userPhotoPreview, itemImages);
             setGeneratedImage(imageUrl);
-
-            // Increment usage on success
-            await firestoreService.incrementUsage('lookGeneration');
         } catch (error) {
             console.error("Try-on generation failed", error);
 
-            // Handle quota exceeded error
-            if (error.code === 'QUOTA_EXCEEDED' || error.status === 429) {
+            // Daily per-user limit reached (enforced server-side).
+            if (error.code === 'LIMIT_REACHED') {
+                setErrorMessage(t('tryOn.errors.limitReached'));
+            }
+            // Upstream Gemini quota (temporary, retry after a delay).
+            else if (error.code === 'QUOTA_EXCEEDED') {
                 const waitTime = error.retryAfter || 60;
                 setRetryAfter(waitTime);
                 setErrorMessage(t('tryOn.errors.quotaExceeded', { seconds: waitTime }));

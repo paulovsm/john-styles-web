@@ -1,28 +1,15 @@
 import { GoogleGenAI } from "@google/genai";
+import { applyCors } from "./_cors.js";
+import { requireAuth, handleAuthError } from "./_auth.js";
+import { parseImage, handleValidationError } from "./_validate.js";
+import { consumeUsage, UsageLimitError } from "./_usage.js";
+import { MODELS } from "./_models.js";
 
 export default async function handler(req, res) {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    );
-
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
+    if (applyCors(req, res)) return;
 
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
-    }
-
-    const { image, prompt, language = 'en' } = req.body;
-
-    if (!image) {
-        return res.status(400).json({ error: 'Missing image data' });
     }
 
     const apiKey = process.env.GOOGLE_AI_API_KEY;
@@ -31,10 +18,15 @@ export default async function handler(req, res) {
     }
 
     try {
-        const ai = new GoogleGenAI({ apiKey });
+        const { uid } = await requireAuth(req);
 
-        // Remove header if present (e.g., "data:image/jpeg;base64,")
-        const base64Image = image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
+        const { image, language = 'en' } = req.body;
+        const { data: base64Image, mimeType } = parseImage(image, 'image');
+
+        // Consume one unit of the daily quota (atomic, server-authoritative).
+        await consumeUsage(uid, 'wardrobeAnalysis');
+
+        const ai = new GoogleGenAI({ apiKey });
 
         const analysisPrompt = `Analyze this image of a clothing item. Return ONLY a valid JSON object (no markdown formatting, no backticks) with the following fields:
         - name: A short, descriptive name for the item in ${language} (e.g., "Blue Denim Jacket" or "Jaqueta Jeans Azul").
@@ -47,29 +39,26 @@ export default async function handler(req, res) {
 
         const contents = [
             { text: analysisPrompt },
-            {
-                inlineData: {
-                    data: base64Image,
-                    mimeType: "image/jpeg", // Assuming jpeg for simplicity
-                }
-            }
+            { inlineData: { data: base64Image, mimeType } },
         ];
 
         const response = await ai.models.generateContent({
-            model: "gemini-3.6-flash",
-            contents: contents,
+            model: MODELS.vision,
+            config: { responseMimeType: "application/json" },
+            contents,
         });
 
-        let text = response.candidates[0].content.parts[0].text;
-
-        // Clean up potential markdown code blocks
+        let text = response.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
         text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-        // Parse the JSON string to ensure it's valid
         const analysisData = JSON.parse(text);
-
         return res.status(200).json(analysisData);
     } catch (error) {
+        if (handleAuthError(res, error)) return;
+        if (handleValidationError(res, error)) return;
+        if (error instanceof UsageLimitError) {
+            return res.status(429).json({ error: 'LIMIT_REACHED', limitType: error.limitType, limit: error.limit });
+        }
         console.error('Gemini Vision API Error:', error);
         return res.status(500).json({ error: 'Failed to analyze image', details: error.message });
     }

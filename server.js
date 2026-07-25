@@ -1,7 +1,6 @@
 import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';
 
@@ -12,10 +11,9 @@ dotenv.config(); // Fallback to .env
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
 app.use(express.json({ limit: '10mb' })); // Support large payloads (images)
 
-// Helper to wrap Vercel-style handlers for Express
+// Wrap Vercel-style handlers so uncaught errors return JSON instead of hanging.
 const wrapHandler = (handler) => async (req, res) => {
     try {
         await handler(req, res);
@@ -27,21 +25,28 @@ const wrapHandler = (handler) => async (req, res) => {
     }
 };
 
-// Import handlers dynamically
+// Dynamically register every api/*.js file as /api/<name>, mirroring Vercel's
+// file-based routing. Files prefixed with `_` are shared helpers, not routes.
 const apiDir = join(dirname(fileURLToPath(import.meta.url)), 'api');
 
-// Register routes
-// We manually register known endpoints to ensure correct mapping
-import chatHandler from './api/gemini-chat.js';
-import analyzeHandler from './api/gemini-image-analyze.js';
-import generateHandler from './api/gemini-image-generate.js';
-import profileAnalyzeHandler from './api/gemini-profile-analyze.js';
+async function registerRoutes() {
+    const files = fs
+        .readdirSync(apiDir)
+        .filter((f) => f.endsWith('.js') && !f.startsWith('_'));
 
-app.all('/api/gemini-chat', wrapHandler(chatHandler));
-app.all('/api/gemini-image-analyze', wrapHandler(analyzeHandler));
-app.all('/api/gemini-image-generate', wrapHandler(generateHandler));
-app.all('/api/gemini-profile-analyze', wrapHandler(profileAnalyzeHandler));
+    for (const file of files) {
+        const route = `/api/${file.replace(/\.js$/, '')}`;
+        const mod = await import(pathToFileURL(join(apiDir, file)).href);
+        const handler = mod.default;
+        if (typeof handler === 'function') {
+            app.all(route, wrapHandler(handler));
+            console.log(`Registered ${route}`);
+        }
+    }
+}
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+registerRoutes().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
 });
