@@ -3,6 +3,7 @@ import MainLayout from '../components/layout/MainLayout';
 import Button from '../components/common/Button';
 import Loading from '../components/common/Loading';
 import Card from '../components/common/Card';
+import UsageCounter from '../components/common/UsageCounter';
 import { useWardrobeContext } from '../contexts/WardrobeContext';
 import { geminiService } from '../services/api/geminiService';
 import { CloudUpload, AutoAwesome, Check } from '@mui/icons-material';
@@ -29,6 +30,7 @@ export default function TryOnPage() {
     const [retryAfter, setRetryAfter] = useState(null);
     const [advancedMode, setAdvancedMode] = useState(false);
     const [customPrompt, setCustomPrompt] = useState('');
+    const [usageRefresh, setUsageRefresh] = useState(0);
 
     const handlePhotoChange = async (e) => {
         const file = e.target.files[0];
@@ -161,6 +163,7 @@ export default function TryOnPage() {
 
             const imageUrl = await geminiService.generateImage(prompt, userPhotoPreview, itemImages);
             setGeneratedImage(imageUrl);
+            setUsageRefresh((n) => n + 1); // refresh the remaining-usage counter
         } catch (error) {
             console.error("Try-on generation failed", error);
 
@@ -333,6 +336,7 @@ export default function TryOnPage() {
                         {generating ? <Loading type="spinner" size={20} className="mr-2" /> : <AutoAwesome className="mr-2" />}
                         {t('tryOn.generate')}
                     </Button>
+                    <UsageCounter limitType="lookGeneration" refreshKey={usageRefresh} className="text-center" />
                 </div>
 
                 {/* Right Column: Result */}

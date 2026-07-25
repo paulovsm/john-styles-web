@@ -227,5 +227,8 @@
   },
   "footer": {
     "rights": "Todos los derechos reservados."
+  },
+  "usage": {
+    "remaining": "{{remaining}} de {{limit}} restantes hoy"
   }
 }

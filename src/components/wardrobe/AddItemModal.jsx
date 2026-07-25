@@ -8,6 +8,7 @@ import { firestoreService } from '../../services/storage/firestoreService';
 import { AutoAwesome, CloudUpload } from '@mui/icons-material';
 import { compressImage } from '../../utils/imageUtils';
 import { mapCategory } from '../../utils/categoryMapper';
+import UsageCounter from '../common/UsageCounter';
 
 import { useTranslation } from 'react-i18next';
 
@@ -196,6 +197,10 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                             {t('wardrobe.addModal.analyzeAI')}
                         </Button>
                     </div>
+                )}
+
+                {preview && (
+                    <UsageCounter limitType="wardrobeAnalysis" refreshKey={analyzing ? 0 : 1} className="text-right" />
                 )}
 
                 {analyzeError && (
