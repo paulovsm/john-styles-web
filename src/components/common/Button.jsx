@@ -1,5 +1,5 @@
 import React from 'react';
-import { CircularProgress } from '@mui/material';
+import Loading from './Loading';
 
 export default function Button({
     children,
@@ -29,7 +29,7 @@ export default function Button({
             {...props}
         >
             {isLoading && (
-                <CircularProgress size={16} color="inherit" className="mr-2" />
+                <Loading type="spinner" size={16} className="mr-2" />
             )}
             {children}
         </button>
