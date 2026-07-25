@@ -199,21 +199,14 @@ class HybridStorageService {
         console.log('Starting cloud sync...');
 
         try {
-            // Sync user profile
-            const cloudProfile = await firestoreService.getUserProfile();
-            if (cloudProfile !== null) { // Only update if not null (null means error/offline)
-                localStorageService.setItem(STORAGE_KEYS.USER_PROFILE, cloudProfile);
-                this.notify(STORAGE_KEYS.USER_PROFILE, cloudProfile);
-                console.log('Profile synced from cloud');
-            }
+            // NOTE: the user profile is loaded/owned by UserProfileContext (which
+            // also drives the onboarding gate). We intentionally do NOT fetch it
+            // here too, to avoid a double-write race on the same data.
 
             // Sync wardrobe with merge logic
             const cloudWardrobe = await firestoreService.getWardrobe();
             if (cloudWardrobe !== null) {
                 const localWardrobe = localStorageService.getWardrobe();
-
-                // Create a map of cloud items for easy lookup
-                const cloudMap = new Map(cloudWardrobe.map(item => [item.id, item]));
 
                 // Merge strategy:
                 // 1. Start with cloud items

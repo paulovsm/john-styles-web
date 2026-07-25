@@ -145,11 +145,8 @@ export default function TryOnPage() {
             } else {
                 // Construct prompt for multiple items
                 const itemsDescription = selectedItems.map(item => {
-                    const itemColor = item.colors?.[0] || '';
                     const itemCategory = item.category || '';
                     const itemName = item.name || '';
-                    //const itemDescription = item.description || '';
-                    //return `${itemColor} ${itemCategory} (${itemName})`;
                     return `${itemCategory} (${itemName})`;
                 }).join(', ');
 

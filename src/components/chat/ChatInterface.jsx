@@ -21,11 +21,9 @@ export default function ChatInterface() {
                 <span className="text-xs text-fleek-gold bg-fleek-navy/50 px-2 py-1 rounded-full border border-fleek-gold/30">
                     {t('chat.beta')}
                 </span>
-                {agentState !== 'idle' && (
+                {agentState === 'processing' && (
                     <span className="ml-2 text-xs text-white-pure/70 animate-pulse">
-                        {agentState === 'analyzing' && 'Analysing style...'}
-                        {agentState === 'trending' && 'Checking trends...'}
-                        {agentState === 'recommending' && 'Creating recommendations...'}
+                        {t('chat.thinking', 'John está pensando...')}
                     </span>
                 )}
             </div>
