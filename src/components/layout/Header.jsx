@@ -66,6 +66,7 @@ export default function Header() {
                         <button
                             onClick={handleSync}
                             className={`p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none ${isSyncing ? 'animate-spin' : ''}`}
+                            aria-label={t('common.sync', 'Sincronizar')}
                             title={t('common.sync', 'Sincronizar')}
                             disabled={isSyncing}
                         >
@@ -78,7 +79,8 @@ export default function Header() {
                                 <button
                                     onClick={handleLogout}
                                     className="p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none"
-                                    title="Logout"
+                                    aria-label={t('common.logout', 'Sair')}
+                                    title={t('common.logout', 'Sair')}
                                 >
                                     <Logout />
                                 </button>
@@ -157,6 +159,7 @@ export default function Header() {
                                 <button
                                     onClick={handleLogout}
                                     className="ml-auto flex-shrink-0 p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none"
+                                    aria-label={t('common.logout', 'Sair')}
                                 >
                                     <Logout />
                                 </button>
@@ -168,6 +171,20 @@ export default function Header() {
                                 </Link>
                             </div>
                         )}
+
+                        {/* Sync + language are desktop-only in the top bar; expose them here too. */}
+                        <div className="mt-3 px-4 flex items-center justify-between">
+                            <button
+                                onClick={handleSync}
+                                disabled={isSyncing}
+                                className="flex items-center gap-2 text-sm text-grey-dark hover:text-brand-navy focus:outline-none"
+                                aria-label={t('common.sync', 'Sincronizar')}
+                            >
+                                <Sync className={isSyncing ? 'animate-spin' : ''} fontSize="small" />
+                                {t('common.sync', 'Sincronizar')}
+                            </button>
+                            <LanguageSelector />
+                        </div>
                     </div>
                 </div>
             )}

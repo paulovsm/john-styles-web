@@ -9,6 +9,7 @@ import HistoryPage from './pages/HistoryPage';
 import TryOnPage from './pages/TryOnPage';
 import OnboardingPage from './pages/OnboardingPage';
 import GalleryPage from './pages/GalleryPage';
+import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 const router = createBrowserRouter([
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
                 <GalleryPage />
             </ProtectedRoute>
         ),
+    },
+    {
+        path: '*',
+        element: <NotFoundPage />,
     },
 ]);
 

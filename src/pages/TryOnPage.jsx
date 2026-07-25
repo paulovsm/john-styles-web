@@ -238,7 +238,7 @@ export default function TryOnPage() {
                             {items.length === 0 ? (
                                 <p className="text-sm text-grey-medium">{t('tryOn.noItemsWardrobe')}</p>
                             ) : (
-                                <div className="grid grid-cols-3 gap-4 max-h-64 overflow-y-auto">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-64 overflow-y-auto">
                                     {items.map((item) => {
                                         const isSelected = selectedItems.some(i => i.id === item.id);
                                         return (
