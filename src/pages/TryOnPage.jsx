@@ -9,7 +9,7 @@ import { CloudUpload, AutoAwesome, Check } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
-import { compressImage } from '../utils/imageUtils';
+import { compressImage, toDataUrl } from '../utils/imageUtils';
 
 
 
@@ -153,8 +153,11 @@ export default function TryOnPage() {
                 prompt = `Keep this person's appearance exactly as shown in the image. Dress person with the following items: ${itemsDescription}. Replace the current outfit if needed. Maintain photorealistic quality, natural lighting, and the original photo composition. The clothing items should fit naturally on the person.`;
             }
 
-            // Extract images from selected items
-            const itemImages = selectedItems.map(item => item.image);
+            // Item images are stored as Storage URLs; the generate API needs
+            // inline base64, so convert them client-side first.
+            const itemImages = await Promise.all(
+                selectedItems.map(item => toDataUrl(item.image))
+            );
 
             const imageUrl = await geminiService.generateImage(prompt, userPhotoPreview, itemImages);
             setGeneratedImage(imageUrl);

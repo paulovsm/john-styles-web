@@ -4,6 +4,7 @@ import Input from '../common/Input';
 import Button from '../common/Button';
 import Loading from '../common/Loading';
 import { geminiService } from '../../services/api/geminiService';
+import { firestoreService } from '../../services/storage/firestoreService';
 import { AutoAwesome, CloudUpload } from '@mui/icons-material';
 import { compressImage } from '../../utils/imageUtils';
 import { mapCategory } from '../../utils/categoryMapper';
@@ -16,6 +17,8 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const [preview, setPreview] = useState('');
     const [analyzing, setAnalyzing] = useState(false);
     const [analyzeError, setAnalyzeError] = useState('');
+    const [saving, setSaving] = useState(false);
+    const [saveError, setSaveError] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -110,16 +113,36 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSave({
-            ...formData,
-            id: item ? item.id : undefined,
-            image: preview,
-            colors: formData.color ? [formData.color] : [], // Simple array conversion
-            styles: formData.style ? [formData.style] : []
-        });
-        onClose();
+        setSaveError('');
+        setSaving(true);
+
+        try {
+            const id = item?.id || Date.now().toString();
+            let imageUrl = preview;
+
+            // If a new image was selected (we still hold the File), upload it to
+            // Storage and persist only the URL — never the base64 blob, which
+            // would bloat the Firestore doc / localStorage.
+            if (file) {
+                imageUrl = await firestoreService.uploadImage(file, id);
+            }
+
+            onSave({
+                ...formData,
+                id,
+                image: imageUrl,
+                colors: formData.color ? [formData.color] : [],
+                styles: formData.style ? [formData.style] : []
+            });
+            onClose();
+        } catch (error) {
+            console.error('Error saving item:', error);
+            setSaveError(t('wardrobe.errors.saveFailed', 'Falha ao salvar o item. Tente novamente.'));
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -242,11 +265,18 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     placeholder={t('wardrobe.addModal.brandPlaceholder')}
                 />
 
+                {saveError && (
+                    <div role="alert" className="px-3 py-2 rounded-md bg-status-error/10 border border-status-error text-status-error text-sm">
+                        {saveError}
+                    </div>
+                )}
+
                 <div className="flex justify-end space-x-3 pt-4 border-t border-grey-light">
-                    <Button type="button" variant="text" onClick={onClose}>
+                    <Button type="button" variant="text" onClick={onClose} disabled={saving}>
                         {t('wardrobe.addModal.cancel')}
                     </Button>
-                    <Button type="submit" variant="primary" disabled={!formData.name || !preview}>
+                    <Button type="submit" variant="primary" disabled={!formData.name || !preview || saving}>
+                        {saving ? <Loading type="spinner" size={16} className="mr-2" /> : null}
                         {t('wardrobe.addModal.save')}
                     </Button>
                 </div>

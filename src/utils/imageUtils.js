@@ -1,4 +1,26 @@
 /**
+ * Ensures an image reference is a base64 data URL.
+ * Wardrobe/gallery images are now stored as Storage URLs, but our image APIs
+ * expect inline base64, so remote URLs are fetched and converted client-side.
+ *
+ * @param {string} src - a data: URL or an http(s) URL
+ * @returns {Promise<string>} a data URL
+ */
+export const toDataUrl = async (src) => {
+    if (!src) return src;
+    if (src.startsWith('data:')) return src;
+
+    const res = await fetch(src);
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+};
+
+/**
  * Compresses an image file to ensure it meets size requirements.
  * Resizes the image if dimensions exceed maxDimension (default 1500px).
  * Compresses to JPEG with specified quality (default 0.7).
