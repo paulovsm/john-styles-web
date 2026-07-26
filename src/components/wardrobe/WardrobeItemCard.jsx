@@ -10,6 +10,11 @@ export default function WardrobeItemCard({ item, onDelete, onClick }) {
     return (
         <Card hoverable onClick={() => onClick && onClick(item)} className="relative group">
             <Card.Image src={item.image} alt={item.name} className="h-48" />
+            {item.demo && (
+                <span className="absolute top-2 left-2 text-[10px] font-medium px-2 py-0.5 rounded-full bg-brand-gold/90 text-white-pure shadow-sm">
+                    {t('wardrobe.sampleBadge', 'Exemplo')}
+                </span>
+            )}
             <Card.Body>
                 <Card.Title className="truncate">{item.name}</Card.Title>
                 <Card.Subtitle className="capitalize">{item.category}</Card.Subtitle>

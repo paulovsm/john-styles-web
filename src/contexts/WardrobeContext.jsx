@@ -1,10 +1,8 @@
-import React, { createContext, useContext, useState, useMemo, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import { useWardrobeItems } from '../hooks/useWardrobeItems';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from './AuthContext';
 import { useUserProfileContext } from './UserProfileContext';
-import { firestoreService } from '../services/storage/firestoreService';
-import { DEMO_WARDROBE } from '../data/demoWardrobe';
+import { pickSampleItems } from '../data/demoWardrobe';
 
 const WardrobeContext = createContext();
 
@@ -15,38 +13,23 @@ export function useWardrobeContext() {
 export function WardrobeProvider({ children }) {
     const { items: rawItems, setItems, addItem, removeItem, updateItem } = useWardrobeItems();
     const { t } = useTranslation();
-    const { currentUser } = useAuth();
-    const { profile, updateProfile, isLoadingProfile } = useUserProfileContext();
+    const { profile } = useUserProfileContext();
 
-    // Seed a demo wardrobe on a new user's first access so they can try the
-    // product immediately (kills the cold start). We check the CLOUD wardrobe
-    // (source of truth) rather than local state, which can be transiently stale
-    // during login/user-switch — that stale check previously skipped the seed
-    // while still marking the user as seeded, so nothing ever appeared.
-    const uid = currentUser?.uid || null;
-    const seededRef = useRef(false);
-    useEffect(() => {
-        if (seededRef.current || !uid || isLoadingProfile) return;
-        if (profile?.seededDemo) { seededRef.current = true; return; }
+    // Opt-in sample closet: the user explicitly chooses to explore with sample
+    // pieces (from the empty state). We do NOT auto-inject data — the wardrobe
+    // belongs to the user. Samples are tailored to their onboarding profile and
+    // flagged demo:true so they can be badged and removed.
+    const addSampleItems = useCallback(() => {
+        const samples = pickSampleItems(profile);
+        setItems((prev) => {
+            const existing = new Set(prev.map((i) => i.id));
+            return [...prev, ...samples.filter((s) => !existing.has(s.id))];
+        });
+    }, [profile, setItems]);
 
-        seededRef.current = true; // prevent concurrent runs
-        let cancelled = false;
-        (async () => {
-            const cloud = await firestoreService.getWardrobe(uid);
-            if (cancelled) return;
-            if (!Array.isArray(cloud)) {
-                // Read failed — retry on a later mount instead of marking seeded.
-                seededRef.current = false;
-                return;
-            }
-            if (cloud.length === 0) {
-                setItems(DEMO_WARDROBE);
-            }
-            updateProfile({ seededDemo: true });
-        })();
-
-        return () => { cancelled = true; };
-    }, [uid, isLoadingProfile, profile?.seededDemo, setItems, updateProfile]);
+    const removeSampleItems = useCallback(() => {
+        setItems((prev) => prev.filter((i) => !i.demo));
+    }, [setItems]);
 
     // Safety net: never render the same item id twice (guards against any
     // sync race / legacy duplicate leaking into the list). Keeps the last
@@ -89,6 +72,8 @@ export function WardrobeProvider({ children }) {
         });
     }, [items, filters, t]);
 
+    const hasDemoItems = useMemo(() => items.some((i) => i.demo), [items]);
+
     const value = {
         items: filteredItems,
         allItems: items,
@@ -96,7 +81,10 @@ export function WardrobeProvider({ children }) {
         removeItem,
         updateItem,
         filters,
-        setFilters
+        setFilters,
+        addSampleItems,
+        removeSampleItems,
+        hasDemoItems,
     };
 
     return (

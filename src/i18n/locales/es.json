@@ -134,7 +134,12 @@
       "limitReached": "Límite diario de análisis alcanzado (5/5). Por favor, inténtalo de nuevo mañana.",
       "analysisFailed": "Error al analizar la imagen. Inténtalo de nuevo.",
       "saveFailed": "Error al guardar el artículo. Inténtalo de nuevo."
-    }
+    },
+    "exploreSamples": "Explorar con prendas de ejemplo",
+    "exploreSamplesHint": "Prendas de ejemplo para probar la app — puedes quitarlas cuando quieras.",
+    "sampleBadge": "Ejemplo",
+    "sampleNotice": "Tu guardarropa incluye prendas de ejemplo para que pruebes.",
+    "removeSamples": "Quitar ejemplos"
   },
   "tryOn": {
     "title": "Prueba Virtual",

@@ -134,7 +134,12 @@
       "limitReached": "Daily analysis limit reached (5/5). Please try again tomorrow.",
       "analysisFailed": "Failed to analyze the image. Please try again.",
       "saveFailed": "Failed to save the item. Please try again."
-    }
+    },
+    "exploreSamples": "Explore with sample pieces",
+    "exploreSamplesHint": "Sample pieces to try the app — remove them anytime.",
+    "sampleBadge": "Sample",
+    "sampleNotice": "Your wardrobe includes sample pieces so you can try things out.",
+    "removeSamples": "Remove samples"
   },
   "tryOn": {
     "title": "Virtual Try-On",

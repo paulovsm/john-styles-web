@@ -1,79 +1,72 @@
 /**
- * Curated demo wardrobe seeded into a new user's closet on first access, so
- * they can try the product (see a populated wardrobe, run a try-on) in seconds
- * instead of having to build a wardrobe from scratch — killing the cold start.
+ * Curated SAMPLE catalog offered to new users (opt-in) so they can try the
+ * product with a populated closet + try-on in seconds. Items are picked to
+ * match the user's onboarding preferences (colors / occasions / preferred
+ * items). Every seeded item is flagged `demo: true` so the UI can badge it as
+ * a sample and offer to remove them.
  *
- * Images are hosted on images.unsplash.com, which serves CORS headers so the
- * try-on flow can fetch + convert them. These are placeholder demo assets and
- * can be swapped for owned/brand imagery later.
+ * Images are CORS-enabled Unsplash URLs; attributes were assigned by visually
+ * inspecting each photo (single-item/clear shots only). Replaceable later with
+ * owned/brand imagery.
  */
 const img = (id) => `https://images.unsplash.com/${id}?w=600&q=70&auto=format&fit=crop`;
 
-export const DEMO_WARDROBE = [
-    {
-        id: 'demo-white-tshirt',
-        name: 'Camiseta Branca Básica',
-        category: 'tops',
-        description: 'Camiseta branca de algodão, corte reto.',
-        colors: ['Branco'],
-        styles: ['Casual'],
-        brand: '',
-        image: img('photo-1521572163474-6864f9cf17ab'),
-        demo: true,
-    },
-    {
-        id: 'demo-denim-jacket',
-        name: 'Jaqueta Jeans',
-        category: 'outerwear',
-        description: 'Jaqueta jeans azul clássica.',
-        colors: ['Azul'],
-        styles: ['Casual'],
-        brand: '',
-        image: img('photo-1576871337622-98d48d1cf531'),
-        demo: true,
-    },
-    {
-        id: 'demo-black-jeans',
-        name: 'Calça Jeans Preta',
-        category: 'bottoms',
-        description: 'Calça jeans preta slim.',
-        colors: ['Preto'],
-        styles: ['Casual'],
-        brand: '',
-        image: img('photo-1541099649105-f69ad21f3246'),
-        demo: true,
-    },
-    {
-        id: 'demo-white-sneakers',
-        name: 'Tênis Branco',
-        category: 'shoes',
-        description: 'Tênis branco minimalista.',
-        colors: ['Branco'],
-        styles: ['Casual'],
-        brand: '',
-        image: img('photo-1595950653106-6c9ebd614d3a'),
-        demo: true,
-    },
-    {
-        id: 'demo-blue-shirt',
-        name: 'Camisa Social Azul',
-        category: 'tops',
-        description: 'Camisa social azul de manga longa.',
-        colors: ['Azul'],
-        styles: ['Formal'],
-        brand: '',
-        image: img('photo-1602810318383-e386cc2a3ccf'),
-        demo: true,
-    },
-    {
-        id: 'demo-beige-chinos',
-        name: 'Calça Chino Bege',
-        category: 'bottoms',
-        description: 'Calça chino bege de algodão.',
-        colors: ['Bege'],
-        styles: ['Casual'],
-        brand: '',
-        image: img('photo-1473966968600-fa801b869a1a'),
-        demo: true,
-    },
+export const SAMPLE_CATALOG = [
+    { id: 'sample-white-tee', name: 'Camiseta Branca', category: 'tops', colors: ['Branco'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1521572163474-6864f9cf17ab') },
+    { id: 'sample-black-tee', name: 'Camiseta Preta', category: 'tops', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1596755094514-f87e34085b2c') },
+    { id: 'sample-chambray-shirt', name: 'Camisa Chambray Azul', category: 'tops', colors: ['Azul'], styles: ['Smart casual'], occasions: ['casual', 'casual executivo'], image: img('photo-1583743814966-8936f5b7be1a') },
+    { id: 'sample-blue-dress-shirt', name: 'Camisa Social Azul Claro', category: 'tops', colors: ['Azul'], styles: ['Formal'], occasions: ['trabalho', 'casual executivo'], image: img('photo-1618354691373-d851c5c3a990') },
+    { id: 'sample-white-sweatshirt', name: 'Moletom Branco', category: 'tops', colors: ['Branco'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1620799140408-edc6dcb6d633') },
+    { id: 'sample-blue-jeans', name: 'Calça Jeans Azul', category: 'bottoms', colors: ['Azul'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1541099649105-f69ad21f3246') },
+    { id: 'sample-black-jeans', name: 'Calça Jeans Preta', category: 'bottoms', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1556905055-8f358a7a47b2') },
+    { id: 'sample-beige-chinos', name: 'Calça Chino Bege', category: 'bottoms', colors: ['Bege'], styles: ['Smart casual'], occasions: ['casual', 'casual executivo', 'trabalho'], image: img('photo-1473966968600-fa801b869a1a') },
+    { id: 'sample-pink-joggers', name: 'Calça Jogger Rosa', category: 'bottoms', colors: ['Rosa'], styles: ['Casual'], occasions: ['casual'], image: img('photo-1600185365483-26d7a4cc7519') },
+    { id: 'sample-white-sneakers', name: 'Tênis Branco Esportivo', category: 'shoes', colors: ['Branco'], styles: ['Esportivo'], occasions: ['dia a dia', 'esporte'], image: img('photo-1551232864-3f0890e580d9') },
+    { id: 'sample-pastel-sneakers', name: 'Tênis Pastel', category: 'shoes', colors: ['Multicolor'], styles: ['Casual'], occasions: ['casual'], image: img('photo-1595950653106-6c9ebd614d3a') },
 ];
+
+const norm = (arr) => (Array.isArray(arr) ? arr : []).map((s) => String(s).toLowerCase().trim()).filter(Boolean);
+
+/**
+ * Picks sample items tailored to the user's profile, ensuring category variety.
+ * Falls back to a balanced default when the profile has no useful signal.
+ *
+ * @param {Object} profile - onboarding profile (favoriteColors, occasions, preferredItems, dislikes)
+ * @param {number} count
+ * @returns {Array} sample items flagged demo:true
+ */
+export function pickSampleItems(profile = {}, count = 6) {
+    const favColors = norm(profile.favoriteColors);
+    const occasions = norm(profile.occasions);
+    const preferred = norm(profile.preferredItems);
+    const dislikes = norm(profile.dislikes);
+
+    const scored = SAMPLE_CATALOG.map((item) => {
+        const colors = norm(item.colors);
+        const occs = norm(item.occasions);
+        const hay = [item.name, item.category, ...item.styles, ...colors].join(' ').toLowerCase();
+
+        let score = 0;
+        if (favColors.some((c) => colors.includes(c))) score += 3;
+        if (occasions.some((o) => occs.some((io) => io.includes(o) || o.includes(io)))) score += 2;
+        if (preferred.some((p) => hay.includes(p) || p.includes(item.category))) score += 2;
+        if (dislikes.some((d) => hay.includes(d) || (d.includes('viv') && colors.includes('multicolor')))) score -= 3;
+        return { item, score };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+
+    // Guarantee at least one of each core category, then fill by score.
+    const picked = [];
+    const usedIds = new Set();
+    for (const cat of ['tops', 'bottoms', 'shoes']) {
+        const best = scored.find(({ item }) => item.category === cat && !usedIds.has(item.id));
+        if (best && best.score > -3) { picked.push(best.item); usedIds.add(best.item.id); }
+    }
+    for (const { item, score } of scored) {
+        if (picked.length >= count) break;
+        if (!usedIds.has(item.id) && score > -3) { picked.push(item); usedIds.add(item.id); }
+    }
+
+    return picked.slice(0, count).map((item) => ({ ...item, demo: true }));
+}

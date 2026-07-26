@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 export default function WardrobePage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-    const { addItem, updateItem } = useWardrobeContext();
+    const { addItem, updateItem, hasDemoItems, removeSampleItems } = useWardrobeContext();
     const { t } = useTranslation();
 
     const handleSaveItem = (item) => {
@@ -43,6 +43,15 @@ export default function WardrobePage() {
                     {t('wardrobe.addItem')}
                 </Button>
             </div>
+
+            {hasDemoItems && (
+                <div className="mb-4 flex items-center justify-between gap-3 px-4 py-2 rounded-md bg-brand-gold/10 border border-brand-gold/30 text-sm text-brand-gold-dark">
+                    <span>{t('wardrobe.sampleNotice', 'Seu guarda-roupa inclui peças de exemplo para você testar.')}</span>
+                    <button onClick={removeSampleItems} className="font-medium underline whitespace-nowrap hover:opacity-80">
+                        {t('wardrobe.removeSamples', 'Remover exemplos')}
+                    </button>
+                </div>
+            )}
 
             <WardrobeFilters />
             <WardrobeGrid onAddItem={() => { setEditingItem(null); setIsModalOpen(true); }} onItemClick={handleItemClick} />
