@@ -82,7 +82,11 @@
     "noResponse": "Sorry, I didn't get that.",
     "send": "Send",
     "thinking": "John is thinking...",
-    "connectionError": "Sorry, I'm having trouble connecting right now. Please try again."
+    "connectionError": "Sorry, I'm having trouble connecting right now. Please try again.",
+    "actions": {
+      "tryOn": "Try this look",
+      "open": "Open"
+    }
   },
   "wardrobe": {
     "title": "My Wardrobe",

@@ -82,7 +82,11 @@
     "noResponse": "Desculpe, não entendi.",
     "send": "Enviar",
     "thinking": "John está pensando...",
-    "connectionError": "Desculpe, estou com dificuldades para conectar agora. Tente novamente."
+    "connectionError": "Desculpe, estou com dificuldades para conectar agora. Tente novamente.",
+    "actions": {
+      "tryOn": "Provar este look",
+      "open": "Abrir"
+    }
   },
   "wardrobe": {
     "title": "Meu Guarda-roupa",

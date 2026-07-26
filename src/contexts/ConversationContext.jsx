@@ -3,6 +3,7 @@ import { useChatHistory } from '../hooks/useChatHistory';
 import { n8nService } from '../services/api/n8nService';
 import { useUserProfileContext } from './UserProfileContext';
 import { useWardrobeContext } from './WardrobeContext';
+import { parseAgentActions } from '../utils/agentActions';
 import i18n from '../i18n/config';
 
 const ConversationContext = createContext();
@@ -34,7 +35,9 @@ export function ConversationProvider({ children }) {
                 chatHistory: history,
             });
 
-            addMessage({ role: 'model', content: responseText });
+            // The agent may append a <actions> block for one-click follow-ups.
+            const { text: content, actions } = parseAgentActions(responseText);
+            addMessage({ role: 'model', content, actions });
         } catch (error) {
             console.error('Error processing message:', error);
             addMessage({
