@@ -7,7 +7,8 @@ import UsageCounter from '../components/common/UsageCounter';
 import { useLocation } from 'react-router-dom';
 import { useWardrobeContext } from '../contexts/WardrobeContext';
 import { geminiService } from '../services/api/geminiService';
-import { CloudUpload, AutoAwesome, Check } from '@mui/icons-material';
+import { CloudUpload, AutoAwesome, Check, IosShare } from '@mui/icons-material';
+import { shareOrDownloadImage } from '../utils/shareImage';
 import { useTranslation } from 'react-i18next';
 import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
@@ -39,6 +40,21 @@ export default function TryOnPage() {
     const [usageRefresh, setUsageRefresh] = useState(0);
     const [outfits, setOutfits] = useState([]);
     const [savingOutfit, setSavingOutfit] = useState(false);
+    const [sharing, setSharing] = useState(false);
+
+    const handleShare = async () => {
+        if (!generatedImage) return;
+        setSharing(true);
+        try {
+            const result = await shareOrDownloadImage(generatedImage);
+            if (result === 'downloaded') toast.success(t('tryOn.downloaded', 'Imagem baixada.'));
+        } catch (error) {
+            console.error('Share failed', error);
+            toast.error(t('tryOn.shareError', 'Não foi possível compartilhar a imagem.'));
+        } finally {
+            setSharing(false);
+        }
+    };
 
     // Preload the user's saved model photo so they don't re-upload each session.
     React.useEffect(() => {
@@ -457,21 +473,36 @@ export default function TryOnPage() {
                     <UsageCounter limitType="lookGeneration" refreshKey={usageRefresh} className="text-center" />
                 </div>
 
-                {/* Right Column: Result */}
-                <div className="bg-white-off rounded-xl border border-grey-light p-6 flex items-center justify-center min-h-[500px]">
+                {/* Right Column: Result — the hero moment */}
+                <div className="lg:sticky lg:top-6 h-fit">
                     {generating ? (
-                        <div className="text-center">
-                            <Loading type="spinner" size={48} className="mb-4" />
-                            <p className="text-brand-navy font-medium">{t('tryOn.generating')}</p>
-                            <p className="text-sm text-grey-medium mt-2">{t('tryOn.generatingDescription')}</p>
+                        <div className="rounded-2xl border border-grey-light bg-white-off flex items-center justify-center min-h-[500px]">
+                            <div className="text-center px-6">
+                                <Loading type="spinner" size={48} className="mb-4" />
+                                <p className="text-brand-navy font-medium">{t('tryOn.generating')}</p>
+                                <p className="text-sm text-grey-medium mt-2">{t('tryOn.generatingDescription')}</p>
+                            </div>
                         </div>
                     ) : generatedImage ? (
-                        <div className="w-full">
-                            <h3 className="text-lg font-medium text-brand-navy mb-4 text-center">{t('tryOn.yourLook')}</h3>
-                            <img src={generatedImage} alt="Generated Try-On" className="w-full rounded-lg shadow-lg" />
-                            <div className="mt-6 flex justify-center space-x-4">
+                        <div className="animate-reveal">
+                            <div className="relative overflow-hidden rounded-2xl bg-black shadow-2xl">
+                                <img
+                                    src={generatedImage}
+                                    alt={t('tryOn.yourLook')}
+                                    className="w-full max-h-[72vh] object-contain"
+                                />
+                                <div className="absolute top-3 left-3 inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-black/50 text-white backdrop-blur-sm">
+                                    <AutoAwesome style={{ fontSize: 14 }} />
+                                    {t('tryOn.yourLook')}
+                                </div>
+                            </div>
+                            <div className="mt-4 flex flex-wrap justify-center gap-3">
                                 <Button variant="outline" onClick={() => setGeneratedImage('')}>
                                     {t('tryOn.tryAnother')}
+                                </Button>
+                                <Button variant="outline" onClick={handleShare} disabled={sharing}>
+                                    {sharing ? <Loading type="spinner" size={18} className="mr-2" /> : <IosShare className="mr-2 h-5 w-5" />}
+                                    {t('tryOn.share', 'Compartilhar')}
                                 </Button>
                                 <Button
                                     variant="primary"
@@ -485,9 +516,11 @@ export default function TryOnPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="text-center text-grey-medium">
-                            <AutoAwesome className="h-16 w-16 mx-auto mb-4 opacity-20" />
-                            <p>{t('tryOn.placeholder')}</p>
+                        <div className="rounded-2xl border border-dashed border-grey-light bg-white-off flex items-center justify-center min-h-[500px]">
+                            <div className="text-center text-grey-medium px-6">
+                                <AutoAwesome className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                                <p>{t('tryOn.placeholder')}</p>
+                            </div>
                         </div>
                     )}
                 </div>

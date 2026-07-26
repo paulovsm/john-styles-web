@@ -49,7 +49,16 @@ export default {
         '8': '32px',
         '12': '48px',
         '16': '64px',
-      }
+      },
+      keyframes: {
+        reveal: {
+          '0%': { opacity: '0', transform: 'scale(0.98)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        reveal: 'reveal 0.45s ease-out both',
+      },
     },
   },
   plugins: [

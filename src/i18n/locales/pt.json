@@ -192,7 +192,10 @@
     "myOutfits": "Meus looks",
     "outfitSaved": "Look salvo.",
     "outfitSaveError": "Falha ao salvar o look.",
-    "outfitPartial": "Algumas peças deste look não estão mais no guarda-roupa."
+    "outfitPartial": "Algumas peças deste look não estão mais no guarda-roupa.",
+    "share": "Compartilhar",
+    "downloaded": "Imagem baixada.",
+    "shareError": "Não foi possível compartilhar a imagem."
   },
   "history": {
     "title": "Histórico de Interações",

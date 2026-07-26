@@ -192,7 +192,10 @@
     "myOutfits": "My looks",
     "outfitSaved": "Look saved.",
     "outfitSaveError": "Failed to save the look.",
-    "outfitPartial": "Some items from this look are no longer in your wardrobe."
+    "outfitPartial": "Some items from this look are no longer in your wardrobe.",
+    "share": "Share",
+    "downloaded": "Image downloaded.",
+    "shareError": "Could not share the image."
   },
   "history": {
     "title": "Interaction History",
