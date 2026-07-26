@@ -55,7 +55,13 @@
     "askJohn": "Ask John Styles",
     "addNewItem": "Add New Item",
     "viewHistory": "View History",
-    "myProfile": "My Profile"
+    "myProfile": "My Profile",
+    "outfitOfDay": "Outfit of the day",
+    "tryOutfit": "Try it",
+    "outfitEmpty": "Add pieces to your wardrobe to get outfit suggestions.",
+    "recentLooks": "Recent looks",
+    "viewAll": "View all",
+    "noLooks": "You haven't saved any looks yet. Try the Virtual Try-On."
   },
   "chat": {
     "title": "Chat with John Styles",

@@ -4,6 +4,7 @@ import Button from '../components/common/Button';
 import Loading from '../components/common/Loading';
 import Card from '../components/common/Card';
 import UsageCounter from '../components/common/UsageCounter';
+import { useLocation } from 'react-router-dom';
 import { useWardrobeContext } from '../contexts/WardrobeContext';
 import { geminiService } from '../services/api/geminiService';
 import { CloudUpload, AutoAwesome, Check } from '@mui/icons-material';
@@ -18,6 +19,7 @@ import { compressImage, toDataUrl } from '../utils/imageUtils';
 
 export default function TryOnPage() {
     const { items } = useWardrobeContext();
+    const location = useLocation();
     const { currentUser } = useAuth();
     const { profile, updateProfile } = useUserProfileContext();
     const toast = useToast();
@@ -44,6 +46,15 @@ export default function TryOnPage() {
             setUserPhotoPreview(profile.modelPhotoUrl);
         }
     }, [profile?.modelPhotoUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Preselect items when arriving from the dashboard "outfit of the day".
+    const preselectIds = location.state?.preselect;
+    React.useEffect(() => {
+        if (!preselectIds?.length || items.length === 0) return;
+        const resolved = preselectIds.map((id) => items.find((i) => i.id === id)).filter(Boolean);
+        if (resolved.length) setSelectedItems(resolved);
+        // Run once when we arrive with a preselection.
+    }, [preselectIds]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const persistModelPhoto = async (blob) => {
         if (!currentUser) return;

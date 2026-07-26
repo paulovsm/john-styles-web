@@ -55,7 +55,13 @@
     "askJohn": "Perguntar ao John Styles",
     "addNewItem": "Adicionar Novo Item",
     "viewHistory": "Ver Histórico",
-    "myProfile": "Meu Perfil"
+    "myProfile": "Meu Perfil",
+    "outfitOfDay": "Look do dia",
+    "tryOutfit": "Provar",
+    "outfitEmpty": "Adicione peças ao guarda-roupa para receber sugestões de look.",
+    "recentLooks": "Looks recentes",
+    "viewAll": "Ver todos",
+    "noLooks": "Você ainda não salvou nenhum look. Experimente no Provador Virtual."
   },
   "chat": {
     "title": "Chat com John Styles",
