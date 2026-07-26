@@ -452,6 +452,57 @@ class FirestoreService {
             throw error;
         }
     }
+
+    // ── Outfits (saved reusable combinations of wardrobe items) ──
+
+    /**
+     * Save an outfit (a named combination of item ids).
+     * @param {Object} outfit - { name, itemIds, imageUrl? }
+     * @returns {Promise<string|null>} the new outfit id
+     */
+    async saveOutfit(outfit, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) throw new Error('Cannot save outfit: user not authenticated');
+
+            const collectionRef = collection(db, 'users', uid, 'outfits');
+            const docRef = await addDoc(collectionRef, { ...outfit, createdAt: serverTimestamp() });
+            return docRef.id;
+        } catch (error) {
+            console.error('Error saving outfit to Firestore:', error);
+            throw error;
+        }
+    }
+
+    async getOutfits(userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) return [];
+
+            const collectionRef = collection(db, 'users', uid, 'outfits');
+            const q = query(collectionRef, orderBy('createdAt', 'desc'));
+            const querySnapshot = await getDocs(q);
+            const items = [];
+            querySnapshot.forEach((doc) => items.push({ id: doc.id, ...doc.data() }));
+            return items;
+        } catch (error) {
+            console.error('Error getting outfits from Firestore:', error);
+            return null;
+        }
+    }
+
+    async deleteOutfit(outfitId, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) return false;
+            await deleteDoc(doc(db, 'users', uid, 'outfits', outfitId));
+            return true;
+        } catch (error) {
+            console.error('Error deleting outfit from Firestore:', error);
+            throw error;
+        }
+    }
+
     /**
      * Sync entire wardrobe list (handles additions, updates, and deletions)
      * @param {Array} items - Current local wardrobe items

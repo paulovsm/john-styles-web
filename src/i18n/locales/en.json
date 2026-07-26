@@ -162,7 +162,13 @@
       "limitReached": "Daily generation limit reached (5/5). Please try again tomorrow."
     },
     "saveSuccess": "Look saved to gallery!",
-    "photoSaved": "Photo saved to your profile."
+    "photoSaved": "Photo saved to your profile.",
+    "selectedItems": "Selected items:",
+    "saveOutfit": "Save look",
+    "myOutfits": "My looks",
+    "outfitSaved": "Look saved.",
+    "outfitSaveError": "Failed to save the look.",
+    "outfitPartial": "Some items from this look are no longer in your wardrobe."
   },
   "history": {
     "title": "Interaction History",

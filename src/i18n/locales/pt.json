@@ -162,7 +162,13 @@
       "retryIn": "Você pode tentar novamente em aproximadamente {{seconds}} segundos."
     },
     "saveSuccess": "Look salvo na galeria!",
-    "photoSaved": "Foto salva no seu perfil."
+    "photoSaved": "Foto salva no seu perfil.",
+    "selectedItems": "Peças selecionadas:",
+    "saveOutfit": "Salvar look",
+    "myOutfits": "Meus looks",
+    "outfitSaved": "Look salvo.",
+    "outfitSaveError": "Falha ao salvar o look.",
+    "outfitPartial": "Algumas peças deste look não estão mais no guarda-roupa."
   },
   "history": {
     "title": "Histórico de Interações",

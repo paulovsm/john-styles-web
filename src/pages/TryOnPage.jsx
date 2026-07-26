@@ -35,6 +35,8 @@ export default function TryOnPage() {
     const [advancedMode, setAdvancedMode] = useState(false);
     const [customPrompt, setCustomPrompt] = useState('');
     const [usageRefresh, setUsageRefresh] = useState(0);
+    const [outfits, setOutfits] = useState([]);
+    const [savingOutfit, setSavingOutfit] = useState(false);
 
     // Preload the user's saved model photo so they don't re-upload each session.
     React.useEffect(() => {
@@ -88,6 +90,52 @@ export default function TryOnPage() {
                 return [...otherItems, item];
             }
         });
+    };
+
+    // ── Saved outfits (reusable item combinations) ──
+    React.useEffect(() => {
+        if (!currentUser) return;
+        firestoreService.getOutfits(currentUser.uid).then((list) => {
+            if (list) setOutfits(list);
+        });
+    }, [currentUser]);
+
+    const handleSaveOutfit = async () => {
+        if (selectedItems.length === 0 || !currentUser) return;
+        setSavingOutfit(true);
+        try {
+            const name = selectedItems.map((i) => i.name).join(' + ');
+            const outfit = { name, itemIds: selectedItems.map((i) => i.id) };
+            const id = await firestoreService.saveOutfit(outfit);
+            setOutfits((prev) => [{ id, ...outfit }, ...prev]);
+            toast.success(t('tryOn.outfitSaved', 'Look salvo.'));
+        } catch (error) {
+            console.error('Error saving outfit:', error);
+            toast.error(t('tryOn.outfitSaveError', 'Falha ao salvar o look.'));
+        } finally {
+            setSavingOutfit(false);
+        }
+    };
+
+    const applyOutfit = (outfit) => {
+        // Select the items from this outfit that still exist in the wardrobe.
+        const resolved = outfit.itemIds
+            .map((id) => items.find((it) => it.id === id))
+            .filter(Boolean);
+        setSelectedItems(resolved);
+        if (resolved.length < outfit.itemIds.length) {
+            toast.info(t('tryOn.outfitPartial', 'Algumas peças deste look não estão mais no guarda-roupa.'));
+        }
+    };
+
+    const handleDeleteOutfit = async (outfit) => {
+        try {
+            await firestoreService.deleteOutfit(outfit.id, currentUser.uid);
+            setOutfits((prev) => prev.filter((o) => o.id !== outfit.id));
+        } catch (error) {
+            console.error('Error deleting outfit:', error);
+            toast.error(t('tryOn.outfitSaveError', 'Falha ao salvar o look.'));
+        }
     };
 
     const replacePlaceholders = (prompt, items) => {
@@ -295,11 +343,40 @@ export default function TryOnPage() {
                             )}
                             {selectedItems.length > 0 && (
                                 <div className="mt-4 pt-4 border-t border-grey-light">
-                                    <p className="text-sm font-medium text-brand-navy mb-2">Selected Items:</p>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <p className="text-sm font-medium text-brand-navy">{t('tryOn.selectedItems', 'Peças selecionadas:')}</p>
+                                        <Button variant="text" className="text-xs py-1" onClick={handleSaveOutfit} disabled={savingOutfit}>
+                                            {savingOutfit ? <Loading type="spinner" size={14} className="mr-1" /> : null}
+                                            {t('tryOn.saveOutfit', 'Salvar look')}
+                                        </Button>
+                                    </div>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedItems.map(item => (
                                             <span key={item.id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-navy/10 text-brand-navy">
                                                 {item.category}: {item.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {outfits.length > 0 && (
+                                <div className="mt-4 pt-4 border-t border-grey-light">
+                                    <p className="text-sm font-medium text-brand-navy mb-2">{t('tryOn.myOutfits', 'Meus looks')}</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {outfits.map((outfit) => (
+                                            <span key={outfit.id} className="inline-flex items-center gap-1 pl-2.5 pr-1 py-0.5 rounded-full text-xs font-medium bg-brand-gold/15 text-brand-gold-dark">
+                                                <button type="button" onClick={() => applyOutfit(outfit)} className="max-w-[160px] truncate" title={outfit.name}>
+                                                    {outfit.name}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteOutfit(outfit)}
+                                                    aria-label={t('common.delete', 'Excluir')}
+                                                    className="hover:text-status-error"
+                                                >
+                                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
                                             </span>
                                         ))}
                                     </div>
