@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { STORAGE_KEYS } from '../services/storage/hybridStorageService';
 
@@ -10,9 +11,9 @@ export function useUserProfile() {
         onboardingCompleted: false
     });
 
-    const updateProfile = (updates) => {
+    const updateProfile = useCallback((updates) => {
         setProfile(prev => ({ ...prev, ...updates }));
-    };
+    }, [setProfile]);
 
     return { profile, setProfile, updateProfile };
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { storageService } from '../services/storage/hybridStorageService';
 
 export function useLocalStorage(key, initialValue) {
@@ -35,7 +35,7 @@ export function useLocalStorage(key, initialValue) {
     // Wrapped setter: compute the next value, then persist exactly once as a
     // side effect (outside the updater). storageService.setItem notifies
     // subscribers, which updates our state too.
-    const setValue = (value) => {
+    const setValue = useCallback((value) => {
         try {
             const valueToStore = value instanceof Function ? value(valueRef.current) : value;
             valueRef.current = valueToStore;
@@ -44,7 +44,7 @@ export function useLocalStorage(key, initialValue) {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [key]);
 
     return [storedValue, setValue];
 }
