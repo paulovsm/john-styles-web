@@ -491,7 +491,7 @@ export default function TryOnPage() {
                                     alt={t('tryOn.yourLook')}
                                     className="w-full max-h-[72vh] object-contain"
                                 />
-                                <div className="absolute top-3 left-3 inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-black/50 text-white backdrop-blur-sm">
+                                <div className="absolute top-3 left-3 inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-black/50 text-[#fff] backdrop-blur-sm">
                                     <AutoAwesome style={{ fontSize: 14 }} />
                                     {t('tryOn.yourLook')}
                                 </div>
