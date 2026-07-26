@@ -230,9 +230,9 @@
     "analyzeButton": "Analisar Meu Estilo",
     "analyzing": "Analisando...",
     "resultsTitle": "Seu Perfil de Estilo",
-    "favoriteColors": "Cores Favoritas",
+    "favoriteColors": "Cores favoritas",
     "preferredItems": "Itens Preferidos",
-    "dislikes": "O que não gosto",
+    "dislikes": "O que evito",
     "occasions": "Ocasiões",
     "bodyType": "Tipo de Corpo",
     "favoriteBrands": "Marcas Favoritas",
@@ -245,7 +245,101 @@
     "error": "Falha ao analisar perfil. Por favor, tente novamente.",
     "reanalyzeButton": "Reanalisar com IA",
     "cancelButton": "Cancelar",
-    "addTagPlaceholder": "Adicionar..."
+    "addTagPlaceholder": "Adicionar...",
+    "stepOf": "{{current}} de {{total}}",
+    "next": "Continuar",
+    "back": "Voltar",
+    "skip": "Pular",
+    "describeWithAI": "Prefere descrever com suas palavras?",
+    "goalsPlaceholder": "Ex.: Quero um visual casual e confortável para o trabalho.",
+    "steps": {
+      "archetypes": {
+        "title": "Qual é o seu estilo?",
+        "subtitle": "Escolha um ou mais estilos com que você se identifica."
+      },
+      "colors": {
+        "title": "Cores favoritas",
+        "subtitle": "Toque nas cores que você mais usa."
+      },
+      "occasions": {
+        "title": "Para quais ocasiões?",
+        "subtitle": "Onde você mais precisa se vestir bem."
+      },
+      "body": {
+        "title": "Tipo de corpo",
+        "subtitle": "Ajuda a recomendar caimentos que ficam melhor em você."
+      },
+      "dislikes": {
+        "title": "O que evitar?",
+        "subtitle": "Opcional — o que você prefere não usar."
+      },
+      "review": {
+        "title": "Tudo certo?",
+        "subtitle": "Revise e ajuste antes de salvar."
+      }
+    },
+    "archetypes": {
+      "casual": {
+        "label": "Casual",
+        "desc": "Confortável e descontraído"
+      },
+      "classic": {
+        "label": "Clássico",
+        "desc": "Atemporal e elegante"
+      },
+      "streetwear": {
+        "label": "Streetwear",
+        "desc": "Urbano e moderno"
+      },
+      "minimalist": {
+        "label": "Minimalista",
+        "desc": "Peças básicas e neutras"
+      },
+      "sporty": {
+        "label": "Esportivo",
+        "desc": "Ativo e prático"
+      },
+      "elegant": {
+        "label": "Elegante",
+        "desc": "Sofisticado e refinado"
+      }
+    },
+    "colors": {
+      "black": "Preto",
+      "white": "Branco",
+      "gray": "Cinza",
+      "blue": "Azul",
+      "navy": "Azul marinho",
+      "beige": "Bege",
+      "brown": "Marrom",
+      "green": "Verde",
+      "red": "Vermelho",
+      "wine": "Vinho",
+      "pink": "Rosa",
+      "purple": "Roxo"
+    },
+    "bodyTypes": {
+      "athletic": "Atlético",
+      "slim": "Magro",
+      "average": "Médio",
+      "plus": "Plus size",
+      "unspecified": "Prefiro não dizer"
+    },
+    "occasionOptions": {
+      "work": "Trabalho",
+      "businessCasual": "Casual executivo",
+      "everyday": "Dia a dia",
+      "party": "Festa",
+      "sport": "Esporte",
+      "date": "Encontro"
+    },
+    "dislikeOptions": {
+      "brightColors": "Cores vivas",
+      "tightClothes": "Roupas justas",
+      "bigPrints": "Estampas grandes",
+      "largeLogos": "Logos grandes",
+      "formalwear": "Muito formal"
+    }
   },
   "notFound": {
     "title": "Página não encontrada",

@@ -230,9 +230,9 @@
     "analyzeButton": "Analyze My Style",
     "analyzing": "Analyzing...",
     "resultsTitle": "Your Style Profile",
-    "favoriteColors": "Favorite Colors",
+    "favoriteColors": "Favorite colors",
     "preferredItems": "Preferred Items",
-    "dislikes": "Dislikes",
+    "dislikes": "Things I avoid",
     "occasions": "Occasions",
     "bodyType": "Body Type",
     "favoriteBrands": "Favorite Brands",
@@ -245,7 +245,101 @@
     "error": "Failed to analyze profile. Please try again.",
     "reanalyzeButton": "Re-analyze with AI",
     "cancelButton": "Cancel",
-    "addTagPlaceholder": "Add..."
+    "addTagPlaceholder": "Add...",
+    "stepOf": "{{current}} of {{total}}",
+    "next": "Continue",
+    "back": "Back",
+    "skip": "Skip",
+    "describeWithAI": "Prefer to describe it in your own words?",
+    "goalsPlaceholder": "e.g., I want a casual, comfortable look for work.",
+    "steps": {
+      "archetypes": {
+        "title": "What is your style?",
+        "subtitle": "Pick one or more styles you identify with."
+      },
+      "colors": {
+        "title": "Favorite colors",
+        "subtitle": "Tap the colors you wear most."
+      },
+      "occasions": {
+        "title": "For which occasions?",
+        "subtitle": "Where you most need to dress well."
+      },
+      "body": {
+        "title": "Body type",
+        "subtitle": "Helps recommend fits that suit you best."
+      },
+      "dislikes": {
+        "title": "Anything to avoid?",
+        "subtitle": "Optional — what you would rather not wear."
+      },
+      "review": {
+        "title": "All set?",
+        "subtitle": "Review and tweak before saving."
+      }
+    },
+    "archetypes": {
+      "casual": {
+        "label": "Casual",
+        "desc": "Comfortable and relaxed"
+      },
+      "classic": {
+        "label": "Classic",
+        "desc": "Timeless and elegant"
+      },
+      "streetwear": {
+        "label": "Streetwear",
+        "desc": "Urban and modern"
+      },
+      "minimalist": {
+        "label": "Minimalist",
+        "desc": "Neutral basics"
+      },
+      "sporty": {
+        "label": "Sporty",
+        "desc": "Active and practical"
+      },
+      "elegant": {
+        "label": "Elegant",
+        "desc": "Sophisticated and refined"
+      }
+    },
+    "colors": {
+      "black": "Black",
+      "white": "White",
+      "gray": "Gray",
+      "blue": "Blue",
+      "navy": "Navy",
+      "beige": "Beige",
+      "brown": "Brown",
+      "green": "Green",
+      "red": "Red",
+      "wine": "Wine",
+      "pink": "Pink",
+      "purple": "Purple"
+    },
+    "bodyTypes": {
+      "athletic": "Athletic",
+      "slim": "Slim",
+      "average": "Average",
+      "plus": "Plus size",
+      "unspecified": "Prefer not to say"
+    },
+    "occasionOptions": {
+      "work": "Work",
+      "businessCasual": "Business casual",
+      "everyday": "Everyday",
+      "party": "Party",
+      "sport": "Sport",
+      "date": "Date"
+    },
+    "dislikeOptions": {
+      "brightColors": "Bright colors",
+      "tightClothes": "Tight clothes",
+      "bigPrints": "Big prints",
+      "largeLogos": "Large logos",
+      "formalwear": "Too formal"
+    }
   },
   "notFound": {
     "title": "Page not found",

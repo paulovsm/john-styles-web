@@ -3,247 +3,286 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUserProfileContext } from '../contexts/UserProfileContext';
 import { geminiService } from '../services/api/geminiService';
+import { colorToHex } from '../utils/colorMap';
+import Loading from '../components/common/Loading';
+import { Close } from '@mui/icons-material';
+
+// Option catalogs. `value` is the canonical (PT) token stored on the profile so
+// it matches the wardrobe/sample color names; the label is translated via i18n.
+const ARCHETYPES = [
+    { id: 'casual', items: ['camisetas', 'jeans', 'tênis'] },
+    { id: 'classic', items: ['camisa social', 'alfaiataria'] },
+    { id: 'streetwear', items: ['moletom', 'tênis', 'oversized'] },
+    { id: 'minimalist', items: ['peças básicas', 'tons neutros'] },
+    { id: 'sporty', items: ['esportivo', 'tênis'] },
+    { id: 'elegant', items: ['blazer', 'camisa social'] },
+];
+const COLORS = [
+    { id: 'black', value: 'Preto' }, { id: 'white', value: 'Branco' }, { id: 'gray', value: 'Cinza' },
+    { id: 'blue', value: 'Azul' }, { id: 'navy', value: 'Azul marinho' }, { id: 'beige', value: 'Bege' },
+    { id: 'brown', value: 'Marrom' }, { id: 'green', value: 'Verde' }, { id: 'red', value: 'Vermelho' },
+    { id: 'wine', value: 'Vinho' }, { id: 'pink', value: 'Rosa' }, { id: 'purple', value: 'Roxo' },
+];
+const OCCASIONS = [
+    { id: 'work', value: 'trabalho' }, { id: 'businessCasual', value: 'casual executivo' },
+    { id: 'everyday', value: 'dia a dia' }, { id: 'party', value: 'festa' },
+    { id: 'sport', value: 'esporte' }, { id: 'date', value: 'encontro' },
+];
+const BODY_TYPES = [
+    { id: 'athletic', value: 'Atlético' }, { id: 'slim', value: 'Magro' }, { id: 'average', value: 'Médio' },
+    { id: 'plus', value: 'Plus size' }, { id: 'unspecified', value: '' },
+];
+const DISLIKES = [
+    { id: 'brightColors', value: 'cores vivas' }, { id: 'tightClothes', value: 'roupas justas' },
+    { id: 'bigPrints', value: 'estampas grandes' }, { id: 'largeLogos', value: 'logos grandes' },
+    { id: 'formalwear', value: 'roupas muito formais' },
+];
+
+const STEPS = ['archetypes', 'colors', 'occasions', 'body', 'dislikes', 'review'];
+
+function initSelection(profile) {
+    return {
+        archetypes: profile.styleArchetypes || [],
+        favoriteColors: profile.favoriteColors || [],
+        occasions: profile.occasions || [],
+        bodyType: profile.bodyType || '',
+        dislikes: profile.dislikes || [],
+        preferredItems: profile.preferredItems || [],
+        favoriteBrands: profile.favoriteBrands || [],
+        styleGoals: profile.styleGoals || '',
+    };
+}
 
 export default function OnboardingPage() {
     const { t } = useTranslation();
     const { profile, updateProfile } = useUserProfileContext();
     const navigate = useNavigate();
-    const [text, setText] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [analyzedData, setAnalyzedData] = useState(null);
-    const [error, setError] = useState(null);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-    // Load existing profile data on mount
-    React.useEffect(() => {
-        if (profile.onboardingCompleted && !analyzedData && !isAnalyzing) {
-            setAnalyzedData({
-                favoriteColors: profile.favoriteColors || [],
-                preferredItems: profile.preferredItems || [],
-                dislikes: profile.dislikes || [],
-                occasions: profile.occasions || [],
-                bodyType: profile.bodyType || '',
-                favoriteBrands: profile.favoriteBrands || [],
-                styleGoals: profile.styleGoals || ''
-            });
-        }
-    }, [profile, analyzedData, isAnalyzing]);
+    const [step, setStep] = useState(0);
+    const [sel, setSel] = useState(() => initSelection(profile));
+    // AI free-text escape hatch
+    const [aiOpen, setAiOpen] = useState(false);
+    const [aiText, setAiText] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiError, setAiError] = useState('');
 
-    const handleAnalyze = async () => {
-        if (!text.trim()) return;
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await geminiService.analyzeProfile(text);
-            setAnalyzedData(data);
-            setIsAnalyzing(false);
-        } catch (err) {
-            const detail = err?.details || err?.message;
-            setError(detail ? `${t('onboarding.error')} (${detail})` : t('onboarding.error'));
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSave = () => {
-        if (!analyzedData) return;
-
-        updateProfile({
-            ...analyzedData,
-            onboardingCompleted: true
+    const toggle = (field, value) => {
+        setSel((s) => {
+            const arr = s[field] || [];
+            return { ...s, [field]: arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value] };
         });
+    };
+    const setField = (field, value) => setSel((s) => ({ ...s, [field]: value }));
 
+    const stepId = STEPS[step];
+    const isLast = step === STEPS.length - 1;
+    const progress = Math.round(((step + 1) / STEPS.length) * 100);
+
+    const finish = () => {
+        // Derive preferred items from chosen archetypes (helps recommendations).
+        const derivedItems = [...new Set([
+            ...sel.preferredItems,
+            ...sel.archetypes.flatMap((id) => ARCHETYPES.find((a) => a.id === id)?.items || []),
+        ])];
+        updateProfile({
+            favoriteColors: sel.favoriteColors,
+            occasions: sel.occasions,
+            bodyType: sel.bodyType,
+            dislikes: sel.dislikes,
+            favoriteBrands: sel.favoriteBrands,
+            styleGoals: sel.styleGoals,
+            preferredItems: derivedItems,
+            styleArchetypes: sel.archetypes,
+            onboardingCompleted: true,
+        });
         navigate('/dashboard');
     };
 
-    const updateField = (field, value) => {
-        setAnalyzedData(prev => ({
-            ...prev,
-            [field]: value
-        }));
-    };
-
-    const addTag = (field, tag) => {
-        if (!tag.trim()) return;
-        setAnalyzedData(prev => ({
-            ...prev,
-            [field]: [...(prev[field] || []), tag.trim()]
-        }));
-    };
-
-    const removeTag = (field, index) => {
-        setAnalyzedData(prev => ({
-            ...prev,
-            [field]: prev[field].filter((_, i) => i !== index)
-        }));
-    };
-
-    const TagInput = ({ field, label, items }) => {
-        const [input, setInput] = useState('');
-
-        return (
-            <div>
-                <h3 className="font-bold text-sm text-grey-medium uppercase tracking-wider">{label}</h3>
-                <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                    {items?.map((item, i) => (
-                        <span key={i} className="px-2 py-1 bg-white border border-grey-light rounded-full text-sm flex items-center gap-1">
-                            {item}
-                            <button
-                                onClick={() => removeTag(field, i)}
-                                className="text-grey-medium hover:text-status-error ml-1"
-                            >
-                                ×
-                            </button>
-                        </span>
-                    ))}
-                </div>
-                <div className="flex gap-2">
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                addTag(field, input);
-                                setInput('');
-                            }
-                        }}
-                        placeholder={t('onboarding.addTagPlaceholder')}
-                        className="flex-1 px-3 py-1 border border-grey-light rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-navy"
-                    />
-                    <button
-                        onClick={() => {
-                            addTag(field, input);
-                            setInput('');
-                        }}
-                        disabled={!input.trim()}
-                        className="px-3 py-1 bg-grey-light text-brand-navy rounded-lg text-sm hover:bg-grey-medium/20 disabled:opacity-50"
-                    >
-                        +
-                    </button>
-                </div>
-            </div>
-        );
+    const runAI = async () => {
+        if (!aiText.trim()) return;
+        setAiLoading(true);
+        setAiError('');
+        try {
+            const data = await geminiService.analyzeProfile(aiText);
+            setSel((s) => ({
+                ...s,
+                favoriteColors: data.favoriteColors || s.favoriteColors,
+                preferredItems: data.preferredItems || s.preferredItems,
+                occasions: data.occasions || s.occasions,
+                dislikes: data.dislikes || s.dislikes,
+                bodyType: data.bodyType || s.bodyType,
+                favoriteBrands: data.favoriteBrands || s.favoriteBrands,
+                styleGoals: data.styleGoals || s.styleGoals,
+            }));
+            setAiOpen(false);
+            setStep(STEPS.length - 1); // jump to review
+        } catch (err) {
+            setAiError(err?.message || t('onboarding.error'));
+        } finally {
+            setAiLoading(false);
+        }
     };
 
     return (
         <div className="min-h-screen bg-white-off flex flex-col items-center justify-center p-4">
-            <div className="max-w-2xl w-full bg-white p-8 rounded-xl shadow-lg">
-                <h1 className="text-3xl font-serif font-bold text-brand-navy mb-2">{t('onboarding.title')}</h1>
-                <p className="text-grey-medium mb-6">{t('onboarding.subtitle')}</p>
-
-                {isAnalyzing || !analyzedData ? (
-                    <div className="space-y-4">
-                        <textarea
-                            className="w-full h-40 p-4 border border-grey-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none"
-                            placeholder={t('onboarding.placeholder')}
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
-                            disabled={loading}
-                        />
-
-                        {error && <p className="text-status-error text-sm">{error}</p>}
-
-                        <div className="flex gap-4">
-                            {analyzedData && (
-                                <button
-                                    onClick={() => setIsAnalyzing(false)}
-                                    className="flex-1 py-3 border border-brand-navy text-brand-navy rounded-lg font-medium hover:bg-brand-navy/5 transition-colors"
-                                >
-                                    {t('onboarding.cancelButton')}
-                                </button>
-                            )}
-                            <button
-                                onClick={handleAnalyze}
-                                disabled={!text.trim() || loading}
-                                className={`flex-1 py-3 rounded-lg font-medium transition-colors ${!text.trim() || loading
-                                        ? 'bg-grey-light text-grey-medium cursor-not-allowed'
-                                        : 'bg-brand-navy text-white-pure hover:bg-opacity-90'
-                                    }`}
-                            >
-                                {loading ? t('onboarding.analyzing') : t('onboarding.analyzeButton')}
-                            </button>
-                        </div>
+            <div className="max-w-2xl w-full bg-white-pure p-8 rounded-2xl shadow-lg border border-grey-light">
+                {/* Header + progress */}
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <h1 className="text-2xl font-serif font-bold text-brand-navy">{t('onboarding.title')}</h1>
+                        <span className="text-xs text-grey-medium">{t('onboarding.stepOf', { current: step + 1, total: STEPS.length })}</span>
                     </div>
-                ) : (
-                    <div className="space-y-6">
-                        <div className="bg-grey-light/20 p-6 rounded-lg space-y-6">
-                            <h2 className="text-xl font-serif font-bold text-brand-navy">{t('onboarding.resultsTitle')}</h2>
+                    <div className="h-1.5 bg-grey-light rounded-full overflow-hidden">
+                        <div className="h-full bg-brand-gold transition-all duration-300" style={{ width: `${progress}%` }} />
+                    </div>
+                </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <TagInput
-                                    field="favoriteColors"
-                                    label={t('onboarding.favoriteColors')}
-                                    items={analyzedData.favoriteColors}
-                                />
+                <div className="min-h-[320px]">
+                    <h2 className="text-lg font-serif font-bold text-brand-navy">{t(`onboarding.steps.${stepId}.title`)}</h2>
+                    <p className="text-sm text-grey-medium mb-4">{t(`onboarding.steps.${stepId}.subtitle`)}</p>
 
-                                <TagInput
-                                    field="preferredItems"
-                                    label={t('onboarding.preferredItems')}
-                                    items={analyzedData.preferredItems}
-                                />
-
-                                <TagInput
-                                    field="occasions"
-                                    label={t('onboarding.occasions')}
-                                    items={analyzedData.occasions}
-                                />
-
-                                <TagInput
-                                    field="dislikes"
-                                    label={t('onboarding.dislikes')}
-                                    items={analyzedData.dislikes}
-                                />
-
-                                <div>
-                                    <h3 className="font-bold text-sm text-grey-medium uppercase tracking-wider">{t('onboarding.bodyType')}</h3>
-                                    <input
-                                        type="text"
-                                        value={analyzedData.bodyType || ''}
-                                        onChange={(e) => updateField('bodyType', e.target.value)}
-                                        className="w-full mt-2 px-3 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-navy"
-                                        placeholder={t('onboarding.unspecified')}
-                                    />
+                    {stepId === 'archetypes' && (
+                        <>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {ARCHETYPES.map((a) => {
+                                    const active = sel.archetypes.includes(a.id);
+                                    return (
+                                        <button key={a.id} type="button" onClick={() => toggle('archetypes', a.id)}
+                                            className={`text-left p-3 rounded-xl border-2 transition-colors ${active ? 'border-brand-gold bg-brand-gold/10' : 'border-grey-light hover:border-grey-medium'}`}>
+                                            <span className="block font-medium text-brand-navy">{t(`onboarding.archetypes.${a.id}.label`)}</span>
+                                            <span className="block text-xs text-grey-medium mt-0.5">{t(`onboarding.archetypes.${a.id}.desc`)}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <button type="button" onClick={() => setAiOpen((v) => !v)} className="mt-4 text-sm text-brand-gold-dark hover:underline">
+                                {t('onboarding.describeWithAI', 'Prefere descrever com suas palavras?')}
+                            </button>
+                            {aiOpen && (
+                                <div className="mt-3 space-y-2">
+                                    <textarea value={aiText} onChange={(e) => setAiText(e.target.value)} disabled={aiLoading}
+                                        placeholder={t('onboarding.placeholder')}
+                                        className="w-full h-28 p-3 border border-grey-light rounded-lg bg-white-pure text-grey-dark focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none" />
+                                    {aiError && <p className="text-status-error text-sm">{aiError}</p>}
+                                    <button type="button" onClick={runAI} disabled={!aiText.trim() || aiLoading}
+                                        className="inline-flex items-center px-4 py-2 rounded-lg bg-brand-navy text-white-pure text-sm disabled:opacity-50">
+                                        {aiLoading && <Loading type="spinner" size={16} className="mr-2" />}
+                                        {aiLoading ? t('onboarding.analyzing') : t('onboarding.analyzeButton')}
+                                    </button>
                                 </div>
+                            )}
+                        </>
+                    )}
 
-                                <div className="md:col-span-2">
-                                    <TagInput
-                                        field="favoriteBrands"
-                                        label={t('onboarding.favoriteBrands')}
-                                        items={analyzedData.favoriteBrands}
-                                    />
-                                </div>
+                    {stepId === 'colors' && (
+                        <div className="flex flex-wrap gap-3">
+                            {COLORS.map((c) => {
+                                const active = sel.favoriteColors.includes(c.value);
+                                return (
+                                    <button key={c.id} type="button" onClick={() => toggle('favoriteColors', c.value)}
+                                        className={`inline-flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border-2 transition-colors ${active ? 'border-brand-gold bg-brand-gold/10' : 'border-grey-light hover:border-grey-medium'}`}>
+                                        <span className="w-5 h-5 rounded-full border border-grey-light" style={{ backgroundColor: colorToHex(c.value) || '#ccc' }} />
+                                        <span className="text-sm text-brand-navy">{t(`onboarding.colors.${c.id}`)}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
 
-                                <div className="md:col-span-2">
-                                    <h3 className="font-bold text-sm text-grey-medium uppercase tracking-wider">{t('onboarding.styleGoals')}</h3>
-                                    <textarea
-                                        value={analyzedData.styleGoals || ''}
-                                        onChange={(e) => updateField('styleGoals', e.target.value)}
-                                        className="w-full mt-2 px-3 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-navy resize-none h-24"
-                                        placeholder={t('onboarding.noneSpecified')}
-                                    />
-                                </div>
+                    {stepId === 'occasions' && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {OCCASIONS.map((o) => {
+                                const active = sel.occasions.includes(o.value);
+                                return (
+                                    <button key={o.id} type="button" onClick={() => toggle('occasions', o.value)}
+                                        className={`p-3 rounded-xl border-2 text-sm font-medium transition-colors ${active ? 'border-brand-gold bg-brand-gold/10 text-brand-navy' : 'border-grey-light text-grey-dark hover:border-grey-medium'}`}>
+                                        {t(`onboarding.occasionOptions.${o.id}`)}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {stepId === 'body' && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {BODY_TYPES.map((b) => {
+                                const active = sel.bodyType === b.value;
+                                return (
+                                    <button key={b.id} type="button" onClick={() => setField('bodyType', b.value)}
+                                        className={`p-3 rounded-xl border-2 text-sm font-medium transition-colors ${active ? 'border-brand-gold bg-brand-gold/10 text-brand-navy' : 'border-grey-light text-grey-dark hover:border-grey-medium'}`}>
+                                        {t(`onboarding.bodyTypes.${b.id}`)}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {stepId === 'dislikes' && (
+                        <div className="flex flex-wrap gap-3">
+                            {DISLIKES.map((d) => {
+                                const active = sel.dislikes.includes(d.value);
+                                return (
+                                    <button key={d.id} type="button" onClick={() => toggle('dislikes', d.value)}
+                                        className={`px-3 py-1.5 rounded-full border-2 text-sm transition-colors ${active ? 'border-status-error bg-status-error/10 text-status-error' : 'border-grey-light text-grey-dark hover:border-grey-medium'}`}>
+                                        {t(`onboarding.dislikeOptions.${d.id}`)}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {stepId === 'review' && (
+                        <div className="space-y-4">
+                            <ReviewChips label={t('onboarding.favoriteColors')} items={sel.favoriteColors} onRemove={(v) => toggle('favoriteColors', v)} />
+                            <ReviewChips label={t('onboarding.occasions')} items={sel.occasions} onRemove={(v) => toggle('occasions', v)} />
+                            <ReviewChips label={t('onboarding.dislikes')} items={sel.dislikes} onRemove={(v) => toggle('dislikes', v)} />
+                            <div>
+                                <h3 className="font-medium text-sm text-grey-medium uppercase tracking-wide mb-1">{t('onboarding.styleGoals')}</h3>
+                                <textarea value={sel.styleGoals} onChange={(e) => setField('styleGoals', e.target.value)}
+                                    placeholder={t('onboarding.goalsPlaceholder', 'Ex.: Quero um visual casual e confortável para o trabalho.')}
+                                    className="w-full h-24 p-3 border border-grey-light rounded-lg bg-white-pure text-grey-dark focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none" />
                             </div>
                         </div>
+                    )}
+                </div>
 
-                        <div className="flex gap-4">
-                            <button
-                                onClick={() => setIsAnalyzing(true)}
-                                className="flex-1 py-3 border border-brand-navy text-brand-navy rounded-lg font-medium hover:bg-brand-navy/5 transition-colors"
-                            >
-                                {t('onboarding.reanalyzeButton')}
+                {/* Nav */}
+                <div className="mt-6 flex items-center justify-between gap-3">
+                    <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}
+                        className="px-4 py-2.5 rounded-lg text-brand-navy font-medium disabled:opacity-40 hover:bg-grey-light/50">
+                        {t('onboarding.back', 'Voltar')}
+                    </button>
+                    <div className="flex items-center gap-3">
+                        {!isLast && (
+                            <button type="button" onClick={() => setStep((s) => s + 1)} className="text-sm text-grey-medium hover:text-brand-navy">
+                                {t('onboarding.skip', 'Pular')}
                             </button>
-                            <button
-                                onClick={handleSave}
-                                className="flex-1 py-3 bg-brand-navy text-white-pure rounded-lg font-medium hover:bg-opacity-90 transition-colors"
-                            >
-                                {t('onboarding.saveButton')}
-                            </button>
-                        </div>
+                        )}
+                        <button type="button" onClick={() => (isLast ? finish() : setStep((s) => s + 1))}
+                            className="px-6 py-2.5 rounded-lg bg-brand-navy text-white-pure font-medium hover:bg-opacity-90">
+                            {isLast ? t('onboarding.saveButton') : t('onboarding.next', 'Continuar')}
+                        </button>
                     </div>
-                )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function ReviewChips({ label, items, onRemove }) {
+    if (!items || items.length === 0) return null;
+    return (
+        <div>
+            <h3 className="font-medium text-sm text-grey-medium uppercase tracking-wide mb-2">{label}</h3>
+            <div className="flex flex-wrap gap-2">
+                {items.map((item) => (
+                    <span key={item} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm bg-brand-navy/10 text-brand-navy capitalize">
+                        {item}
+                        <button type="button" onClick={() => onRemove(item)} className="hover:text-status-error" aria-label="remover">
+                            <Close style={{ fontSize: 14 }} />
+                        </button>
+                    </span>
+                ))}
             </div>
         </div>
     );
