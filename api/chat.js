@@ -1,7 +1,14 @@
+import { fetch as undiciFetch, Agent } from "undici";
 import { applyCors } from "./_cors.js";
 import { requireAuth, handleAuthError } from "./_auth.js";
 import { validateText, handleValidationError } from "./_validate.js";
 import { consumeUsage, UsageLimitError } from "./_usage.js";
+
+// The n8n agent (web search + multiple sub-agents) can take a while to respond.
+// undici's default headers/body timeouts abort it too early, so use a dispatcher
+// with generous limits; an AbortSignal below caps the overall wait.
+const N8N_TIMEOUT_MS = 120000;
+const n8nDispatcher = new Agent({ headersTimeout: N8N_TIMEOUT_MS, bodyTimeout: N8N_TIMEOUT_MS });
 
 /**
  * Authenticated proxy to the John Styles n8n agent.
@@ -36,7 +43,7 @@ export default async function handler(req, res) {
             ? wardrobeItems.map(({ image, ...rest }) => rest)
             : [];
 
-        const upstream = await fetch(webhookUrl, {
+        const upstream = await undiciFetch(webhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -46,6 +53,8 @@ export default async function handler(req, res) {
                 wardrobeItems: wardrobeWithoutImages,
                 chatHistory,
             }),
+            dispatcher: n8nDispatcher,
+            signal: AbortSignal.timeout(N8N_TIMEOUT_MS),
         });
 
         if (!upstream.ok) {
@@ -60,6 +69,9 @@ export default async function handler(req, res) {
         if (handleValidationError(res, error)) return;
         if (error instanceof UsageLimitError) {
             return res.status(429).json({ error: 'LIMIT_REACHED', limitType: error.limitType, limit: error.limit });
+        }
+        if (error?.name === 'TimeoutError' || error?.name === 'AbortError' || error?.code === 'UND_ERR_HEADERS_TIMEOUT') {
+            return res.status(504).json({ error: 'CHAT_TIMEOUT', message: 'The assistant took too long to respond. Please try again.' });
         }
         console.error('Chat proxy error:', error);
         return res.status(500).json({ error: 'Failed to process chat message' });
