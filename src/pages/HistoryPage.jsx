@@ -35,7 +35,7 @@ export default function HistoryPage() {
                                     {new Date(msg.timestamp).toLocaleString()}
                                 </span>
                             </div>
-                            <div className="prose prose-sm max-w-none text-grey-dark">
+                            <div className="prose prose-sm dark:prose-invert max-w-none text-grey-dark">
                                 <ReactMarkdown>{msg.content}</ReactMarkdown>
                             </div>
                         </Card>
