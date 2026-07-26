@@ -2,17 +2,21 @@ import React, { useMemo } from 'react';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import { useNavigate } from 'react-router-dom';
-import { AutoAwesome, Checkroom } from '@mui/icons-material';
+import { AutoAwesome, Checkroom, Thermostat } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { pickOutfitOfTheDay } from '../../utils/outfitOfTheDay';
 
-export default function OutfitOfTheDay() {
+export default function OutfitOfTheDay({ weather }) {
     const { allItems } = useWardrobeContext();
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const outfit = useMemo(() => pickOutfitOfTheDay(allItems), [allItems]);
+    const cold = weather?.status === 'ready' && weather.cold;
+    const outfit = useMemo(
+        () => pickOutfitOfTheDay(allItems, undefined, { cold }),
+        [allItems, cold]
+    );
 
     const tryOn = () => {
         navigate('/try-on', { state: { preselect: outfit.map((i) => i.id) } });
@@ -28,12 +32,20 @@ export default function OutfitOfTheDay() {
                         </div>
                         <Card.Title>{t('dashboard.outfitOfDay', 'Look do dia')}</Card.Title>
                     </div>
-                    {outfit.length > 0 && (
-                        <Button variant="primary" className="text-sm" onClick={tryOn}>
-                            <AutoAwesome className="mr-2 h-4 w-4" />
-                            {t('dashboard.tryOutfit', 'Provar')}
-                        </Button>
-                    )}
+                    <div className="flex items-center gap-3">
+                        {weather?.status === 'ready' && (
+                            <span className="inline-flex items-center gap-1 text-sm text-grey-medium" title={t(`dashboard.weather.${weather.condition}`, '')}>
+                                <Thermostat fontSize="small" />
+                                {weather.tempC}°C
+                            </span>
+                        )}
+                        {outfit.length > 0 && (
+                            <Button variant="primary" className="text-sm" onClick={tryOn}>
+                                <AutoAwesome className="mr-2 h-4 w-4" />
+                                {t('dashboard.tryOutfit', 'Provar')}
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {outfit.length === 0 ? (
@@ -44,16 +56,23 @@ export default function OutfitOfTheDay() {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-3 gap-3">
-                        {outfit.map((item) => (
-                            <div key={item.id} className="text-center">
-                                <div className="aspect-square rounded-md overflow-hidden bg-grey-light">
-                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    <>
+                        <div className={`grid gap-3 ${outfit.length === 4 ? 'grid-cols-4' : 'grid-cols-3'}`}>
+                            {outfit.map((item) => (
+                                <div key={item.id} className="text-center">
+                                    <div className="aspect-square rounded-md overflow-hidden bg-grey-light">
+                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                    </div>
+                                    <p className="mt-1 text-xs text-grey-dark truncate" title={item.name}>{item.name}</p>
                                 </div>
-                                <p className="mt-1 text-xs text-grey-dark truncate" title={item.name}>{item.name}</p>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                        {cold && (
+                            <p className="mt-3 text-xs text-brand-gold-dark">
+                                {t('dashboard.weatherColdTip', 'Está frio — incluímos uma peça de agasalho no look.')}
+                            </p>
+                        )}
+                    </>
                 )}
             </Card.Body>
         </Card>

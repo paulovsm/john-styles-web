@@ -20,11 +20,15 @@ export function todayKey(date = new Date()) {
 /**
  * @param {Array} items - wardrobe items
  * @param {string} seed - a per-day seed (default: today)
- * @returns {Array} one item per available core category (tops, bottoms, shoes)
+ * @param {{cold?: boolean}} [opts] - when cold, include an outerwear piece if available
+ * @returns {Array} one item per available core category (+ outerwear when cold)
  */
-export function pickOutfitOfTheDay(items = [], seed = todayKey()) {
+export function pickOutfitOfTheDay(items = [], seed = todayKey(), opts = {}) {
+    const categories = ['tops', 'bottoms', 'shoes'];
+    if (opts.cold) categories.push('outerwear');
+
     const outfit = [];
-    for (const category of ['tops', 'bottoms', 'shoes']) {
+    for (const category of categories) {
         const inCat = items.filter((i) => i.category === category);
         if (inCat.length === 0) continue;
         const idx = hashString(`${seed}:${category}`) % inCat.length;

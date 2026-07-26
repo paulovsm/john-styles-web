@@ -6,11 +6,13 @@ import QuickActions from '../components/dashboard/QuickActions';
 import OutfitOfTheDay from '../components/dashboard/OutfitOfTheDay';
 import RecentLooks from '../components/dashboard/RecentLooks';
 import { useAuth } from '../contexts/AuthContext';
+import { useWeather } from '../hooks/useWeather';
 import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
     const { currentUser } = useAuth();
     const { t } = useTranslation();
+    const weather = useWeather();
 
     return (
         <MainLayout>
@@ -31,7 +33,7 @@ export default function Dashboard() {
             {/* Daily hub: outfit of the day + quick actions */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                    <OutfitOfTheDay />
+                    <OutfitOfTheDay weather={weather} />
                 </div>
                 <div className="lg:col-span-1">
                     <QuickActions />

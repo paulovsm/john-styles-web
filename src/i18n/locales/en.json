@@ -61,7 +61,16 @@
     "outfitEmpty": "Add pieces to your wardrobe to get outfit suggestions.",
     "recentLooks": "Recent looks",
     "viewAll": "View all",
-    "noLooks": "You haven't saved any looks yet. Try the Virtual Try-On."
+    "noLooks": "You haven't saved any looks yet. Try the Virtual Try-On.",
+    "weatherColdTip": "It's cold — we added an outerwear piece to the look.",
+    "weather": {
+      "clear": "Clear",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "rain": "Rain",
+      "snow": "Snow",
+      "storm": "Storm"
+    }
   },
   "chat": {
     "title": "Chat with John Styles",

@@ -61,7 +61,16 @@
     "outfitEmpty": "Agrega prendas a tu guardarropa para recibir sugerencias de look.",
     "recentLooks": "Looks recientes",
     "viewAll": "Ver todos",
-    "noLooks": "Aún no has guardado ningún look. Prueba el Probador Virtual."
+    "noLooks": "Aún no has guardado ningún look. Prueba el Probador Virtual.",
+    "weatherColdTip": "Hace frío — agregamos una prenda de abrigo al look.",
+    "weather": {
+      "clear": "Despejado",
+      "cloudy": "Nublado",
+      "fog": "Niebla",
+      "rain": "Lluvia",
+      "snow": "Nieve",
+      "storm": "Tormenta"
+    }
   },
   "chat": {
     "title": "Chat con John Styles",
