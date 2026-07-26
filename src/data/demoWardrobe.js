@@ -5,23 +5,26 @@
  * items). Every seeded item is flagged `demo: true` so the UI can badge it as
  * a sample and offer to remove them.
  *
- * Images are CORS-enabled Unsplash URLs; attributes were assigned by visually
- * inspecting each photo (single-item/clear shots only). Replaceable later with
- * owned/brand imagery.
+ * Images are CORS-enabled Unsplash URLs; each id↔garment pair was verified by
+ * visually inspecting the photo (single-item / clear shots only). Replaceable
+ * later with owned/brand imagery.
  */
 const img = (id) => `https://images.unsplash.com/${id}?w=600&q=70&auto=format&fit=crop`;
 
 export const SAMPLE_CATALOG = [
+    // Tops
     { id: 'sample-white-tee', name: 'Camiseta Branca', category: 'tops', colors: ['Branco'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1521572163474-6864f9cf17ab') },
-    { id: 'sample-black-tee', name: 'Camiseta Preta', category: 'tops', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1596755094514-f87e34085b2c') },
-    { id: 'sample-chambray-shirt', name: 'Camisa Chambray Azul', category: 'tops', colors: ['Azul'], styles: ['Smart casual'], occasions: ['casual', 'casual executivo'], image: img('photo-1583743814966-8936f5b7be1a') },
-    { id: 'sample-blue-dress-shirt', name: 'Camisa Social Azul Claro', category: 'tops', colors: ['Azul'], styles: ['Formal'], occasions: ['trabalho', 'casual executivo'], image: img('photo-1618354691373-d851c5c3a990') },
+    { id: 'sample-black-tee', name: 'Camiseta Preta', category: 'tops', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1618354691373-d851c5c3a990') },
+    { id: 'sample-black-tee-print', name: 'Camiseta Preta Estampada', category: 'tops', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1583743814966-8936f5b7be1a') },
+    { id: 'sample-chambray-shirt', name: 'Camisa Chambray Azul', category: 'tops', colors: ['Azul'], styles: ['Smart casual'], occasions: ['casual', 'casual executivo'], image: img('photo-1596755094514-f87e34085b2c') },
+    { id: 'sample-blue-dress-shirt', name: 'Camisa Social Azul Claro', category: 'tops', colors: ['Azul'], styles: ['Formal'], occasions: ['trabalho', 'casual executivo'], image: img('photo-1620012253295-c15cc3e65df4') },
     { id: 'sample-white-sweatshirt', name: 'Moletom Branco', category: 'tops', colors: ['Branco'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1620799140408-edc6dcb6d633') },
+    // Bottoms
     { id: 'sample-blue-jeans', name: 'Calça Jeans Azul', category: 'bottoms', colors: ['Azul'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1541099649105-f69ad21f3246') },
-    { id: 'sample-black-jeans', name: 'Calça Jeans Preta', category: 'bottoms', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1556905055-8f358a7a47b2') },
-    { id: 'sample-beige-chinos', name: 'Calça Chino Bege', category: 'bottoms', colors: ['Bege'], styles: ['Smart casual'], occasions: ['casual', 'casual executivo', 'trabalho'], image: img('photo-1473966968600-fa801b869a1a') },
-    { id: 'sample-pink-joggers', name: 'Calça Jogger Rosa', category: 'bottoms', colors: ['Rosa'], styles: ['Casual'], occasions: ['casual'], image: img('photo-1600185365483-26d7a4cc7519') },
-    { id: 'sample-white-sneakers', name: 'Tênis Branco Esportivo', category: 'shoes', colors: ['Branco'], styles: ['Esportivo'], occasions: ['dia a dia', 'esporte'], image: img('photo-1551232864-3f0890e580d9') },
+    { id: 'sample-dark-jeans', name: 'Calça Jeans Escura', category: 'bottoms', colors: ['Preto', 'Azul'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1542272604-787c3835535d') },
+    { id: 'sample-pink-joggers', name: 'Calça Jogger Rosa', category: 'bottoms', colors: ['Rosa'], styles: ['Casual'], occasions: ['casual'], image: img('photo-1594633312681-425c7b97ccd1') },
+    // Shoes
+    { id: 'sample-white-sneakers', name: 'Tênis Branco Esportivo', category: 'shoes', colors: ['Branco'], styles: ['Esportivo'], occasions: ['dia a dia', 'esporte'], image: img('photo-1600185365483-26d7a4cc7519') },
     { id: 'sample-pastel-sneakers', name: 'Tênis Pastel', category: 'shoes', colors: ['Multicolor'], styles: ['Casual'], occasions: ['casual'], image: img('photo-1595950653106-6c9ebd614d3a') },
 ];
 
