@@ -40,6 +40,11 @@ export function parseAgentActions(text) {
         // Malformed action block — ignore it, keep the conversational text.
     }
 
-    const clean = text.replace(match[0], '').trim();
+    const clean = text
+        .replace(match[0], '')
+        // Drop a code fence the LLM may have wrapped the block in.
+        .replace(/```(?:json)?\s*```/gi, '')
+        .replace(/```(?:json)?\s*$/i, '')
+        .trim();
     return { text: clean, actions };
 }

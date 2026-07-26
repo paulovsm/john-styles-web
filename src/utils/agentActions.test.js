@@ -34,6 +34,13 @@ describe('parseAgentActions', () => {
         expect(actions).toEqual([]);
     });
 
+    it('strips a code-fence the LLM may wrap the block in', () => {
+        const raw = 'Aqui vai:\n```\n<actions>[{"type":"navigate","to":"/gallery"}]</actions>\n```';
+        const { text, actions } = parseAgentActions(raw);
+        expect(text).toBe('Aqui vai:');
+        expect(actions).toEqual([{ type: 'navigate', to: '/gallery' }]);
+    });
+
     it('handles non-string input safely', () => {
         expect(parseAgentActions(null)).toEqual({ text: '', actions: [] });
     });
