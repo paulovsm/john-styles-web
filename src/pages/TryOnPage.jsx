@@ -284,7 +284,7 @@ export default function TryOnPage() {
                                             </span>
                                         )}
                                         <button
-                                            onClick={() => setUserPhotoPreview('')}
+                                            onClick={() => { setUserPhotoPreview(''); updateProfile({ modelPhotoUrl: null }); }}
                                             aria-label={t('common.remove', 'Remover')}
                                             className="absolute top-0 right-0 -mt-2 -mr-2 bg-white-pure rounded-full p-1 shadow-md text-grey-medium hover:text-status-error"
                                         >

@@ -49,20 +49,31 @@ class HybridStorageService {
     }
 
     /**
-     * Reset all app-owned local data to empty defaults and notify listeners.
-     * Does not touch non-data keys (e.g. selected language, last uid).
+     * Reset app-owned local data to empty defaults and notify listeners.
+     * NOTE: the user profile is intentionally NOT cleared here — it is owned by
+     * UserProfileContext, which loads/replaces it per user. Clearing it here too
+     * created a race that wiped the freshly-loaded profile (forcing onboarding).
      */
     clearLocalData() {
         const defaults = {
             [STORAGE_KEYS.WARDROBE]: [],
             [STORAGE_KEYS.CHAT_HISTORY]: [],
-            [STORAGE_KEYS.USER_PROFILE]: {},
             [STORAGE_KEYS.VIRTUAL_TRYONS]: [],
         };
         for (const [key, def] of Object.entries(defaults)) {
             localStorageService.setItem(key, def);
             this.notify(key, def);
         }
+    }
+
+    /**
+     * Reset the locally-cached profile WITHOUT writing to the cloud. Used by
+     * UserProfileContext to drop a previous user's profile before loading the
+     * new one, so nothing leaks and we never clobber the cloud with defaults.
+     */
+    resetProfileLocal() {
+        localStorageService.setItem(STORAGE_KEYS.USER_PROFILE, {});
+        this.notify(STORAGE_KEYS.USER_PROFILE, {});
     }
 
     /**

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useAuth } from './AuthContext';
 import { firestoreService } from '../services/storage/firestoreService';
+import { storageService } from '../services/storage/hybridStorageService';
 
 const UserProfileContext = createContext();
 
@@ -22,33 +23,37 @@ export function UserProfileProvider({ children }) {
     const { currentUser } = useAuth();
     const [isLoadingProfile, setIsLoadingProfile] = React.useState(true);
 
-    // Load the signed-in user's profile. We REPLACE (not merge) so a previous
-    // user's fields (e.g. modelPhotoUrl) never leak into the next user on the
-    // same browser. On sign-out we reset to defaults.
+    // Load the signed-in user's profile, keyed on uid. We drop any previously
+    // cached profile FIRST (local-only, no cloud write) so a prior user's data
+    // — including modelPhotoUrl — never leaks into the next user on the same
+    // browser, then REPLACE with the loaded profile.
+    const uid = currentUser?.uid || null;
     useEffect(() => {
         let active = true;
-        async function loadUserProfile() {
-            if (!currentUser?.uid) {
-                setProfile(DEFAULT_PROFILE);
-                setIsLoadingProfile(false);
-                return;
-            }
-            setIsLoadingProfile(true);
-            try {
-                const firestoreProfile = await firestoreService.getUserProfile(currentUser.uid);
-                if (!active) return;
-                setProfile(firestoreProfile ? { ...DEFAULT_PROFILE, ...firestoreProfile } : DEFAULT_PROFILE);
-            } catch (error) {
-                console.error('Error loading user profile:', error);
-                if (active) setProfile(DEFAULT_PROFILE);
-            } finally {
-                if (active) setIsLoadingProfile(false);
-            }
+
+        // Clear stale local profile immediately (covers logout + user switch).
+        storageService.resetProfileLocal();
+
+        if (!uid) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- load gate
+            setIsLoadingProfile(false);
+            return;
         }
 
-        loadUserProfile();
+        setIsLoadingProfile(true);
+        firestoreService.getUserProfile(uid).then((firestoreProfile) => {
+            if (!active) return;
+            // undefined = read failed → leave the reset (no clobber, no leak).
+            if (firestoreProfile === null) {
+                setProfile(DEFAULT_PROFILE);
+            } else if (firestoreProfile) {
+                setProfile({ ...DEFAULT_PROFILE, ...firestoreProfile });
+            }
+            setIsLoadingProfile(false);
+        });
+
         return () => { active = false; };
-    }, [currentUser, setProfile]);
+    }, [uid, setProfile]);
 
     const value = {
         profile,

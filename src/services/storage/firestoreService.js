@@ -44,30 +44,17 @@ class FirestoreService {
             const docRef = doc(db, 'users', uid, 'data', 'profile');
             const docSnap = await getDoc(docRef);
 
-            if (docSnap.exists()) {
-                return docSnap.data();
-            }
-            return null;
+            // null = the profile genuinely does not exist yet (new user).
+            return docSnap.exists() ? docSnap.data() : null;
         } catch (error) {
-            // Only treat unavailable as offline, not other errors like permission-denied
-            if (error.code === 'unavailable') {
-                console.log('📡 Firestore unavailable - using local data');
-                return null;
-            }
-
-            if (error.code === 'permission-denied') {
-                console.error('🔒 Firestore Permission Denied. Check Security Rules in Firebase Console!');
-                console.error('User:', this.getCurrentUserId());
-                return null;
-            }
-
-            // Log other errors with details
+            // undefined = we couldn't read it (offline / permission / other).
+            // Callers must NOT overwrite the profile with defaults in this case.
             console.error('Error getting user profile from Firestore:', {
                 code: error.code,
                 message: error.message,
-                userId: this.getCurrentUserId()
+                userId: this.getCurrentUserId(),
             });
-            return null;
+            return undefined;
         }
     }
 
