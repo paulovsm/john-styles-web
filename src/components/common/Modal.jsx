@@ -67,7 +67,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
     return createPortal(
         <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div className="fixed inset-0 bg-grey-dark bg-opacity-75 transition-opacity" aria-hidden="true" onClick={onClose}></div>
+                <div className="fixed inset-0 bg-black/60 transition-opacity" aria-hidden="true" onClick={onClose}></div>
 
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 

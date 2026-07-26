@@ -217,7 +217,8 @@
     "sync": "Sync",
     "userAvatar": "User photo",
     "saved": "Saved!",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "toggleTheme": "Toggle theme"
   },
   "onboarding": {
     "title": "Welcome to John Styles",

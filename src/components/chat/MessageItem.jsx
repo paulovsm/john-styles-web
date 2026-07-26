@@ -38,7 +38,7 @@ export default function MessageItem({ message, userAvatar }) {
                     : 'bg-white-pure border border-grey-light text-grey-dark rounded-bl-none'
                     }`}
             >
-                <div className="text-sm prose prose-sm max-w-none prose-p:my-1 prose-a:text-brand-gold-dark">
+                <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-a:text-brand-gold-dark">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
                 </div>
                 {!isUser && message.actions?.length > 0 && (

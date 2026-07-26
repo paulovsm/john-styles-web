@@ -6,6 +6,16 @@
   <link rel="icon" type="image/avif" href="/FA_Icon_White.avif" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>John Styles - Your Personal Fashion Assistant</title>
+  <script>
+    // Apply the saved/system theme before paint to avoid a flash of the wrong theme.
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
 </head>
 
 <body>

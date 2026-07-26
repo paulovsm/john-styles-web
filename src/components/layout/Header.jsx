@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Menu, Close, Logout, Person, Sync } from '@mui/icons-material';
+import { Menu, Close, Logout, Person, Sync, DarkMode, LightMode } from '@mui/icons-material';
 import LanguageSelector from '../common/LanguageSelector';
 import { useSyncStatus } from '../../hooks/useSyncStatus';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function Header() {
     const { currentUser, logout } = useAuth();
@@ -12,6 +13,7 @@ export default function Header() {
     const { t } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { isSyncing, syncNow } = useSyncStatus();
+    const { theme, toggleTheme } = useTheme();
 
     const handleSync = async () => {
         try {
@@ -63,6 +65,14 @@ export default function Header() {
                         </div>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-2">
+                        <button
+                            onClick={toggleTheme}
+                            className="p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none"
+                            aria-label={t('common.toggleTheme', 'Alternar tema')}
+                            title={t('common.toggleTheme', 'Alternar tema')}
+                        >
+                            {theme === 'dark' ? <LightMode /> : <DarkMode />}
+                        </button>
                         <button
                             onClick={handleSync}
                             className={`p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none ${isSyncing ? 'animate-spin' : ''}`}
@@ -183,7 +193,16 @@ export default function Header() {
                                 <Sync className={isSyncing ? 'animate-spin' : ''} fontSize="small" />
                                 {t('common.sync', 'Sincronizar')}
                             </button>
-                            <LanguageSelector />
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={toggleTheme}
+                                    className="flex items-center gap-2 text-sm text-grey-dark hover:text-brand-navy focus:outline-none"
+                                    aria-label={t('common.toggleTheme', 'Alternar tema')}
+                                >
+                                    {theme === 'dark' ? <LightMode fontSize="small" /> : <DarkMode fontSize="small" />}
+                                </button>
+                                <LanguageSelector />
+                            </div>
                         </div>
                     </div>
                 </div>

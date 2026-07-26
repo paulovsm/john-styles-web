@@ -1,19 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Semantic design tokens as space-separated RGB triples, consumed by
+ * tailwind.config.js via rgb(var(--token) / <alpha-value>). The existing
+ * color class names (brand-*, white-*, grey-*) are remapped to these tokens,
+ * so the whole app becomes theme-aware. Dark mode just swaps the values.
+ *
+ * Identity: editorial "ink & paper" high-contrast base + a cognac accent.
+ */
 @layer base {
   :root {
-    /* Brand tokens (kept in sync with tailwind.config.js) */
-    --color-brand-navy: #0F172A;
-    --color-brand-gold: #C5A059;
-    --color-brand-gold-dark: #8A6D2F;
+    --c-bg: 247 245 241;        /* warm paper (page) */
+    --c-surface: 255 255 255;   /* cards */
+    --c-content: 27 26 29;      /* ink (text) */
+    --c-muted: 110 106 115;     /* muted text */
+    --c-border: 230 225 216;    /* borders / subtle fills */
+    --c-ink: 27 26 29;          /* high-contrast (primary buttons, headers) */
+    --c-accent: 181 97 58;      /* cognac */
+    --c-accent-strong: 138 72 42; /* darker cognac (text on light) */
+  }
+
+  .dark {
+    --c-bg: 15 14 17;
+    --c-surface: 23 22 26;
+    --c-content: 243 241 238;   /* paper */
+    --c-muted: 165 161 170;
+    --c-border: 42 40 48;
+    --c-ink: 243 241 238;       /* flips to paper (primary on dark) */
+    --c-accent: 210 134 92;     /* lighter cognac for dark */
+    --c-accent-strong: 226 170 132;
   }
 
   body {
-    @apply font-sans text-brand-navy bg-white-pure;
+    @apply font-sans;
+    background-color: rgb(var(--c-bg));
+    color: rgb(var(--c-content));
   }
 
   h1, h2, h3, h4, h5, h6 {
