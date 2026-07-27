@@ -15,7 +15,8 @@
     "login": "Iniciar Sesión",
     "logout": "Cerrar Sesión",
     "signInWith": "Iniciar sesión con {{provider}}",
-    "welcome": "Bienvenido de nuevo"
+    "welcome": "Bienvenido de nuevo",
+    "legalPrefix": "Al iniciar sesión, aceptas nuestra"
   },
   "landing": {
     "hero": {
@@ -360,7 +361,8 @@
     "deleteSuccess": "Look eliminado."
   },
   "footer": {
-    "rights": "Todos los derechos reservados."
+    "rights": "Todos los derechos reservados.",
+    "privacy": "Política de Privacidad"
   },
   "usage": {
     "remaining": "{{remaining}} de {{limit}} restantes hoy"

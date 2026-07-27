@@ -15,7 +15,8 @@
     "login": "Log In",
     "logout": "Logout",
     "signInWith": "Sign in with {{provider}}",
-    "welcome": "Welcome back"
+    "welcome": "Welcome back",
+    "legalPrefix": "By signing in, you agree to our"
   },
   "landing": {
     "hero": {
@@ -360,7 +361,8 @@
     "deleteSuccess": "Look deleted."
   },
   "footer": {
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy"
   },
   "usage": {
     "remaining": "{{remaining}} of {{limit}} left today"

@@ -15,7 +15,8 @@
     "login": "Entrar",
     "logout": "Sair",
     "signInWith": "Entrar com {{provider}}",
-    "welcome": "Bem-vindo de volta"
+    "welcome": "Bem-vindo de volta",
+    "legalPrefix": "Ao entrar, você concorda com nossa"
   },
   "landing": {
     "hero": {
@@ -360,7 +361,8 @@
     "deleteSuccess": "Look excluído."
   },
   "footer": {
-    "rights": "Todos os direitos reservados."
+    "rights": "Todos os direitos reservados.",
+    "privacy": "Política de Privacidade"
   },
   "usage": {
     "remaining": "{{remaining}} de {{limit}} restantes hoje"

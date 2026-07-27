@@ -10,6 +10,7 @@ import TryOnPage from './pages/TryOnPage';
 import OnboardingPage from './pages/OnboardingPage';
 import GalleryPage from './pages/GalleryPage';
 import NotFoundPage from './pages/NotFoundPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 const router = createBrowserRouter([
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
     {
         path: '/login',
         element: <LoginPage />,
+    },
+    {
+        path: '/privacy',
+        element: <PrivacyPolicyPage />,
     },
     {
         path: '/dashboard',

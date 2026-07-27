@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Google, Facebook, Apple } from '@mui/icons-material';
 
@@ -86,7 +86,10 @@ export default function LoginPage() {
 
                 <div className="text-center mt-4">
                     <p className="text-xs text-grey-medium">
-                        By signing in, you agree to our Terms of Service and Privacy Policy.
+                        {t('auth.legalPrefix', 'Ao entrar, você concorda com nossa')}{' '}
+                        <Link to="/privacy" className="underline hover:text-brand-navy">
+                            {t('footer.privacy', 'Política de Privacidade')}
+                        </Link>.
                     </p>
                 </div>
             </div>
