@@ -6,17 +6,10 @@ import { geminiService } from '../services/api/geminiService';
 import { colorToHex } from '../utils/colorMap';
 import Loading from '../components/common/Loading';
 import { Close } from '@mui/icons-material';
+import { ARCHETYPES, inferArchetypes } from '../utils/archetypes';
 
 // Option catalogs. `value` is the canonical (PT) token stored on the profile so
 // it matches the wardrobe/sample color names; the label is translated via i18n.
-const ARCHETYPES = [
-    { id: 'casual', items: ['camisetas', 'jeans', 'tênis'] },
-    { id: 'classic', items: ['camisa social', 'alfaiataria'] },
-    { id: 'streetwear', items: ['moletom', 'tênis', 'oversized'] },
-    { id: 'minimalist', items: ['peças básicas', 'tons neutros'] },
-    { id: 'sporty', items: ['esportivo', 'tênis'] },
-    { id: 'elegant', items: ['blazer', 'camisa social'] },
-];
 const COLORS = [
     { id: 'black', value: 'Preto' }, { id: 'white', value: 'Branco' }, { id: 'gray', value: 'Cinza' },
     { id: 'blue', value: 'Azul' }, { id: 'navy', value: 'Azul marinho' }, { id: 'beige', value: 'Bege' },
@@ -116,8 +109,10 @@ export default function OnboardingPage() {
         setAiError('');
         try {
             const data = await geminiService.analyzeProfile(aiText);
+            const inferred = inferArchetypes(data);
             setSel((s) => ({
                 ...s,
+                archetypes: s.archetypes.length ? s.archetypes : inferred,
                 favoriteColors: data.favoriteColors ? canon(data.favoriteColors, COLORS) : s.favoriteColors,
                 preferredItems: data.preferredItems || s.preferredItems,
                 occasions: data.occasions ? canon(data.occasions, OCCASIONS) : s.occasions,
