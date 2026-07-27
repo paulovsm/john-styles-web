@@ -2,16 +2,11 @@
     {
         "origin": [
             "http://localhost:5173",
-            "http://localhost:3000"
+            "http://localhost:3000",
+            "https://john-styles-web.vercel.app"
         ],
-        "method": [
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "HEAD",
-            "OPTIONS"
-        ],
+        "method": ["GET", "HEAD", "PUT", "POST", "DELETE", "OPTIONS"],
+        "responseHeader": ["Content-Type", "Authorization"],
         "maxAgeSeconds": 3600
     }
 ]
