@@ -188,7 +188,8 @@
       "saveFailed": "Falha ao salvar na galeria. Tente novamente.",
       "noImage": "Nenhuma imagem foi gerada. Tente novamente.",
       "limitReached": "Limite diário de geração atingido (5/5). Por favor, tente novamente amanhã.",
-      "retryIn": "Você pode tentar novamente em aproximadamente {{seconds}} segundos."
+      "retryIn": "Você pode tentar novamente em aproximadamente {{seconds}} segundos.",
+      "network": "Falha de conexão ao gerar o look. Verifique sua internet e tente novamente."
     },
     "saveSuccess": "Look salvo na galeria!",
     "photoSaved": "Foto salva no seu perfil.",

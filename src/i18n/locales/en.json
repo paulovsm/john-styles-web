@@ -188,7 +188,8 @@
       "genericError": "Failed to generate image. Please try again.",
       "noImage": "No image was generated. Please try again.",
       "saveFailed": "Failed to save to gallery. Please try again.",
-      "limitReached": "Daily generation limit reached (5/5). Please try again tomorrow."
+      "limitReached": "Daily generation limit reached (5/5). Please try again tomorrow.",
+      "network": "Connection error while generating the look. Check your internet and try again."
     },
     "saveSuccess": "Look saved to gallery!",
     "photoSaved": "Photo saved to your profile.",

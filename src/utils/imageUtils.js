@@ -20,6 +20,32 @@ export const toDataUrl = async (src) => {
     });
 };
 
+const blobToDataUrl = (blob) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+
+/**
+ * Fetches an image (data: or http(s) URL) and returns a RE-COMPRESSED data URL.
+ * Used to shrink the try-on payload so several images fit under the serverless
+ * request-body limit (~4.5MB on Vercel).
+ *
+ * @param {string} src
+ * @param {number} maxDimension
+ * @param {number} quality
+ * @returns {Promise<string>} compressed data URL
+ */
+export const toCompressedDataUrl = async (src, maxDimension = 1024, quality = 0.7) => {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    const file = new File([blob], 'image.jpg', { type: blob.type || 'image/jpeg' });
+    const compressed = await compressImage(file, maxDimension, quality);
+    return blobToDataUrl(compressed);
+};
+
 /**
  * Compresses an image file to ensure it meets size requirements.
  * Resizes the image if dimensions exceed maxDimension (default 1500px).

@@ -14,7 +14,7 @@ import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserProfileContext } from '../contexts/UserProfileContext';
 import { useToast } from '../contexts/ToastContext';
-import { compressImage, toDataUrl } from '../utils/imageUtils';
+import { compressImage, toCompressedDataUrl } from '../utils/imageUtils';
 
 
 
@@ -252,14 +252,12 @@ export default function TryOnPage() {
                 prompt = `Keep this person's appearance exactly as shown in the image. Dress person with the following items: ${itemsDescription}. Replace the current outfit if needed. Maintain photorealistic quality, natural lighting, and the original photo composition. The clothing items should fit naturally on the person.`;
             }
 
-            // Item images are stored as Storage URLs; the generate API needs
-            // inline base64, so convert them client-side first.
+            // Convert to inline base64 for the API, RE-COMPRESSED so the combined
+            // payload (photo + items) stays under the serverless body limit.
             const itemImages = await Promise.all(
-                selectedItems.map(item => toDataUrl(item.image))
+                selectedItems.map(item => toCompressedDataUrl(item.image))
             );
-
-            // The photo may be a saved model URL; convert to base64 for the API.
-            const userImageData = await toDataUrl(userPhotoPreview);
+            const userImageData = await toCompressedDataUrl(userPhotoPreview);
             const imageUrl = await geminiService.generateImage(prompt, userImageData, itemImages);
             setGeneratedImage(imageUrl);
             setUsageRefresh((n) => n + 1); // refresh the remaining-usage counter
@@ -281,8 +279,13 @@ export default function TryOnPage() {
                     setErrorMessage('');
                     setRetryAfter(null);
                 }, waitTime * 1000);
-            } else {
-                // Generic error
+            }
+            // Network-level failure (fetch rejected) — clearer than "Failed to fetch".
+            else if (error.name === 'TypeError' || /failed to fetch/i.test(error.message || '')) {
+                setErrorMessage(t('tryOn.errors.network', 'Falha de conexão ao gerar o look. Verifique sua internet e tente novamente.'));
+            }
+            // Generic error
+            else {
                 setErrorMessage(error.message || t('tryOn.errors.genericError'));
             }
         } finally {
