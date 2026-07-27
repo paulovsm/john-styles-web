@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A user can only touch their own subtree, and only when authenticated.
+    // Note: a match on a document path does NOT cascade to subcollections in
+    // Firestore, so each subcollection is listed explicitly below.
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Profile, chat history, etc. live under data/{docId}.
+      // usageLimits is authoritative on the server (Admin SDK): clients may
+      // READ their counters for display, but never WRITE them — otherwise the
+      // daily limit could be reset/bypassed from the browser.
+      match /data/{docId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId) && docId != 'usageLimits';
+      }
+
+      // Collections the client fully owns.
+      match /wardrobe/{docId} { allow read, write: if isOwner(userId); }
+      match /gallery/{docId}  { allow read, write: if isOwner(userId); }
+      match /outfits/{docId}  { allow read, write: if isOwner(userId); }
+
+      // Server-only secrets (e.g. Google Calendar refresh token). Never exposed
+      // to the client — read/written solely via the Admin SDK.
+      match /private/{docId} { allow read, write: if false; }
+    }
+
+    // Deny everything else by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+
+  function isOwner(userId) {
+    return request.auth != null && request.auth.uid == userId;
+  }
+}

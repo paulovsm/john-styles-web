@@ -1,201 +1,394 @@
 {
-    "app": {
-        "name": "John Styles",
-        "tagline": "Your Personal Fashion Assistant"
+  "app": {
+    "name": "John Styles",
+    "tagline": "Your Personal Fashion Assistant"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "chat": "Chat",
+    "wardrobe": "Wardrobe",
+    "tryOn": "Try-On",
+    "history": "History",
+    "gallery": "Gallery"
+  },
+  "auth": {
+    "login": "Log In",
+    "logout": "Logout",
+    "signInWith": "Sign in with {{provider}}",
+    "welcome": "Welcome back",
+    "legalPrefix": "By signing in, you agree to our"
+  },
+  "landing": {
+    "hero": {
+      "title": "Elevate your style with",
+      "subtitle": "AI Intelligence",
+      "description": "John Styles is your personal fashion assistant. Get personalized outfit recommendations, organize your wardrobe, and visualize new looks instantly.",
+      "getStarted": "Get Started",
+      "login": "Log In"
     },
-    "nav": {
-        "dashboard": "Dashboard",
-        "chat": "Chat",
-        "wardrobe": "Wardrobe",
-        "tryOn": "Try-On",
-        "history": "History"
+    "features": {
+      "title": "Everything you need to look your best",
+      "subtitle": "John Styles combines advanced AI with fashion expertise to help you build a wardrobe you love.",
+      "aiAnalysis": {
+        "title": "AI Style Analysis",
+        "description": "Get personalized fashion advice based on your unique preferences and body type."
+      },
+      "virtualWardrobe": {
+        "title": "Virtual Wardrobe",
+        "description": "Digitize your closet and organize your outfits effortlessly."
+      },
+      "virtualTryOn": {
+        "title": "Virtual Try-On",
+        "description": "Visualize how new clothes will look on you before you buy."
+      },
+      "eyebrow": "Features"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {{name}}",
+    "subtitle": "Here's what's happening with your style today.",
+    "wardrobeSummary": "Wardrobe Summary",
+    "quickActions": "Quick Actions",
+    "totalItems": "Total Items",
+    "tops": "Tops",
+    "bottoms": "Bottoms",
+    "shoes": "Shoes",
+    "askJohn": "Ask John Styles",
+    "addNewItem": "Add New Item",
+    "viewHistory": "View History",
+    "myProfile": "My Profile",
+    "outfitOfDay": "Outfit of the day",
+    "tryOutfit": "Try it",
+    "outfitEmpty": "Add pieces to your wardrobe to get outfit suggestions.",
+    "recentLooks": "Recent looks",
+    "viewAll": "View all",
+    "noLooks": "You haven't saved any looks yet. Try the Virtual Try-On.",
+    "weatherColdTip": "It's cold — we added an outerwear piece to the look.",
+    "weather": {
+      "clear": "Clear",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "rain": "Rain",
+      "snow": "Snow",
+      "storm": "Storm"
     },
-    "auth": {
-        "login": "Log In",
-        "logout": "Logout",
-        "signInWith": "Sign in with {{provider}}",
-        "welcome": "Welcome back"
-    },
-    "landing": {
-        "hero": {
-            "title": "Elevate your style with",
-            "subtitle": "AI Intelligence",
-            "description": "John Styles is your personal fashion assistant. Get personalized outfit recommendations, organize your wardrobe, and visualize new looks instantly.",
-            "getStarted": "Get Started",
-            "login": "Log In"
-        },
-        "features": {
-            "title": "Everything you need to look your best",
-            "subtitle": "John Styles combines advanced AI with fashion expertise to help you build a wardrobe you love.",
-            "aiAnalysis": {
-                "title": "AI Style Analysis",
-                "description": "Get personalized fashion advice based on your unique preferences and body type."
-            },
-            "virtualWardrobe": {
-                "title": "Virtual Wardrobe",
-                "description": "Digitize your closet and organize your outfits effortlessly."
-            },
-            "virtualTryOn": {
-                "title": "Virtual Try-On",
-                "description": "Visualize how new clothes will look on you before you buy."
-            }
-        }
-    },
-    "dashboard": {
-        "welcome": "Welcome back, {{name}}",
-        "subtitle": "Here's what's happening with your style today.",
-        "wardrobeSummary": "Wardrobe Summary",
-        "quickActions": "Quick Actions",
-        "totalItems": "Total Items",
+    "connectCalendar": "Connect Google Calendar for day-aware suggestions",
+    "calendarConnected": "Google Calendar connected!",
+    "calendarDenied": "Calendar connection cancelled.",
+    "calendarError": "Could not connect the calendar."
+  },
+  "chat": {
+    "title": "Chat with John Styles",
+    "beta": "Beta",
+    "placeholder": "Ask John Styles about your outfit...",
+    "greeting": "Hello! I'm John Styles, your personal fashion assistant. How can I help you look your best today?",
+    "typing": "John is typing...",
+    "error": "Sorry, I encountered an error. Please try again.",
+    "noResponse": "Sorry, I didn't get that.",
+    "send": "Send",
+    "thinking": "John is thinking...",
+    "connectionError": "Sorry, I'm having trouble connecting right now. Please try again.",
+    "actions": {
+      "tryOn": "Try this look",
+      "open": "Open"
+    }
+  },
+  "wardrobe": {
+    "title": "My Wardrobe",
+    "addItem": "Add Item",
+    "noItems": "No items",
+    "noItemsDescription": "Get started by adding a new item to your wardrobe.",
+    "filters": {
+      "search": "Search items...",
+      "allCategories": "All Categories",
+      "allStyles": "All Styles",
+      "allColors": "All Colors",
+      "categories": {
         "tops": "Tops",
         "bottoms": "Bottoms",
         "shoes": "Shoes",
-        "askJohn": "Ask John Styles",
-        "addNewItem": "Add New Item",
-        "viewHistory": "View History",
-        "myProfile": "My Profile"
+        "accessories": "Accessories",
+        "outerwear": "Outerwear"
+      },
+      "styles": {
+        "casual": "Casual",
+        "formal": "Formal",
+        "business": "Business",
+        "sporty": "Sporty",
+        "chic": "Chic",
+        "boho": "Boho"
+      },
+      "colors": {
+        "black": "Black",
+        "white": "White",
+        "blue": "Blue",
+        "red": "Red",
+        "green": "Green",
+        "yellow": "Yellow",
+        "pink": "Pink",
+        "purple": "Purple",
+        "grey": "Grey",
+        "brown": "Brown",
+        "beige": "Beige"
+      }
     },
-    "chat": {
-        "title": "Chat with John Styles",
-        "beta": "Beta",
-        "placeholder": "Ask John Styles about your outfit...",
-        "greeting": "Hello! I'm John Styles, your personal fashion assistant. How can I help you look your best today?",
-        "typing": "John is typing...",
-        "error": "Sorry, I encountered an error. Please try again.",
-        "noResponse": "Sorry, I didn't get that."
+    "addModal": {
+      "title": "Add New Item",
+      "titleEdit": "Edit Item",
+      "itemImage": "Item Image",
+      "uploadImage": "Upload a file",
+      "dragDrop": "or drag and drop",
+      "fileTypes": "PNG, JPG, GIF up to 10MB",
+      "analyzeAI": "Analyze with AI",
+      "name": "Name",
+      "namePlaceholder": "e.g. Blue Denim Jacket",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter a brief description",
+      "category": "Category",
+      "color": "Color",
+      "colorPlaceholder": "e.g. Blue",
+      "style": "Style",
+      "stylePlaceholder": "e.g. Casual",
+      "brand": "Brand",
+      "brandPlaceholder": "Optional",
+      "cancel": "Cancel",
+      "save": "Save Item"
     },
-    "wardrobe": {
-        "title": "My Wardrobe",
-        "addItem": "Add Item",
-        "noItems": "No items",
-        "noItemsDescription": "Get started by adding a new item to your wardrobe.",
-        "filters": {
-            "search": "Search items...",
-            "allCategories": "All Categories",
-            "allStyles": "All Styles",
-            "allColors": "All Colors",
-            "categories": {
-                "tops": "Tops",
-                "bottoms": "Bottoms",
-                "shoes": "Shoes",
-                "accessories": "Accessories",
-                "outerwear": "Outerwear"
-            },
-            "styles": {
-                "casual": "Casual",
-                "formal": "Formal",
-                "business": "Business",
-                "sporty": "Sporty",
-                "chic": "Chic",
-                "boho": "Boho"
-            },
-            "colors": {
-                "black": "Black",
-                "white": "White",
-                "blue": "Blue",
-                "red": "Red",
-                "green": "Green",
-                "yellow": "Yellow",
-                "pink": "Pink",
-                "purple": "Purple",
-                "grey": "Grey",
-                "brown": "Brown",
-                "beige": "Beige"
-            }
-        },
-        "addModal": {
-            "title": "Add New Item",
-            "titleEdit": "Edit Item",
-            "itemImage": "Item Image",
-            "uploadImage": "Upload a file",
-            "dragDrop": "or drag and drop",
-            "fileTypes": "PNG, JPG, GIF up to 10MB",
-            "analyzeAI": "Analyze with AI",
-            "name": "Name",
-            "namePlaceholder": "e.g. Blue Denim Jacket",
-            "description": "Description",
-            "descriptionPlaceholder": "Enter a brief description",
-            "category": "Category",
-            "color": "Color",
-            "colorPlaceholder": "e.g. Blue",
-            "style": "Style",
-            "stylePlaceholder": "e.g. Casual",
-            "brand": "Brand",
-            "brandPlaceholder": "Optional",
-            "cancel": "Cancel",
-            "save": "Save Item"
-        },
-        "errors": {
-            "limitReached": "Daily analysis limit reached (5/5). Please try again tomorrow."
-        }
+    "errors": {
+      "limitReached": "Daily analysis limit reached (5/5). Please try again tomorrow.",
+      "analysisFailed": "Failed to analyze the image. Please try again.",
+      "saveFailed": "Failed to save the item. Please try again."
     },
-    "tryOn": {
-        "title": "Virtual Try-On",
-        "uploadPhoto": "1. Upload Your Photo",
-        "uploadPhotoDescription": "Full body or upper body shot recommended",
-        "selectItem": "2. Select an Item",
-        "noItemsWardrobe": "No items in wardrobe. Add items first.",
-        "generate": "Generate Try-On",
-        "generating": "Generating your look...",
-        "generatingDescription": "This may take a few moments.",
-        "yourLook": "Your Look",
-        "tryAnother": "Try Another",
-        "saveGallery": "Save to Gallery",
-        "placeholder": "Upload a photo and select an item to see the magic happen.",
-        "advancedMode": "Advanced Mode",
-        "customPrompt": "Custom Prompt",
-        "customPromptPlaceholder": "Use placeholders: {item.name}, {item.color}, {item.category}, {item.style}",
-        "customPromptHelp": "Describe how you want the clothing item to appear on the person in the photo",
-        "errors": {
-            "quotaExceeded": "API quota limit reached. Please wait {{seconds}} seconds before trying again. Consider upgrading to a paid plan if you need more capacity.",
-            "retryIn": "You can retry in approximately {{seconds}} seconds.",
-            "genericError": "Failed to generate image. Please try again.",
-            "noImage": "No image was generated. Please try again.",
-            "saveFailed": "Failed to save to gallery. Please try again.",
-            "limitReached": "Daily generation limit reached (5/5). Please try again tomorrow."
-        },
-        "saveSuccess": "Look saved to gallery!"
+    "exploreSamples": "Explore with sample pieces",
+    "exploreSamplesHint": "Sample pieces to try the app — remove them anytime.",
+    "sampleBadge": "Sample",
+    "sampleNotice": "Your wardrobe includes sample pieces so you can try things out.",
+    "removeSamples": "Remove samples"
+  },
+  "tryOn": {
+    "title": "Virtual Try-On",
+    "uploadPhoto": "1. Upload Your Photo",
+    "uploadPhotoDescription": "Full body or upper body shot recommended",
+    "selectItem": "2. Select an Item",
+    "noItemsWardrobe": "No items in wardrobe. Add items first.",
+    "generate": "Generate Try-On",
+    "generating": "Generating your look...",
+    "generatingDescription": "This may take a few moments.",
+    "yourLook": "Your Look",
+    "tryAnother": "Try Another",
+    "saveGallery": "Save to Gallery",
+    "placeholder": "Upload a photo and select an item to see the magic happen.",
+    "advancedMode": "Advanced Mode",
+    "customPrompt": "Custom Prompt",
+    "customPromptPlaceholder": "Use placeholders: {item.name}, {item.color}, {item.category}, {item.style}",
+    "customPromptHelp": "Describe how you want the clothing item to appear on the person in the photo",
+    "errors": {
+      "quotaExceeded": "API quota limit reached. Please wait {{seconds}} seconds before trying again. Consider upgrading to a paid plan if you need more capacity.",
+      "retryIn": "You can retry in approximately {{seconds}} seconds.",
+      "genericError": "Failed to generate image. Please try again.",
+      "noImage": "No image was generated. Please try again.",
+      "saveFailed": "Failed to save to gallery. Please try again.",
+      "limitReached": "Daily generation limit reached (5/5). Please try again tomorrow."
     },
-    "history": {
-        "title": "Interaction History",
-        "noHistory": "No history available yet.",
-        "you": "You",
-        "johnStyles": "John Styles"
+    "saveSuccess": "Look saved to gallery!",
+    "photoSaved": "Photo saved to your profile.",
+    "selectedItems": "Selected items:",
+    "saveOutfit": "Save look",
+    "myOutfits": "My looks",
+    "outfitSaved": "Look saved.",
+    "outfitSaveError": "Failed to save the look.",
+    "outfitPartial": "Some items from this look are no longer in your wardrobe.",
+    "share": "Share",
+    "downloaded": "Image downloaded.",
+    "shareError": "Could not share the image."
+  },
+  "history": {
+    "title": "Interaction History",
+    "noHistory": "No history available yet.",
+    "you": "You",
+    "johnStyles": "John Styles"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "upload": "Upload",
+    "remove": "Remove",
+    "confirm": "Confirm",
+    "logout": "Log out",
+    "selectLanguage": "Select language",
+    "sync": "Sync",
+    "userAvatar": "User photo",
+    "saved": "Saved!",
+    "saving": "Saving...",
+    "toggleTheme": "Toggle theme"
+  },
+  "onboarding": {
+    "title": "Welcome to John Styles",
+    "subtitle": "Let's get to know your style. Describe your fashion preferences, favorite colors, occasions you dress for, brands you love, and things you dislike.",
+    "placeholder": "E.g., I love casual wear, mostly jeans and t-shirts. My favorite colors are blue and black. I dress for work which is business casual. I dislike bright colors and tight fitting clothes.",
+    "analyzeButton": "Analyze My Style",
+    "analyzing": "Analyzing...",
+    "resultsTitle": "Your Style Profile",
+    "favoriteColors": "Favorite colors",
+    "preferredItems": "Preferred Items",
+    "dislikes": "Things I avoid",
+    "occasions": "Occasions",
+    "bodyType": "Body Type",
+    "favoriteBrands": "Favorite Brands",
+    "styleGoals": "Style Goals",
+    "editButton": "Edit Description",
+    "saveButton": "Save Profile",
+    "noneDetected": "None detected",
+    "unspecified": "Unspecified",
+    "noneSpecified": "None specified",
+    "error": "Failed to analyze profile. Please try again.",
+    "reanalyzeButton": "Re-analyze with AI",
+    "cancelButton": "Cancel",
+    "addTagPlaceholder": "Add...",
+    "stepOf": "{{current}} of {{total}}",
+    "next": "Continue",
+    "back": "Back",
+    "skip": "Skip",
+    "describeWithAI": "Prefer to describe it in your own words?",
+    "goalsPlaceholder": "e.g., I want a casual, comfortable look for work.",
+    "steps": {
+      "archetypes": {
+        "title": "What is your style?",
+        "subtitle": "Pick one or more styles you identify with."
+      },
+      "colors": {
+        "title": "Favorite colors",
+        "subtitle": "Tap the colors you wear most."
+      },
+      "occasions": {
+        "title": "For which occasions?",
+        "subtitle": "Where you most need to dress well."
+      },
+      "body": {
+        "title": "Body type",
+        "subtitle": "Helps recommend fits that suit you best."
+      },
+      "dislikes": {
+        "title": "Anything to avoid?",
+        "subtitle": "Optional — what you would rather not wear."
+      },
+      "review": {
+        "title": "All set?",
+        "subtitle": "Review and tweak before saving."
+      }
     },
-    "common": {
-        "loading": "Loading...",
-        "error": "Error",
-        "success": "Success",
-        "delete": "Delete",
-        "edit": "Edit",
-        "save": "Save",
-        "cancel": "Cancel",
-        "close": "Close",
-        "upload": "Upload",
-        "remove": "Remove"
+    "archetypes": {
+      "casual": {
+        "label": "Casual",
+        "desc": "Comfortable and relaxed"
+      },
+      "classic": {
+        "label": "Classic",
+        "desc": "Timeless and elegant"
+      },
+      "streetwear": {
+        "label": "Streetwear",
+        "desc": "Urban and modern"
+      },
+      "minimalist": {
+        "label": "Minimalist",
+        "desc": "Neutral basics"
+      },
+      "sporty": {
+        "label": "Sporty",
+        "desc": "Active and practical"
+      },
+      "elegant": {
+        "label": "Elegant",
+        "desc": "Sophisticated and refined"
+      }
     },
-    "onboarding": {
-        "title": "Welcome to John Styles",
-        "subtitle": "Let's get to know your style. Describe your fashion preferences, favorite colors, occasions you dress for, brands you love, and things you dislike.",
-        "placeholder": "E.g., I love casual wear, mostly jeans and t-shirts. My favorite colors are blue and black. I dress for work which is business casual. I dislike bright colors and tight fitting clothes.",
-        "analyzeButton": "Analyze My Style",
-        "analyzing": "Analyzing...",
-        "resultsTitle": "Your Style Profile",
-        "favoriteColors": "Favorite Colors",
-        "preferredItems": "Preferred Items",
-        "dislikes": "Dislikes",
-        "occasions": "Occasions",
-        "bodyType": "Body Type",
-        "favoriteBrands": "Favorite Brands",
-        "styleGoals": "Style Goals",
-        "editButton": "Edit Description",
-        "saveButton": "Save Profile",
-        "noneDetected": "None detected",
-        "unspecified": "Unspecified",
-        "noneSpecified": "None specified",
-        "error": "Failed to analyze profile. Please try again.",
-        "reanalyzeButton": "Re-analyze with AI",
-        "cancelButton": "Cancel",
-        "addTagPlaceholder": "Add..."
+    "colors": {
+      "black": "Black",
+      "white": "White",
+      "gray": "Gray",
+      "blue": "Blue",
+      "navy": "Navy",
+      "beige": "Beige",
+      "brown": "Brown",
+      "green": "Green",
+      "red": "Red",
+      "wine": "Wine",
+      "pink": "Pink",
+      "purple": "Purple"
+    },
+    "bodyTypes": {
+      "athletic": "Athletic",
+      "slim": "Slim",
+      "average": "Average",
+      "plus": "Plus size",
+      "unspecified": "Prefer not to say"
+    },
+    "occasionOptions": {
+      "work": "Work",
+      "businessCasual": "Business casual",
+      "everyday": "Everyday",
+      "party": "Party",
+      "sport": "Sport",
+      "date": "Date"
+    },
+    "dislikeOptions": {
+      "brightColors": "Bright colors",
+      "tightClothes": "Tight clothes",
+      "bigPrints": "Big prints",
+      "largeLogos": "Large logos",
+      "formalwear": "Too formal"
     }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has moved.",
+    "backHome": "Back to home"
+  },
+  "gallery": {
+    "title": "Looks Gallery",
+    "emptyTitle": "Your gallery is empty",
+    "emptyDescription": "Generate looks in the Virtual Try-On and save them here.",
+    "deleteTitle": "Delete look",
+    "deleteConfirm": "Are you sure you want to delete this look?",
+    "deleteError": "Failed to delete the look. Please try again.",
+    "deleteSuccess": "Look deleted."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy"
+  },
+  "usage": {
+    "remaining": "{{remaining}} of {{limit}} left today"
+  },
+  "insights": {
+    "title": "Wardrobe insights",
+    "coverage": "Essentials coverage",
+    "complete": "Your wardrobe covers the essentials. Nice!",
+    "shopTitle": "Complete your wardrobe",
+    "shop": "Search",
+    "shopDisclaimer": "Opens a shopping search in a new tab.",
+    "gapMissing": "Missing {{item}}",
+    "gapThin": "Few {{item}}",
+    "categories": {
+      "tops": "tops",
+      "bottoms": "bottoms",
+      "shoes": "shoes",
+      "outerwear": "outerwear",
+      "accessories": "accessories"
+    },
+    "shopNoun": {
+      "tops": "t-shirt",
+      "bottoms": "pants",
+      "shoes": "shoes",
+      "outerwear": "jacket",
+      "accessories": "accessory"
+    }
+  }
 }

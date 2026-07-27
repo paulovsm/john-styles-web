@@ -2,6 +2,10 @@ import { storageService as localStorageService, STORAGE_KEYS } from './localStor
 import { firestoreService } from './firestoreService';
 import { auth } from '../auth/firebaseConfig';
 
+// Tracks which user the local data belongs to, so we can detect user switches
+// on the same browser and clear stale data. Not an app-data key (not cleared).
+const LAST_UID_KEY = 'john_styles_last_uid';
+
 /**
  * Hybrid Storage Service
  * Combines localStorage (fast, offline) with Firestore (cloud, multi-device)
@@ -18,13 +22,58 @@ class HybridStorageService {
         this.syncDebounceTimers = {};
         this.listeners = new Set();
 
-        // Listen to auth state changes
+        // Listen to auth state changes. Critically, we must clear the previous
+        // user's local data when a DIFFERENT user signs in (or on sign-out),
+        // otherwise their wardrobe/profile/chat leak into the next session on
+        // the same browser (and the sync merge would re-adopt them as "local").
         auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log('User authenticated, syncing from cloud...');
-                this.syncFromCloud();
+            const lastUid = localStorageService.getItem(LAST_UID_KEY, null);
+
+            if (!user) {
+                if (lastUid !== null) {
+                    this.clearLocalData();
+                    localStorageService.removeItem(LAST_UID_KEY);
+                }
+                return;
             }
+
+            if (user.uid !== lastUid) {
+                // New/switched user on this browser — wipe stale local data
+                // before syncing so nothing from the previous user survives.
+                this.clearLocalData();
+                localStorageService.setItem(LAST_UID_KEY, user.uid);
+            }
+
+            this.syncFromCloud();
         });
+    }
+
+    /**
+     * Reset app-owned local data to empty defaults and notify listeners.
+     * NOTE: the user profile is intentionally NOT cleared here — it is owned by
+     * UserProfileContext, which loads/replaces it per user. Clearing it here too
+     * created a race that wiped the freshly-loaded profile (forcing onboarding).
+     */
+    clearLocalData() {
+        const defaults = {
+            [STORAGE_KEYS.WARDROBE]: [],
+            [STORAGE_KEYS.CHAT_HISTORY]: [],
+            [STORAGE_KEYS.VIRTUAL_TRYONS]: [],
+        };
+        for (const [key, def] of Object.entries(defaults)) {
+            localStorageService.setItem(key, def);
+            this.notify(key, def);
+        }
+    }
+
+    /**
+     * Reset the locally-cached profile WITHOUT writing to the cloud. Used by
+     * UserProfileContext to drop a previous user's profile before loading the
+     * new one, so nothing leaks and we never clobber the cloud with defaults.
+     */
+    resetProfileLocal() {
+        localStorageService.setItem(STORAGE_KEYS.USER_PROFILE, {});
+        this.notify(STORAGE_KEYS.USER_PROFILE, {});
     }
 
     /**
@@ -199,21 +248,14 @@ class HybridStorageService {
         console.log('Starting cloud sync...');
 
         try {
-            // Sync user profile
-            const cloudProfile = await firestoreService.getUserProfile();
-            if (cloudProfile !== null) { // Only update if not null (null means error/offline)
-                localStorageService.setItem(STORAGE_KEYS.USER_PROFILE, cloudProfile);
-                this.notify(STORAGE_KEYS.USER_PROFILE, cloudProfile);
-                console.log('Profile synced from cloud');
-            }
+            // NOTE: the user profile is loaded/owned by UserProfileContext (which
+            // also drives the onboarding gate). We intentionally do NOT fetch it
+            // here too, to avoid a double-write race on the same data.
 
             // Sync wardrobe with merge logic
             const cloudWardrobe = await firestoreService.getWardrobe();
             if (cloudWardrobe !== null) {
                 const localWardrobe = localStorageService.getWardrobe();
-
-                // Create a map of cloud items for easy lookup
-                const cloudMap = new Map(cloudWardrobe.map(item => [item.id, item]));
 
                 // Merge strategy:
                 // 1. Start with cloud items

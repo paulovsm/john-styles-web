@@ -20,7 +20,7 @@ export default function MessageList({ messages, isTyping, userAvatar }) {
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.length === 0 && (
                 <div className="flex items-start space-x-3">
-                    <Avatar size="md" src="/JohnStyles.jpg" alt="John Styles" className="bg-fleek-gold text-fleek-navy" />
+                    <Avatar size="md" src="/JohnStyles.jpg" alt="John Styles" className="bg-brand-gold text-brand-navy" />
                     <div className="flex-1 bg-white-off rounded-lg p-4">
                         <p className="text-grey-dark">{t('chat.greeting')}</p>
                     </div>
@@ -33,7 +33,7 @@ export default function MessageList({ messages, isTyping, userAvatar }) {
 
             {isTyping && (
                 <div className="flex items-start space-x-3">
-                    <Avatar size="md" src="/JohnStyles.jpg" alt="John Styles" className="bg-fleek-gold text-fleek-navy" />
+                    <Avatar size="md" src="/JohnStyles.jpg" alt="John Styles" className="bg-brand-gold text-brand-navy" />
                     <div className="flex-1 bg-white-off rounded-lg p-4">
                         <Loading type="spinner" size={20} />
                         <span className="ml-2 text-sm text-grey-medium">{t('chat.typing')}</span>

@@ -1,38 +1,8 @@
 const API_BASE_URL = '/api';
 import { compressImage } from '../../utils/imageUtils';
+import { authFetch } from './authFetch';
 
 export const geminiService = {
-    /**
-     * Sends a message to the Gemini Chat API.
-     * @param {string} message - The user's message.
-     * @param {Array} history - The conversation history.
-     * @returns {Promise<string>} - The AI's response.
-     */
-    async sendMessage(message, history = []) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/gemini-chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    messages: [...history, { role: 'user', content: message }]
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to send message');
-            }
-
-            const data = await response.json();
-            return data.content;
-        } catch (error) {
-            console.error('Error sending message to Gemini:', error);
-            throw error;
-        }
-    },
-
     /**
      * Analyzes an image using the Gemini Vision API.
      * @param {File} imageFile - The image file to analyze.
@@ -52,17 +22,17 @@ export const geminiService = {
                 reader.onerror = error => reject(error);
             });
 
-            const response = await fetch(`${API_BASE_URL}/gemini-image-analyze`, {
+            const response = await authFetch(`${API_BASE_URL}/gemini-image-analyze`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({ image: base64Image, language }),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to analyze image');
+                const enrichedError = new Error(errorData.message || errorData.error || 'Failed to analyze image');
+                enrichedError.code = errorData.error;
+                enrichedError.status = response.status;
+                throw enrichedError;
             }
 
             const data = await response.json();
@@ -74,11 +44,11 @@ export const geminiService = {
     },
 
     /**
-     * Generates an image based on a prompt (Mock/Placeholder for now).
+     * Generates a try-on image from a prompt + the user's photo and item images.
      * @param {string} prompt - The image generation prompt.
      * @param {string} userImage - The user's photo (base64 or URL).
      * @param {Array<string>} itemImages - Array of item images (base64 or URL).
-     * @returns {Promise<string>} - The URL of the generated image.
+     * @returns {Promise<string>} - The generated image as a data URL.
      */
     async generateImage(prompt, userImage = null, itemImages = []) {
         try {
@@ -91,11 +61,8 @@ export const geminiService = {
                 body.itemImages = Array.isArray(itemImages) ? itemImages : [itemImages];
             }
 
-            const response = await fetch(`${API_BASE_URL}/gemini-image-generate`, {
+            const response = await authFetch(`${API_BASE_URL}/gemini-image-generate`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify(body),
             });
 
@@ -127,11 +94,8 @@ export const geminiService = {
      */
     async analyzeProfile(text) {
         try {
-            const response = await fetch(`${API_BASE_URL}/gemini-profile-analyze`, {
+            const response = await authFetch(`${API_BASE_URL}/gemini-profile-analyze`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({ text }),
             });
 

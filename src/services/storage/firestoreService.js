@@ -44,30 +44,17 @@ class FirestoreService {
             const docRef = doc(db, 'users', uid, 'data', 'profile');
             const docSnap = await getDoc(docRef);
 
-            if (docSnap.exists()) {
-                return docSnap.data();
-            }
-            return null;
+            // null = the profile genuinely does not exist yet (new user).
+            return docSnap.exists() ? docSnap.data() : null;
         } catch (error) {
-            // Only treat unavailable as offline, not other errors like permission-denied
-            if (error.code === 'unavailable') {
-                console.log('📡 Firestore unavailable - using local data');
-                return null;
-            }
-
-            if (error.code === 'permission-denied') {
-                console.error('🔒 Firestore Permission Denied. Check Security Rules in Firebase Console!');
-                console.error('User:', this.getCurrentUserId());
-                return null;
-            }
-
-            // Log other errors with details
+            // undefined = we couldn't read it (offline / permission / other).
+            // Callers must NOT overwrite the profile with defaults in this case.
             console.error('Error getting user profile from Firestore:', {
                 code: error.code,
                 message: error.message,
-                userId: this.getCurrentUserId()
+                userId: this.getCurrentUserId(),
             });
-            return null;
+            return undefined;
         }
     }
 
@@ -342,6 +329,27 @@ class FirestoreService {
     }
 
     /**
+     * Upload the user's persistent model photo (reused across try-ons).
+     * @param {Blob|File} imageBlob - Image file
+     * @param {string} userId - User ID
+     * @returns {Promise<string>} Download URL
+     */
+    async uploadModelPhoto(imageBlob, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) throw new Error('Cannot upload model photo: user not authenticated');
+
+            // Cache-bust so a replaced photo isn't served stale from the CDN.
+            const storageRef = ref(storage, `users/${uid}/model/photo_${Date.now()}.jpg`);
+            await uploadBytes(storageRef, imageBlob);
+            return await getDownloadURL(storageRef);
+        } catch (error) {
+            console.error('Error uploading model photo to Storage:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Save a gallery item to Firestore
      * @param {Object} item - Gallery item data
      * @param {string} userId - User ID
@@ -431,6 +439,57 @@ class FirestoreService {
             throw error;
         }
     }
+
+    // ── Outfits (saved reusable combinations of wardrobe items) ──
+
+    /**
+     * Save an outfit (a named combination of item ids).
+     * @param {Object} outfit - { name, itemIds, imageUrl? }
+     * @returns {Promise<string|null>} the new outfit id
+     */
+    async saveOutfit(outfit, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) throw new Error('Cannot save outfit: user not authenticated');
+
+            const collectionRef = collection(db, 'users', uid, 'outfits');
+            const docRef = await addDoc(collectionRef, { ...outfit, createdAt: serverTimestamp() });
+            return docRef.id;
+        } catch (error) {
+            console.error('Error saving outfit to Firestore:', error);
+            throw error;
+        }
+    }
+
+    async getOutfits(userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) return [];
+
+            const collectionRef = collection(db, 'users', uid, 'outfits');
+            const q = query(collectionRef, orderBy('createdAt', 'desc'));
+            const querySnapshot = await getDocs(q);
+            const items = [];
+            querySnapshot.forEach((doc) => items.push({ id: doc.id, ...doc.data() }));
+            return items;
+        } catch (error) {
+            console.error('Error getting outfits from Firestore:', error);
+            return null;
+        }
+    }
+
+    async deleteOutfit(outfitId, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) return false;
+            await deleteDoc(doc(db, 'users', uid, 'outfits', outfitId));
+            return true;
+        } catch (error) {
+            console.error('Error deleting outfit from Firestore:', error);
+            throw error;
+        }
+    }
+
     /**
      * Sync entire wardrobe list (handles additions, updates, and deletions)
      * @param {Array} items - Current local wardrobe items
@@ -470,109 +529,40 @@ class FirestoreService {
         }
     }
     /**
-     * Check if user has reached the daily limit for a specific feature
-     * @param {string} limitType - 'wardrobeAnalysis' or 'lookGeneration'
+     * Read-only view of the current daily usage for display purposes.
+     *
+     * NOTE: enforcement now happens server-side (see api/_usage.js). The
+     * usageLimits doc is written only by the backend (Admin SDK) and is
+     * read-only for the client per Firestore rules. This method never
+     * increments — it just reports what the server has recorded today.
+     *
+     * @param {string} limitType - 'wardrobeAnalysis' | 'lookGeneration' | 'chat'
      * @param {string} userId - User ID
-     * @returns {Promise<{allowed: boolean, remaining: number, error: string}>} Status object
+     * @returns {Promise<{remaining: number, limit: number, used: number} | null>}
      */
-    async checkUsageLimit(limitType, userId = null) {
+    async getUsage(limitType, userId = null) {
         try {
             const uid = userId || this.getCurrentUserId();
-            if (!uid) return { allowed: false, remaining: 0, error: 'User not authenticated' };
+            if (!uid) return null;
 
             const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
             const docRef = doc(db, 'users', uid, 'data', 'usageLimits');
             const docSnap = await getDoc(docRef);
 
-            const limits = {
-                wardrobeAnalysis: 5,
-                lookGeneration: 5
-            };
-
-            const defaultData = {
-                lastReset: today,
-                wardrobeAnalysis: 0,
-                lookGeneration: 0
-            };
-
-            let data = defaultData;
-
-            if (docSnap.exists()) {
-                const currentData = docSnap.data();
-                // Check if we need to reset (if lastReset is not today)
-                if (currentData.lastReset !== today) {
-                    // It's a new day, use default data (0 usage) but keep today as lastReset
-                    data = defaultData;
-                    // We should update the doc to reset it effectively in DB, 
-                    // but we can do it lazily on increment. 
-                    // However, for display purposes, we return the reset state.
-                } else {
-                    data = currentData;
-                }
-            }
-
-            const currentUsage = data[limitType] || 0;
+            const limits = { wardrobeAnalysis: 5, lookGeneration: 5, chat: 100 };
             const limit = limits[limitType] || 5;
-            const remaining = Math.max(0, limit - currentUsage);
 
-            return {
-                allowed: currentUsage < limit,
-                remaining,
-                limit
-            };
-
-        } catch (error) {
-            console.error(`Error checking usage limit for ${limitType}:`, error);
-            // Fail safe: allow if error? Or block? 
-            // Better to block or return error to let UI decide. 
-            // For now, let's return allowed: true to not break app on error, but log it.
-            // actually, let's return false with error message to be safe.
-            return { allowed: false, remaining: 0, error: error.message };
-        }
-    }
-
-    /**
-     * Increment usage count for a specific feature
-     * @param {string} limitType - 'wardrobeAnalysis' or 'lookGeneration'
-     * @param {string} userId - User ID
-     * @returns {Promise<boolean>} Success status
-     */
-    async incrementUsage(limitType, userId = null) {
-        try {
-            const uid = userId || this.getCurrentUserId();
-            if (!uid) return false;
-
-            const today = new Date().toISOString().split('T')[0];
-            const docRef = doc(db, 'users', uid, 'data', 'usageLimits');
-
-            // We use a transaction or just set/update. 
-            // Since we want to handle the "reset if new day" logic atomically during write:
-
-            const docSnap = await getDoc(docRef);
-            let data = {
-                lastReset: today,
-                wardrobeAnalysis: 0,
-                lookGeneration: 0
-            };
-
+            let used = 0;
             if (docSnap.exists()) {
-                const currentData = docSnap.data();
-                if (currentData.lastReset === today) {
-                    data = currentData;
-                }
-                // If date is different, we use the fresh 'data' object with 0 counts
+                const data = docSnap.data();
+                // Counters only count if they belong to today.
+                used = data.lastReset === today ? (data[limitType] || 0) : 0;
             }
 
-            // Increment specific type
-            data[limitType] = (data[limitType] || 0) + 1;
-            data.lastReset = today; // Ensure date is today
-
-            await setDoc(docRef, data, { merge: true });
-            return true;
-
+            return { used, remaining: Math.max(0, limit - used), limit };
         } catch (error) {
-            console.error(`Error incrementing usage for ${limitType}:`, error);
-            return false;
+            console.error(`Error reading usage for ${limitType}:`, error);
+            return null;
         }
     }
 }

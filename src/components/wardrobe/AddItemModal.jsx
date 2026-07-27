@@ -7,6 +7,8 @@ import { geminiService } from '../../services/api/geminiService';
 import { firestoreService } from '../../services/storage/firestoreService';
 import { AutoAwesome, CloudUpload } from '@mui/icons-material';
 import { compressImage } from '../../utils/imageUtils';
+import { mapCategory } from '../../utils/categoryMapper';
+import UsageCounter from '../common/UsageCounter';
 
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +17,9 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState('');
     const [analyzing, setAnalyzing] = useState(false);
+    const [analyzeError, setAnalyzeError] = useState('');
+    const [saving, setSaving] = useState(false);
+    const [saveError, setSaveError] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -79,65 +84,26 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         if (!file) return;
 
         setAnalyzing(true);
+        setAnalyzeError('');
         try {
-            // Check usage limit first
-            const usageStatus = await firestoreService.checkUsageLimit('wardrobeAnalysis');
-            if (!usageStatus.allowed) {
-                // Ideally use a toast or alert. For now, using console and maybe setting an error state if UI supported it.
-                // Since there's no error state for this modal shown in previous code, I'll alert or log.
-                // Actually, I should probably add a small error message in the UI.
-                // Let's use alert for now as a quick feedback, or better, set a local error state if I can find one.
-                // Looking at the file, there is no error state. I will add one or just alert.
-                // Given the instructions "Implement a limitation", blocking is key.
-                alert(t('wardrobe.errors.limitReached'));
-                return;
-            }
-
             const analysis = await geminiService.analyzeImage(file, i18n.language);
-            console.log("Gemini Analysis Result:", analysis);
-
-            // Increment usage on success
-            await firestoreService.incrementUsage('wardrobeAnalysis');
-
-            // Map Gemini response to our internal categories
-            let mappedCategory = 'tops'; // Default
-            if (analysis.category) {
-                const lowerCat = analysis.category.toLowerCase();
-                console.log("Gemini Category Raw:", analysis.category);
-                console.log("Gemini Category Lower:", lowerCat);
-
-                // Priority: Exact matches from the 5 expected categories
-                if (['tops', 'bottoms', 'shoes', 'accessories', 'outerwear'].includes(lowerCat)) {
-                    mappedCategory = lowerCat;
-                } else {
-                    // Fallback heuristic
-                    if (lowerCat.includes('shoe') || lowerCat.includes('sneaker') || lowerCat.includes('boot') || lowerCat.includes('sandal') || lowerCat.includes('heel')) {
-                        mappedCategory = 'shoes';
-                    } else if (lowerCat.includes('pant') || lowerCat.includes('jeans') || lowerCat.includes('short') || lowerCat.includes('trousers') || lowerCat.includes('skirt') || lowerCat.includes('legging')) {
-                        mappedCategory = 'bottoms';
-                    } else if (lowerCat.includes('access') || lowerCat.includes('hat') || lowerCat.includes('cap') || lowerCat.includes('scarf') || lowerCat.includes('belt') || lowerCat.includes('bag') || lowerCat.includes('glasses')) {
-                        mappedCategory = 'accessories';
-                    } else if (lowerCat.includes('outer') || lowerCat.includes('coat') || lowerCat.includes('jacket') || lowerCat.includes('blazer') || lowerCat.includes('cardigan')) {
-                        mappedCategory = 'outerwear';
-                    } else if (lowerCat.includes('top') || lowerCat.includes('shirt') || lowerCat.includes('blouse') || lowerCat.includes('sweater') || lowerCat.includes('hoodie') || lowerCat.includes('vest')) {
-                        mappedCategory = 'tops';
-                    }
-                }
-                console.log("Mapped Category:", mappedCategory);
-            }
 
             setFormData(prev => ({
                 ...prev,
                 name: analysis.name || prev.name,
                 description: analysis.description || prev.description,
-                category: mappedCategory,
+                category: mapCategory(analysis.category),
                 color: analysis.color || prev.color,
                 style: analysis.style || prev.style,
                 brand: analysis.brand || prev.brand
             }));
         } catch (error) {
             console.error("Analysis failed", error);
-            // Ideally show error notification
+            setAnalyzeError(
+                error.code === 'LIMIT_REACHED'
+                    ? t('wardrobe.errors.limitReached')
+                    : t('wardrobe.errors.analysisFailed', 'Falha ao analisar a imagem. Tente novamente.')
+            );
         } finally {
             setAnalyzing(false);
         }
@@ -148,16 +114,36 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSave({
-            ...formData,
-            id: item ? item.id : undefined,
-            image: preview,
-            colors: formData.color ? [formData.color] : [], // Simple array conversion
-            styles: formData.style ? [formData.style] : []
-        });
-        onClose();
+        setSaveError('');
+        setSaving(true);
+
+        try {
+            const id = item?.id || Date.now().toString();
+            let imageUrl = preview;
+
+            // If a new image was selected (we still hold the File), upload it to
+            // Storage and persist only the URL — never the base64 blob, which
+            // would bloat the Firestore doc / localStorage.
+            if (file) {
+                imageUrl = await firestoreService.uploadImage(file, id);
+            }
+
+            onSave({
+                ...formData,
+                id,
+                image: imageUrl,
+                colors: formData.color ? [formData.color] : [],
+                styles: formData.style ? [formData.style] : []
+            });
+            onClose();
+        } catch (error) {
+            console.error('Error saving item:', error);
+            setSaveError(t('wardrobe.errors.saveFailed', 'Falha ao salvar o item. Tente novamente.'));
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -185,7 +171,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                 <div className="space-y-1 text-center">
                                     <CloudUpload className="mx-auto h-12 w-12 text-grey-medium" />
                                     <div className="flex text-sm text-grey-medium justify-center">
-                                        <span className="relative bg-white-pure rounded-md font-medium text-fleek-navy hover:text-fleek-navy focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-fleek-navy">
+                                        <span className="relative bg-white-pure rounded-md font-medium text-brand-navy hover:text-brand-navy focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-navy">
                                             <span>{t('wardrobe.addModal.uploadImage')}</span>
                                             <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/*" onChange={handleFileChange} />
                                         </span>
@@ -213,6 +199,16 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     </div>
                 )}
 
+                {preview && (
+                    <UsageCounter limitType="wardrobeAnalysis" refreshKey={analyzing ? 0 : 1} className="text-right" />
+                )}
+
+                {analyzeError && (
+                    <div role="alert" className="px-3 py-2 rounded-md bg-status-error/10 border border-status-error text-status-error text-sm">
+                        {analyzeError}
+                    </div>
+                )}
+
                 <Input
                     label={t('wardrobe.addModal.name')}
                     name="name"
@@ -229,7 +225,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                         value={formData.description}
                         onChange={handleChange}
                         placeholder={t('wardrobe.addModal.descriptionPlaceholder') || 'Enter a brief description'}
-                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-fleek-navy focus:border-fleek-navy sm:text-sm min-h-[80px]"
+                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm min-h-[80px]"
                     />
                 </div>
 
@@ -239,7 +235,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
-                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-fleek-navy focus:border-fleek-navy sm:text-sm"
+                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
                     >
                         <option value="tops">{t('wardrobe.filters.categories.tops')}</option>
                         <option value="bottoms">{t('wardrobe.filters.categories.bottoms')}</option>
@@ -274,11 +270,18 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     placeholder={t('wardrobe.addModal.brandPlaceholder')}
                 />
 
+                {saveError && (
+                    <div role="alert" className="px-3 py-2 rounded-md bg-status-error/10 border border-status-error text-status-error text-sm">
+                        {saveError}
+                    </div>
+                )}
+
                 <div className="flex justify-end space-x-3 pt-4 border-t border-grey-light">
-                    <Button type="button" variant="text" onClick={onClose}>
+                    <Button type="button" variant="text" onClick={onClose} disabled={saving}>
                         {t('wardrobe.addModal.cancel')}
                     </Button>
-                    <Button type="submit" variant="primary" disabled={!formData.name || !preview}>
+                    <Button type="submit" variant="primary" disabled={!formData.name || !preview || saving}>
+                        {saving ? <Loading type="spinner" size={16} className="mr-2" /> : null}
                         {t('wardrobe.addModal.save')}
                     </Button>
                 </div>

@@ -1,8 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { useChatHistory } from '../hooks/useChatHistory';
 import { n8nService } from '../services/api/n8nService';
-import { storageService } from '../services/storage/hybridStorageService';
-import { useAuth } from './AuthContext';
+import { useUserProfileContext } from './UserProfileContext';
+import { useWardrobeContext } from './WardrobeContext';
+import { parseAgentActions } from '../utils/agentActions';
+import i18n from '../i18n/config';
 
 const ConversationContext = createContext();
 
@@ -12,60 +14,36 @@ export function useConversationContext() {
 
 export function ConversationProvider({ children }) {
     const { history, addMessage, clearHistory } = useChatHistory();
-    const { currentUser } = useAuth();
     const [isTyping, setIsTyping] = useState(false);
-    const [agentState, setAgentState] = useState('idle'); // idle, analyzing, trending, recommending
+    const [agentState, setAgentState] = useState('idle'); // idle | processing
 
-    // Persistent State
-    const [userProfile, setUserProfile] = useState(null);
-    const [wardrobeItems, setWardrobeItems] = useState([]);
-    const [trends, setTrends] = useState([]);
-    const [recommendations, setRecommendations] = useState(null);
-
-    // Load from localStorage on mount
-    useEffect(() => {
-        const storedProfile = storageService.getUserProfile();
-        if (storedProfile && Object.keys(storedProfile).length > 0) setUserProfile(storedProfile);
-
-        const storedWardrobe = storageService.getWardrobe();
-        if (storedWardrobe && storedWardrobe.length > 0) setWardrobeItems(storedWardrobe);
-    }, []);
-
-    // Save to localStorage on change
-    useEffect(() => {
-        if (userProfile) storageService.saveUserProfile(userProfile);
-    }, [userProfile]);
-
-    useEffect(() => {
-        if (wardrobeItems.length > 0) storageService.saveWardrobe(wardrobeItems);
-    }, [wardrobeItems]);
+    // Single source of truth: read profile/wardrobe from their owning contexts
+    // instead of keeping (and re-persisting) duplicate copies here.
+    const { profile } = useUserProfileContext();
+    const { allItems } = useWardrobeContext();
 
     const processMessage = async (text) => {
         setIsTyping(true);
-        setAgentState('processing'); // Generic state as n8n handles the rest
+        setAgentState('processing');
 
         try {
-            // 1. Add user message to history
             addMessage({ role: 'user', content: text });
 
-            // 2. Call n8n Webhook
             const responseText = await n8nService.sendMessage(text, {
-                userId: currentUser?.uid,
-                userProfile,
-                wardrobeItems,
-                chatHistory: history
+                userProfile: profile,
+                wardrobeItems: allItems,
+                chatHistory: history,
             });
 
-            // 3. Add Agent Response
-            addMessage({ role: 'model', content: responseText });
-
-            // Note: In this new architecture, n8n manages the logic.
-            // If n8n returns structured data (e.g. updated profile), we should handle it here.
-            // For now, we assume text response.
-
+            // The agent may append a <actions> block for one-click follow-ups.
+            const { text: content, actions } = parseAgentActions(responseText);
+            addMessage({ role: 'model', content, actions });
         } catch (error) {
-            console.error("Error processing message:", error);
-            addMessage({ role: 'model', content: "Desculpe, estou com dificuldades para conectar ao meu cérebro agora." });
+            console.error('Error processing message:', error);
+            addMessage({
+                role: 'model',
+                content: i18n.t('chat.connectionError', 'Desculpe, estou com dificuldades para conectar agora. Tente novamente.'),
+            });
         } finally {
             setIsTyping(false);
             setAgentState('idle');
@@ -74,15 +52,11 @@ export function ConversationProvider({ children }) {
 
     const value = {
         history,
-        addMessage, // Keep for manual additions if needed
-        processMessage, // New main entry point
+        addMessage,
+        processMessage,
         clearHistory,
         isTyping,
         agentState,
-        userProfile,
-        wardrobeItems,
-        trends,
-        recommendations
     };
 
     return (

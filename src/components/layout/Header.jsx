@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Menu, Close, Logout, Person, Sync } from '@mui/icons-material';
+import { Menu, Close, Logout, Person, Sync, DarkMode, LightMode } from '@mui/icons-material';
 import LanguageSelector from '../common/LanguageSelector';
 import { useSyncStatus } from '../../hooks/useSyncStatus';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function Header() {
     const { currentUser, logout } = useAuth();
@@ -12,6 +13,7 @@ export default function Header() {
     const { t } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { isSyncing, syncNow } = useSyncStatus();
+    const { theme, toggleTheme } = useTheme();
 
     const handleSync = async () => {
         try {
@@ -36,36 +38,45 @@ export default function Header() {
                 <div className="flex justify-between h-16">
                     <div className="flex">
                         <div className="flex-shrink-0 flex items-center">
-                            <Link to={currentUser ? "/dashboard" : "/"} className="flex items-center text-2xl font-serif font-bold text-fleek-navy">
+                            <Link to={currentUser ? "/dashboard" : "/"} className="flex items-center text-2xl font-serif font-bold text-brand-navy">
                                 <img src="/FA_Icon_White.avif" alt="Logo" className="h-8 w-8 mr-2" />
                                 John Styles
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <Link to="/dashboard" className="border-transparent text-grey-medium hover:border-fleek-navy hover:text-fleek-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/dashboard" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 {t('nav.dashboard')}
                             </Link>
-                            <Link to="/chat" className="border-transparent text-grey-medium hover:border-fleek-navy hover:text-fleek-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/chat" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 {t('nav.chat')}
                             </Link>
-                            <Link to="/wardrobe" className="border-transparent text-grey-medium hover:border-fleek-navy hover:text-fleek-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/wardrobe" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 {t('nav.wardrobe')}
                             </Link>
-                            <Link to="/try-on" className="border-transparent text-grey-medium hover:border-fleek-navy hover:text-fleek-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/try-on" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 {t('nav.tryOn')}
                             </Link>
-                            <Link to="/history" className="border-transparent text-grey-medium hover:border-fleek-navy hover:text-fleek-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/history" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 {t('nav.history')}
                             </Link>
-                            <Link to="/gallery" className="border-transparent text-grey-medium hover:border-fleek-navy hover:text-fleek-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/gallery" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 {t('nav.gallery', 'Galeria')}
                             </Link>
                         </div>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-2">
                         <button
+                            onClick={toggleTheme}
+                            className="p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none"
+                            aria-label={t('common.toggleTheme', 'Alternar tema')}
+                            title={t('common.toggleTheme', 'Alternar tema')}
+                        >
+                            {theme === 'dark' ? <LightMode /> : <DarkMode />}
+                        </button>
+                        <button
                             onClick={handleSync}
-                            className={`p-1 rounded-full text-grey-medium hover:text-fleek-navy focus:outline-none ${isSyncing ? 'animate-spin' : ''}`}
+                            className={`p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none ${isSyncing ? 'animate-spin' : ''}`}
+                            aria-label={t('common.sync', 'Sincronizar')}
                             title={t('common.sync', 'Sincronizar')}
                             disabled={isSyncing}
                         >
@@ -77,26 +88,28 @@ export default function Header() {
                                 <span className="text-sm text-grey-dark">{currentUser.displayName || currentUser.email}</span>
                                 <button
                                     onClick={handleLogout}
-                                    className="p-1 rounded-full text-grey-medium hover:text-fleek-navy focus:outline-none"
-                                    title="Logout"
+                                    className="p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none"
+                                    aria-label={t('common.logout', 'Sair')}
+                                    title={t('common.logout', 'Sair')}
                                 >
                                     <Logout />
                                 </button>
                                 {currentUser.photoURL ? (
                                     <img
-                                        className="h-8 w-8 rounded-full"
+                                        className="h-8 w-8 rounded-full object-cover"
                                         src={currentUser.photoURL}
-                                        alt="User avatar"
+                                        alt={t('common.userAvatar', 'Foto do usuário')}
+                                        referrerPolicy="no-referrer"
                                     />
                                 ) : (
-                                    <div className="h-8 w-8 rounded-full bg-fleek-navy flex items-center justify-center text-white-pure">
+                                    <div className="h-8 w-8 rounded-full bg-brand-navy flex items-center justify-center text-white-pure">
                                         <Person />
                                     </div>
                                 )}
                             </div>
                         ) : (
                             <div className="space-x-4">
-                                <Link to="/login" className="text-grey-dark hover:text-fleek-navy font-medium">
+                                <Link to="/login" className="text-grey-dark hover:text-brand-navy font-medium">
                                     {t('auth.login')}
                                 </Link>
                             </div>
@@ -105,7 +118,7 @@ export default function Header() {
                     <div className="-mr-2 flex items-center sm:hidden">
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="inline-flex items-center justify-center p-2 rounded-md text-grey-medium hover:text-fleek-navy hover:bg-grey-light focus:outline-none"
+                            className="inline-flex items-center justify-center p-2 rounded-md text-grey-medium hover:text-brand-navy hover:bg-grey-light focus:outline-none"
                         >
                             <span className="sr-only">Open main menu</span>
                             {isMenuOpen ? <Close /> : <Menu />}
@@ -118,22 +131,22 @@ export default function Header() {
             {isMenuOpen && (
                 <div className="sm:hidden bg-white-pure border-t border-grey-light">
                     <div className="pt-2 pb-3 space-y-1">
-                        <Link to="/dashboard" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-fleek-navy hover:text-fleek-navy">
+                        <Link to="/dashboard" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
                             {t('nav.dashboard')}
                         </Link>
-                        <Link to="/chat" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-fleek-navy hover:text-fleek-navy">
+                        <Link to="/chat" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
                             {t('nav.chat')}
                         </Link>
-                        <Link to="/wardrobe" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-fleek-navy hover:text-fleek-navy">
+                        <Link to="/wardrobe" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
                             {t('nav.wardrobe')}
                         </Link>
-                        <Link to="/try-on" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-fleek-navy hover:text-fleek-navy">
+                        <Link to="/try-on" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
                             {t('nav.tryOn')}
                         </Link>
-                        <Link to="/history" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-fleek-navy hover:text-fleek-navy">
+                        <Link to="/history" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
                             {t('nav.history')}
                         </Link>
-                        <Link to="/gallery" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-fleek-navy hover:text-fleek-navy">
+                        <Link to="/gallery" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
                             {t('nav.gallery', 'Galeria')}
                         </Link>
                     </div>
@@ -142,31 +155,55 @@ export default function Header() {
                             <div className="flex items-center px-4">
                                 <div className="flex-shrink-0">
                                     {currentUser.photoURL ? (
-                                        <img className="h-10 w-10 rounded-full" src={currentUser.photoURL} alt="" />
+                                        <img className="h-10 w-10 rounded-full object-cover" src={currentUser.photoURL} alt={t('common.userAvatar', 'Foto do usuário')} referrerPolicy="no-referrer" />
                                     ) : (
-                                        <div className="h-10 w-10 rounded-full bg-fleek-navy flex items-center justify-center text-white-pure">
+                                        <div className="h-10 w-10 rounded-full bg-brand-navy flex items-center justify-center text-white-pure">
                                             <Person />
                                         </div>
                                     )}
                                 </div>
                                 <div className="ml-3">
-                                    <div className="text-base font-medium text-fleek-navy">{currentUser.displayName || 'User'}</div>
+                                    <div className="text-base font-medium text-brand-navy">{currentUser.displayName || 'User'}</div>
                                     <div className="text-sm font-medium text-grey-medium">{currentUser.email}</div>
                                 </div>
                                 <button
                                     onClick={handleLogout}
-                                    className="ml-auto flex-shrink-0 p-1 rounded-full text-grey-medium hover:text-fleek-navy focus:outline-none"
+                                    className="ml-auto flex-shrink-0 p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none"
+                                    aria-label={t('common.logout', 'Sair')}
                                 >
                                     <Logout />
                                 </button>
                             </div>
                         ) : (
                             <div className="px-4">
-                                <Link to="/login" className="block text-center w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white-pure bg-fleek-navy hover:bg-opacity-90">
+                                <Link to="/login" className="block text-center w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white-pure bg-brand-navy hover:bg-opacity-90">
                                     {t('auth.login')}
                                 </Link>
                             </div>
                         )}
+
+                        {/* Sync + language are desktop-only in the top bar; expose them here too. */}
+                        <div className="mt-3 px-4 flex items-center justify-between">
+                            <button
+                                onClick={handleSync}
+                                disabled={isSyncing}
+                                className="flex items-center gap-2 text-sm text-grey-dark hover:text-brand-navy focus:outline-none"
+                                aria-label={t('common.sync', 'Sincronizar')}
+                            >
+                                <Sync className={isSyncing ? 'animate-spin' : ''} fontSize="small" />
+                                {t('common.sync', 'Sincronizar')}
+                            </button>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={toggleTheme}
+                                    className="flex items-center gap-2 text-sm text-grey-dark hover:text-brand-navy focus:outline-none"
+                                    aria-label={t('common.toggleTheme', 'Alternar tema')}
+                                >
+                                    {theme === 'dark' ? <LightMode fontSize="small" /> : <DarkMode fontSize="small" />}
+                                </button>
+                                <LanguageSelector />
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

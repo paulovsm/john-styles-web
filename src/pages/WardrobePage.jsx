@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 export default function WardrobePage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-    const { addItem, updateItem } = useWardrobeContext();
+    const { addItem, updateItem, hasDemoItems, removeSampleItems } = useWardrobeContext();
     const { t } = useTranslation();
 
     const handleSaveItem = (item) => {
@@ -37,12 +37,21 @@ export default function WardrobePage() {
     return (
         <MainLayout>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-serif font-bold text-fleek-navy">{t('wardrobe.title')}</h1>
+                <h1 className="text-2xl font-serif font-bold text-brand-navy">{t('wardrobe.title')}</h1>
                 <Button onClick={() => { setEditingItem(null); setIsModalOpen(true); }}>
                     <Add className="mr-2 h-5 w-5" />
                     {t('wardrobe.addItem')}
                 </Button>
             </div>
+
+            {hasDemoItems && (
+                <div className="mb-4 flex items-center justify-between gap-3 px-4 py-2 rounded-md bg-brand-gold/10 border border-brand-gold/30 text-sm text-brand-gold-dark">
+                    <span>{t('wardrobe.sampleNotice', 'Seu guarda-roupa inclui peças de exemplo para você testar.')}</span>
+                    <button onClick={removeSampleItems} className="font-medium underline whitespace-nowrap hover:opacity-80">
+                        {t('wardrobe.removeSamples', 'Remover exemplos')}
+                    </button>
+                </div>
+            )}
 
             <WardrobeFilters />
             <WardrobeGrid onAddItem={() => { setEditingItem(null); setIsModalOpen(true); }} onItemClick={handleItemClick} />

@@ -14,7 +14,7 @@ export default function HistoryPage() {
 
     return (
         <MainLayout>
-            <h1 className="text-2xl font-serif font-bold text-fleek-navy mb-6">{t('history.title')}</h1>
+            <h1 className="text-2xl font-serif font-bold text-brand-navy mb-6">{t('history.title')}</h1>
 
             {reversedHistory.length === 0 ? (
                 <div className="text-center py-12 bg-white-pure rounded-lg border border-grey-light">
@@ -26,8 +26,8 @@ export default function HistoryPage() {
                         <Card key={index} className="p-4">
                             <div className="flex justify-between items-start mb-2">
                                 <span className={`text-sm font-medium px-2 py-1 rounded-full ${msg.role === 'user'
-                                        ? 'bg-fleek-navy/10 text-fleek-navy'
-                                        : 'bg-fleek-gold/10 text-fleek-gold-dark'
+                                        ? 'bg-brand-navy/10 text-brand-navy'
+                                        : 'bg-brand-gold/10 text-brand-gold-dark'
                                     }`}>
                                     {msg.role === 'user' ? t('history.you') : t('history.johnStyles')}
                                 </span>
@@ -35,7 +35,7 @@ export default function HistoryPage() {
                                     {new Date(msg.timestamp).toLocaleString()}
                                 </span>
                             </div>
-                            <div className="prose prose-sm max-w-none text-grey-dark">
+                            <div className="prose prose-sm dark:prose-invert max-w-none text-grey-dark">
                                 <ReactMarkdown>{msg.content}</ReactMarkdown>
                             </div>
                         </Card>

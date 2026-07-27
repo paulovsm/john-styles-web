@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import { useWardrobeItems } from '../hooks/useWardrobeItems';
 import { useTranslation } from 'react-i18next';
+import { useUserProfileContext } from './UserProfileContext';
+import { pickSampleItems } from '../data/demoWardrobe';
 
 const WardrobeContext = createContext();
 
@@ -9,8 +11,34 @@ export function useWardrobeContext() {
 }
 
 export function WardrobeProvider({ children }) {
-    const { items, addItem, removeItem, updateItem } = useWardrobeItems();
+    const { items: rawItems, setItems, addItem, removeItem, updateItem } = useWardrobeItems();
     const { t } = useTranslation();
+    const { profile } = useUserProfileContext();
+
+    // Opt-in sample closet: the user explicitly chooses to explore with sample
+    // pieces (from the empty state). We do NOT auto-inject data — the wardrobe
+    // belongs to the user. Samples are tailored to their onboarding profile and
+    // flagged demo:true so they can be badged and removed.
+    const addSampleItems = useCallback(() => {
+        const samples = pickSampleItems(profile);
+        setItems((prev) => {
+            const existing = new Set(prev.map((i) => i.id));
+            return [...prev, ...samples.filter((s) => !existing.has(s.id))];
+        });
+    }, [profile, setItems]);
+
+    const removeSampleItems = useCallback(() => {
+        setItems((prev) => prev.filter((i) => !i.demo));
+    }, [setItems]);
+
+    // Safety net: never render the same item id twice (guards against any
+    // sync race / legacy duplicate leaking into the list). Keeps the last
+    // occurrence so freshly-updated data wins.
+    const items = useMemo(() => {
+        const byId = new Map();
+        for (const item of rawItems) byId.set(item.id, item);
+        return Array.from(byId.values());
+    }, [rawItems]);
     const [filters, setFilters] = useState({
         category: 'all',
         color: 'all',
@@ -44,6 +72,8 @@ export function WardrobeProvider({ children }) {
         });
     }, [items, filters, t]);
 
+    const hasDemoItems = useMemo(() => items.some((i) => i.demo), [items]);
+
     const value = {
         items: filteredItems,
         allItems: items,
@@ -51,7 +81,10 @@ export function WardrobeProvider({ children }) {
         removeItem,
         updateItem,
         filters,
-        setFilters
+        setFilters,
+        addSampleItems,
+        removeSampleItems,
+        hasDemoItems,
     };
 
     return (

@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import Loading from '../components/common/Loading';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { Collections, CalendarToday, Style, Delete } from '@mui/icons-material';
 
 export default function GalleryPage() {
     const { currentUser } = useAuth();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const toast = useToast();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [pendingDelete, setPendingDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         async function loadGallery() {
@@ -29,10 +34,11 @@ export default function GalleryPage() {
         loadGallery();
     }, [currentUser]);
 
+    const LOCALES = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' };
     const formatDate = (timestamp) => {
         if (!timestamp) return '';
         const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-        return new Intl.DateTimeFormat('pt-BR', {
+        return new Intl.DateTimeFormat(LOCALES[i18n.language] || 'pt-BR', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -41,22 +47,26 @@ export default function GalleryPage() {
         }).format(date);
     };
 
-    const handleDelete = async (item) => {
-        if (window.confirm(t('gallery.deleteConfirm', 'Tem certeza que deseja excluir este look?'))) {
-            try {
-                await firestoreService.deleteGalleryItem(item, currentUser.uid);
-                setItems(items.filter(i => i.id !== item.id));
-            } catch (error) {
-                console.error('Error deleting item:', error);
-                alert(t('gallery.deleteError', 'Erro ao excluir o look. Tente novamente.'));
-            }
+    const confirmDelete = async () => {
+        if (!pendingDelete) return;
+        setDeleting(true);
+        try {
+            await firestoreService.deleteGalleryItem(pendingDelete, currentUser.uid);
+            setItems(items.filter(i => i.id !== pendingDelete.id));
+            toast.success(t('gallery.deleteSuccess', 'Look excluído.'));
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            toast.error(t('gallery.deleteError', 'Erro ao excluir o look. Tente novamente.'));
+        } finally {
+            setDeleting(false);
+            setPendingDelete(null);
         }
     };
 
     return (
         <MainLayout>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-serif font-bold text-fleek-navy">{t('gallery.title', 'Galeria de Looks')}</h1>
+                <h1 className="text-2xl font-serif font-bold text-brand-navy">{t('gallery.title', 'Galeria de Looks')}</h1>
             </div>
 
             {loading ? (
@@ -66,7 +76,7 @@ export default function GalleryPage() {
             ) : items.length === 0 ? (
                 <div className="text-center py-12 bg-white-pure rounded-lg border border-grey-light">
                     <Collections className="h-16 w-16 mx-auto mb-4 text-grey-light" />
-                    <h3 className="text-lg font-medium text-fleek-navy mb-2">{t('gallery.emptyTitle', 'Sua galeria está vazia')}</h3>
+                    <h3 className="text-lg font-medium text-brand-navy mb-2">{t('gallery.emptyTitle', 'Sua galeria está vazia')}</h3>
                     <p className="text-grey-medium">{t('gallery.emptyDescription', 'Gere looks no Provador Virtual e salve-os aqui.')}</p>
                 </div>
             ) : (
@@ -81,8 +91,9 @@ export default function GalleryPage() {
                                     loading="lazy"
                                 />
                                 <button
-                                    onClick={() => handleDelete(item)}
+                                    onClick={() => setPendingDelete(item)}
                                     className="absolute top-2 right-2 p-2 bg-white-pure/80 rounded-full text-grey-dark hover:text-status-error hover:bg-white-pure transition-colors shadow-sm"
+                                    aria-label={t('common.delete', 'Excluir')}
                                     title={t('common.delete', 'Excluir')}
                                 >
                                     <Delete className="h-5 w-5" />
@@ -95,7 +106,7 @@ export default function GalleryPage() {
                                 </div>
                                 {item.prompt && (
                                     <div className="mt-2 text-sm text-grey-dark line-clamp-2" title={item.prompt}>
-                                        <span className="font-medium text-fleek-navy mr-1"><Style className="h-3 w-3 inline mr-1" />Prompt:</span>
+                                        <span className="font-medium text-brand-navy mr-1"><Style className="h-3 w-3 inline mr-1" />Prompt:</span>
                                         {item.prompt}
                                     </div>
                                 )}
@@ -104,6 +115,17 @@ export default function GalleryPage() {
                     ))}
                 </div>
             )}
+
+            <ConfirmDialog
+                isOpen={!!pendingDelete}
+                onCancel={() => setPendingDelete(null)}
+                onConfirm={confirmDelete}
+                title={t('gallery.deleteTitle', 'Excluir look')}
+                message={t('gallery.deleteConfirm', 'Tem certeza que deseja excluir este look?')}
+                confirmLabel={t('common.delete', 'Excluir')}
+                danger
+                loading={deleting}
+            />
         </MainLayout>
     );
 }

@@ -1,46 +1,50 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { storageService } from '../services/storage/hybridStorageService';
 
 export function useLocalStorage(key, initialValue) {
     // Get from local storage then parse stored json or return initialValue
     const [storedValue, setStoredValue] = useState(() => {
         try {
-            const item = storageService.getItem(key, initialValue);
-            return item;
+            return storageService.getItem(key, initialValue);
         } catch (error) {
             console.error(error);
             return initialValue;
         }
     });
 
+    // Keep a ref in sync so setValue can compute functional updates without
+    // running side effects (persist/notify) inside the state updater — doing
+    // that is impure and, under React StrictMode's double-invocation, caused
+    // duplicated writes/notifications.
+    const valueRef = useRef(storedValue);
+    useEffect(() => {
+        valueRef.current = storedValue;
+    }, [storedValue]);
+
     // Subscribe to external changes (e.g. from cloud sync)
     useEffect(() => {
         const unsubscribe = storageService.subscribe((changedKey, newValue) => {
             if (changedKey === key) {
+                valueRef.current = newValue;
                 setStoredValue(newValue);
             }
         });
         return unsubscribe;
     }, [key]);
 
-    // Return a wrapped version of useState's setter function that ...
-    // ... persists the new value to localStorage.
-    const setValue = (value) => {
+    // Wrapped setter: compute the next value, then persist exactly once as a
+    // side effect (outside the updater). storageService.setItem notifies
+    // subscribers, which updates our state too.
+    const setValue = useCallback((value) => {
         try {
-            // Allow value to be a function so we have same API as useState
-            setStoredValue((currentValue) => {
-                const valueToStore =
-                    value instanceof Function ? value(currentValue) : value;
-
-                // Save to local storage (and cloud via hybridStorageService)
-                storageService.setItem(key, valueToStore);
-
-                return valueToStore;
-            });
+            const valueToStore = value instanceof Function ? value(valueRef.current) : value;
+            valueRef.current = valueToStore;
+            setStoredValue(valueToStore);
+            storageService.setItem(key, valueToStore);
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [key]);
 
     return [storedValue, setValue];
 }

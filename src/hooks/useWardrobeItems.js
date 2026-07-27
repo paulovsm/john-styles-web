@@ -6,7 +6,7 @@ export function useWardrobeItems() {
     const [items, setItems] = useLocalStorage(STORAGE_KEYS.WARDROBE, []);
 
     const addItem = (item) => {
-        setItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
+        setItems(prev => [...prev, { ...item, id: item.id || Date.now().toString() }]);
     };
 
     const removeItem = async (id) => {
