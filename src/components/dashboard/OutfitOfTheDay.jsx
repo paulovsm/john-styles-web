@@ -62,7 +62,7 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                         <span>{dailyContext.headline}</span>
                     </div>
                 )}
-                {dailyContext?.status === 'ready' && !dailyContext.connected && (
+                {dailyContext?.status === 'ready' && !dailyContext.connected && dailyContext.reason !== 'not_configured' && (
                     <button
                         type="button"
                         onClick={connectCalendar}
