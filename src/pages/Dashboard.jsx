@@ -5,6 +5,7 @@ import WardrobeSummary from '../components/dashboard/WardrobeSummary';
 import QuickActions from '../components/dashboard/QuickActions';
 import OutfitOfTheDay from '../components/dashboard/OutfitOfTheDay';
 import RecentLooks from '../components/dashboard/RecentLooks';
+import InsightsCard from '../components/dashboard/InsightsCard';
 import { useAuth } from '../contexts/AuthContext';
 import { useWeather } from '../hooks/useWeather';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +49,11 @@ export default function Dashboard() {
                 <div className="lg:col-span-2">
                     <RecentLooks />
                 </div>
+            </div>
+
+            {/* Wardrobe insights + shopping suggestions */}
+            <div className="mt-6">
+                <InsightsCard />
             </div>
         </MainLayout>
     );

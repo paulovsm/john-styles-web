@@ -360,5 +360,29 @@
   },
   "usage": {
     "remaining": "{{remaining}} of {{limit}} left today"
+  },
+  "insights": {
+    "title": "Wardrobe insights",
+    "coverage": "Essentials coverage",
+    "complete": "Your wardrobe covers the essentials. Nice!",
+    "shopTitle": "Complete your wardrobe",
+    "shop": "Search",
+    "shopDisclaimer": "Opens a shopping search in a new tab.",
+    "gapMissing": "Missing {{item}}",
+    "gapThin": "Few {{item}}",
+    "categories": {
+      "tops": "tops",
+      "bottoms": "bottoms",
+      "shoes": "shoes",
+      "outerwear": "outerwear",
+      "accessories": "accessories"
+    },
+    "shopNoun": {
+      "tops": "t-shirt",
+      "bottoms": "pants",
+      "shoes": "shoes",
+      "outerwear": "jacket",
+      "accessories": "accessory"
+    }
   }
 }

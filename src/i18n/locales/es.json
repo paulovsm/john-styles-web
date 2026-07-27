@@ -360,5 +360,29 @@
   },
   "usage": {
     "remaining": "{{remaining}} de {{limit}} restantes hoy"
+  },
+  "insights": {
+    "title": "Insights del guardarropa",
+    "coverage": "Cobertura de lo esencial",
+    "complete": "Tu guardarropa cubre lo esencial. ¡Bien!",
+    "shopTitle": "Completa tu guardarropa",
+    "shop": "Buscar",
+    "shopDisclaimer": "Abre una búsqueda de compras en una nueva pestaña.",
+    "gapMissing": "Faltan {{item}}",
+    "gapThin": "Pocas opciones de {{item}}",
+    "categories": {
+      "tops": "prendas superiores",
+      "bottoms": "pantalones",
+      "shoes": "calzado",
+      "outerwear": "abrigos",
+      "accessories": "accesorios"
+    },
+    "shopNoun": {
+      "tops": "camiseta",
+      "bottoms": "pantalón",
+      "shoes": "zapato",
+      "outerwear": "chaqueta",
+      "accessories": "accesorio"
+    }
   }
 }

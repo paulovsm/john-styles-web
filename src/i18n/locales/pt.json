@@ -360,5 +360,29 @@
   },
   "usage": {
     "remaining": "{{remaining}} de {{limit}} restantes hoje"
+  },
+  "insights": {
+    "title": "Insights do guarda-roupa",
+    "coverage": "Cobertura do essencial",
+    "complete": "Seu guarda-roupa cobre o essencial. Boa!",
+    "shopTitle": "Complete seu guarda-roupa",
+    "shop": "Buscar",
+    "shopDisclaimer": "Abre uma busca de compras em nova aba.",
+    "gapMissing": "Faltam {{item}}",
+    "gapThin": "Poucas opções de {{item}}",
+    "categories": {
+      "tops": "blusas/camisetas",
+      "bottoms": "calças",
+      "shoes": "calçados",
+      "outerwear": "agasalhos",
+      "accessories": "acessórios"
+    },
+    "shopNoun": {
+      "tops": "camiseta",
+      "bottoms": "calça",
+      "shoes": "sapato",
+      "outerwear": "jaqueta",
+      "accessories": "acessório"
+    }
   }
 }
