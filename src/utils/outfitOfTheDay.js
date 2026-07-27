@@ -20,19 +20,31 @@ export function todayKey(date = new Date()) {
 /**
  * @param {Array} items - wardrobe items
  * @param {string} seed - a per-day seed (default: today)
- * @param {{cold?: boolean}} [opts] - when cold, include an outerwear piece if available
+ * @param {{cold?: boolean, preferStyles?: string[]}} [opts]
+ *   - cold: include an outerwear piece if available
+ *   - preferStyles: bias each category toward items whose styles match (e.g. a
+ *     formal day prefers "Formal"/"Smart casual"); falls back to all when none match
  * @returns {Array} one item per available core category (+ outerwear when cold)
  */
 export function pickOutfitOfTheDay(items = [], seed = todayKey(), opts = {}) {
     const categories = ['tops', 'bottoms', 'shoes'];
     if (opts.cold) categories.push('outerwear');
 
+    const prefer = (opts.preferStyles || []).map((s) => s.toLowerCase());
+    const matchesPreferred = (item) => {
+        if (prefer.length === 0) return false;
+        const styles = (item.styles || []).map((s) => String(s).toLowerCase());
+        return styles.some((s) => prefer.some((p) => s.includes(p) || p.includes(s)));
+    };
+
     const outfit = [];
     for (const category of categories) {
         const inCat = items.filter((i) => i.category === category);
         if (inCat.length === 0) continue;
-        const idx = hashString(`${seed}:${category}`) % inCat.length;
-        outfit.push(inCat[idx]);
+        const preferred = inCat.filter(matchesPreferred);
+        const pool = preferred.length > 0 ? preferred : inCat;
+        const idx = hashString(`${seed}:${category}`) % pool.length;
+        outfit.push(pool[idx]);
     }
     return outfit;
 }

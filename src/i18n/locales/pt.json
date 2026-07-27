@@ -70,7 +70,11 @@
       "rain": "Chuva",
       "snow": "Neve",
       "storm": "Tempestade"
-    }
+    },
+    "connectCalendar": "Conectar Google Agenda para sugestões pelo seu dia",
+    "calendarConnected": "Google Agenda conectada!",
+    "calendarDenied": "Conexão da agenda cancelada.",
+    "calendarError": "Não foi possível conectar a agenda."
   },
   "chat": {
     "title": "Chat com John Styles",

@@ -70,7 +70,11 @@
       "rain": "Rain",
       "snow": "Snow",
       "storm": "Storm"
-    }
+    },
+    "connectCalendar": "Connect Google Calendar for day-aware suggestions",
+    "calendarConnected": "Google Calendar connected!",
+    "calendarDenied": "Calendar connection cancelled.",
+    "calendarError": "Could not connect the calendar."
   },
   "chat": {
     "title": "Chat with John Styles",

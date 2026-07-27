@@ -21,6 +21,10 @@ service cloud.firestore {
       match /wardrobe/{docId} { allow read, write: if isOwner(userId); }
       match /gallery/{docId}  { allow read, write: if isOwner(userId); }
       match /outfits/{docId}  { allow read, write: if isOwner(userId); }
+
+      // Server-only secrets (e.g. Google Calendar refresh token). Never exposed
+      // to the client — read/written solely via the Admin SDK.
+      match /private/{docId} { allow read, write: if false; }
     }
 
     // Deny everything else by default.

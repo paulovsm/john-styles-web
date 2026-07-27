@@ -2,30 +2,37 @@ import React, { useMemo } from 'react';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import { useNavigate } from 'react-router-dom';
-import { AutoAwesome, Checkroom, Thermostat } from '@mui/icons-material';
+import { AutoAwesome, Checkroom, Thermostat, CalendarMonth, Event } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { pickOutfitOfTheDay } from '../../utils/outfitOfTheDay';
+import { preferStylesForFormality } from '../../hooks/useDailyContext';
+import { calendarService } from '../../services/api/calendarService';
 
-export default function OutfitOfTheDay({ weather }) {
+export default function OutfitOfTheDay({ weather, dailyContext }) {
     const { allItems } = useWardrobeContext();
     const { t } = useTranslation();
     const navigate = useNavigate();
 
     const cold = weather?.status === 'ready' && weather.cold;
-    const outfit = useMemo(
-        () => pickOutfitOfTheDay(allItems, undefined, { cold }),
-        [allItems, cold]
-    );
+    const calendarConnected = dailyContext?.connected;
+    const formality = dailyContext?.formality;
 
-    const tryOn = () => {
-        navigate('/try-on', { state: { preselect: outfit.map((i) => i.id) } });
+    const outfit = useMemo(() => {
+        const preferStyles = calendarConnected ? preferStylesForFormality(formality) : [];
+        return pickOutfitOfTheDay(allItems, undefined, { cold, preferStyles });
+    }, [allItems, cold, calendarConnected, formality]);
+
+    const tryOn = () => navigate('/try-on', { state: { preselect: outfit.map((i) => i.id) } });
+
+    const connectCalendar = async () => {
+        try { await calendarService.connect(); } catch { /* surfaced by redirect */ }
     };
 
     return (
         <Card className="h-full">
             <Card.Body>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center">
                         <div className="bg-brand-gold/15 p-2 rounded-full mr-3">
                             <AutoAwesome className="text-brand-gold-dark" />
@@ -34,7 +41,7 @@ export default function OutfitOfTheDay({ weather }) {
                     </div>
                     <div className="flex items-center gap-3">
                         {weather?.status === 'ready' && (
-                            <span className="inline-flex items-center gap-1 text-sm text-grey-medium" title={t(`dashboard.weather.${weather.condition}`, '')}>
+                            <span className="inline-flex items-center gap-1 text-sm text-grey-medium">
                                 <Thermostat fontSize="small" />
                                 {weather.tempC}°C
                             </span>
@@ -47,6 +54,24 @@ export default function OutfitOfTheDay({ weather }) {
                         )}
                     </div>
                 </div>
+
+                {/* Calendar-derived context: headline, or a connect CTA */}
+                {dailyContext?.connected && dailyContext.headline && (
+                    <div className="mb-3 flex items-start gap-2 text-sm text-brand-navy bg-brand-navy/5 rounded-lg px-3 py-2">
+                        <Event style={{ fontSize: 18 }} className="mt-0.5 shrink-0 text-brand-gold-dark" />
+                        <span>{dailyContext.headline}</span>
+                    </div>
+                )}
+                {dailyContext?.status === 'ready' && !dailyContext.connected && (
+                    <button
+                        type="button"
+                        onClick={connectCalendar}
+                        className="mb-3 inline-flex items-center gap-1.5 text-xs text-brand-gold-dark hover:underline"
+                    >
+                        <CalendarMonth style={{ fontSize: 16 }} />
+                        {t('dashboard.connectCalendar', 'Conectar Google Agenda para sugestões pelo seu dia')}
+                    </button>
+                )}
 
                 {outfit.length === 0 ? (
                     <div className="text-center py-8">
