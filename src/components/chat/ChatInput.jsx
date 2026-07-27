@@ -23,7 +23,7 @@ export default function ChatInput({ onSend, disabled }) {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder={t('chat.placeholder')}
                     disabled={disabled}
-                    className="flex-1 px-4 py-2 border border-grey-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent disabled:bg-grey-light disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2 border border-grey-light rounded-lg bg-white-pure text-grey-dark placeholder:text-grey-medium focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent disabled:bg-grey-light disabled:cursor-not-allowed"
                 />
                 <button
                     type="submit"

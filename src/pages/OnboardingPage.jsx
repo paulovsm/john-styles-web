@@ -40,13 +40,25 @@ const DISLIKES = [
 
 const STEPS = ['archetypes', 'colors', 'occasions', 'body', 'dislikes', 'review'];
 
+// Normalize values (possibly from the AI in a different case, e.g. "azul") to
+// the wizard's canonical option values so chips highlight/match correctly.
+const canon = (values, options) =>
+    (values || []).map((v) => {
+        const match = options.find((o) => o.value.toLowerCase() === String(v).toLowerCase());
+        return match ? match.value : v;
+    });
+const canonOne = (value, options) => {
+    const match = options.find((o) => o.value && o.value.toLowerCase() === String(value || '').toLowerCase());
+    return match ? match.value : (value || '');
+};
+
 function initSelection(profile) {
     return {
         archetypes: profile.styleArchetypes || [],
-        favoriteColors: profile.favoriteColors || [],
-        occasions: profile.occasions || [],
-        bodyType: profile.bodyType || '',
-        dislikes: profile.dislikes || [],
+        favoriteColors: canon(profile.favoriteColors, COLORS),
+        occasions: canon(profile.occasions, OCCASIONS),
+        bodyType: canonOne(profile.bodyType, BODY_TYPES),
+        dislikes: canon(profile.dislikes, DISLIKES),
         preferredItems: profile.preferredItems || [],
         favoriteBrands: profile.favoriteBrands || [],
         styleGoals: profile.styleGoals || '',
@@ -106,11 +118,11 @@ export default function OnboardingPage() {
             const data = await geminiService.analyzeProfile(aiText);
             setSel((s) => ({
                 ...s,
-                favoriteColors: data.favoriteColors || s.favoriteColors,
+                favoriteColors: data.favoriteColors ? canon(data.favoriteColors, COLORS) : s.favoriteColors,
                 preferredItems: data.preferredItems || s.preferredItems,
-                occasions: data.occasions || s.occasions,
-                dislikes: data.dislikes || s.dislikes,
-                bodyType: data.bodyType || s.bodyType,
+                occasions: data.occasions ? canon(data.occasions, OCCASIONS) : s.occasions,
+                dislikes: data.dislikes ? canon(data.dislikes, DISLIKES) : s.dislikes,
+                bodyType: data.bodyType ? canonOne(data.bodyType, BODY_TYPES) : s.bodyType,
                 favoriteBrands: data.favoriteBrands || s.favoriteBrands,
                 styleGoals: data.styleGoals || s.styleGoals,
             }));

@@ -34,7 +34,7 @@ export default function MessageItem({ message, userAvatar }) {
             )}
             <div
                 className={`max-w-[75%] rounded-lg px-4 py-3 shadow-sm ${isUser
-                    ? 'bg-brand-navy text-white-pure rounded-br-none'
+                    ? 'bg-brand-gold text-[#1b1a1d] rounded-br-none'
                     : 'bg-white-pure border border-grey-light text-grey-dark rounded-bl-none'
                     }`}
             >
@@ -55,7 +55,7 @@ export default function MessageItem({ message, userAvatar }) {
                         ))}
                     </div>
                 )}
-                <div className={`text-xs mt-1 ${isUser ? 'text-grey-light' : 'text-grey-medium'}`}>
+                <div className={`text-xs mt-1 ${isUser ? 'text-[#1b1a1d]/60' : 'text-grey-medium'}`}>
                     {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
             </div>
