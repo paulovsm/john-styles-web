@@ -56,50 +56,64 @@ export const toCompressedDataUrl = async (src, maxDimension = 1024, quality = 0.
  * @param {number} quality - The JPEG quality (0 to 1).
  * @returns {Promise<File>} - A promise that resolves to the compressed File object.
  */
-export const compressImage = (file, maxDimension = 1500, quality = 0.7) => {
+// Scales (w,h) down so the largest side fits maxDimension, preserving ratio.
+const fitDimensions = (width, height, maxDimension) => {
+    if (width <= maxDimension && height <= maxDimension) return { width, height };
+    return width > height
+        ? { width: maxDimension, height: Math.round((height * maxDimension) / width) }
+        : { width: Math.round((width * maxDimension) / height), height: maxDimension };
+};
+
+const canvasToJpegFile = (canvas, name, quality) =>
+    new Promise((resolve, reject) => {
+        canvas.toBlob(
+            (blob) => {
+                if (!blob) { reject(new Error('Canvas is empty')); return; }
+                resolve(new File([blob], name, { type: 'image/jpeg', lastModified: Date.now() }));
+            },
+            'image/jpeg',
+            quality
+        );
+    });
+
+export const compressImage = async (file, maxDimension = 1500, quality = 0.7) => {
+    // Decode with EXIF orientation applied. Phone photos carry an orientation
+    // flag in EXIF; the canvas re-encode below strips that metadata, so unless
+    // we bake the rotation into the pixels here the image ends up sideways
+    // (classic "photo tombada" bug). createImageBitmap({imageOrientation}) does
+    // exactly that. Falls back to the legacy <img> path on older browsers.
+    if (typeof createImageBitmap === 'function') {
+        try {
+            const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+            const { width, height } = fitDimensions(bitmap.width, bitmap.height, maxDimension);
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
+            bitmap.close?.();
+            return await canvasToJpegFile(canvas, file.name, quality);
+        } catch {
+            // fall through to the legacy path
+        }
+    }
+
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = (event) => {
             const img = new Image();
             img.src = event.target.result;
-            img.onload = () => {
-                let width = img.width;
-                let height = img.height;
-
-                // Calculate new dimensions while maintaining aspect ratio
-                if (width > maxDimension || height > maxDimension) {
-                    if (width > height) {
-                        height = Math.round((height * maxDimension) / width);
-                        width = maxDimension;
-                    } else {
-                        width = Math.round((width * maxDimension) / height);
-                        height = maxDimension;
-                    }
-                }
-
+            img.onload = async () => {
+                const { width, height } = fitDimensions(img.width, img.height, maxDimension);
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                canvas.toBlob(
-                    (blob) => {
-                        if (!blob) {
-                            reject(new Error('Canvas is empty'));
-                            return;
-                        }
-                        // Create a new File object with the same name and lastModified date
-                        const compressedFile = new File([blob], file.name, {
-                            type: 'image/jpeg',
-                            lastModified: Date.now(),
-                        });
-                        resolve(compressedFile);
-                    },
-                    'image/jpeg',
-                    quality
-                );
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                try {
+                    resolve(await canvasToJpegFile(canvas, file.name, quality));
+                } catch (err) {
+                    reject(err);
+                }
             };
             img.onerror = (error) => reject(error);
         };

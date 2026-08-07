@@ -51,7 +51,7 @@ export default function RecentLooks() {
                     <div className="grid grid-cols-4 gap-3">
                         {looks.map((look) => (
                             <Link key={look.id} to="/gallery" className="block aspect-[3/4] rounded-md overflow-hidden bg-grey-light">
-                                <img src={look.imageUrl} alt={t('dashboard.recentLooks', 'Looks recentes')} className="w-full h-full object-cover hover:opacity-90" loading="lazy" />
+                                <img src={look.imageUrl} alt={t('dashboard.recentLooks', 'Looks recentes')} className="w-full h-full object-cover hover:opacity-90" loading="lazy" style={{ imageOrientation: 'from-image' }} />
                             </Link>
                         ))}
                     </div>

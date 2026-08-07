@@ -85,8 +85,8 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                         <div className={`grid gap-3 ${outfit.length === 4 ? 'grid-cols-4' : 'grid-cols-3'}`}>
                             {outfit.map((item) => (
                                 <div key={item.id} className="text-center">
-                                    <div className="aspect-square rounded-md overflow-hidden bg-grey-light">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                    <div className="aspect-[3/4] rounded-md overflow-hidden bg-grey-light">
+                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" style={{ imageOrientation: 'from-image' }} />
                                     </div>
                                     <p className="mt-1 text-xs text-grey-dark truncate" title={item.name}>{item.name}</p>
                                 </div>

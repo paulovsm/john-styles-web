@@ -31,6 +31,7 @@ export default async function handler(req, res) {
         const analysisPrompt = `Analyze this image of a clothing item. Return ONLY a valid JSON object (no markdown formatting, no backticks) with the following fields:
         - name: A short, descriptive name for the item in ${language} (e.g., "Blue Denim Jacket" or "Jaqueta Jeans Azul").
         - category: One of "tops", "bottoms", "shoes", "accessories", "outerwear" (ALWAYS in English, do not translate this value).
+        - subcategory: ONLY when category is "tops", classify the top as one of "shirt" (a collared button-up / dress shirt / camisa), "polo" (polo shirt), or "tshirt" (t-shirt / casual top / blusa). For any other category, use null. (ALWAYS in English, do not translate this value).
         - color: The primary color of the item in ${language}.
         - style: The style of the item in ${language} (e.g., "Casual", "Formal", "Sporty").
         - brand: The brand name if visible, otherwise null.
