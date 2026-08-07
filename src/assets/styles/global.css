@@ -44,4 +44,13 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
+
+  /* Native option menus otherwise inherit the dark-theme text color while
+     Windows renders their background in white, making the labels unreadable. */
+  .wardrobe-filter-select,
+  .wardrobe-filter-select option {
+    background-color: #ffffff;
+    color: #1b1a1d;
+    color-scheme: light;
+  }
 }
