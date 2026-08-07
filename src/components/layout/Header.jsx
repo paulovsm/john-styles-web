@@ -38,7 +38,7 @@ export default function Header() {
                 <div className="flex justify-between h-16">
                     <div className="flex">
                         <div className="flex-shrink-0 flex items-center">
-                            <Link to={currentUser ? "/dashboard" : "/"} className="flex items-center text-2xl font-serif font-bold text-brand-navy">
+                            <Link to="/" className="flex items-center text-2xl font-serif font-bold text-brand-navy">
                                 <img src="/FA_Icon_White.avif" alt="Logo" className="h-8 w-8 mr-2" />
                                 John Styles
                             </Link>
