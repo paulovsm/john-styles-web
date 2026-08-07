@@ -13,12 +13,12 @@ const img = (id) => `https://images.unsplash.com/${id}?w=600&q=70&auto=format&fi
 
 export const SAMPLE_CATALOG = [
     // Tops
-    { id: 'sample-white-tee', name: 'Camiseta Branca', category: 'tops', colors: ['Branco'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1521572163474-6864f9cf17ab') },
-    { id: 'sample-black-tee', name: 'Camiseta Preta', category: 'tops', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1618354691373-d851c5c3a990') },
-    { id: 'sample-black-tee-print', name: 'Camiseta Preta Estampada', category: 'tops', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1583743814966-8936f5b7be1a') },
-    { id: 'sample-chambray-shirt', name: 'Camisa Chambray Azul', category: 'tops', colors: ['Azul'], styles: ['Smart casual'], occasions: ['casual', 'casual executivo'], image: img('photo-1596755094514-f87e34085b2c') },
-    { id: 'sample-blue-dress-shirt', name: 'Camisa Social Azul Claro', category: 'tops', colors: ['Azul'], styles: ['Formal'], occasions: ['trabalho', 'casual executivo'], image: img('photo-1620012253295-c15cc3e65df4') },
-    { id: 'sample-white-sweatshirt', name: 'Moletom Branco', category: 'tops', colors: ['Branco'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1620799140408-edc6dcb6d633') },
+    { id: 'sample-white-tee', name: 'Camiseta Branca', category: 'tops', subcategory: 'tshirt', colors: ['Branco'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1521572163474-6864f9cf17ab') },
+    { id: 'sample-black-tee', name: 'Camiseta Preta', category: 'tops', subcategory: 'tshirt', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1618354691373-d851c5c3a990') },
+    { id: 'sample-black-tee-print', name: 'Camiseta Preta Estampada', category: 'tops', subcategory: 'tshirt', colors: ['Preto'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1583743814966-8936f5b7be1a') },
+    { id: 'sample-chambray-shirt', name: 'Camisa Chambray Azul', category: 'tops', subcategory: 'shirt', colors: ['Azul'], styles: ['Smart casual'], occasions: ['casual', 'casual executivo'], image: img('photo-1596755094514-f87e34085b2c') },
+    { id: 'sample-blue-dress-shirt', name: 'Camisa Social Azul Claro', category: 'tops', subcategory: 'shirt', colors: ['Azul'], styles: ['Formal'], occasions: ['trabalho', 'casual executivo'], image: img('photo-1620012253295-c15cc3e65df4') },
+    { id: 'sample-white-sweatshirt', name: 'Moletom Branco', category: 'tops', subcategory: 'tshirt', colors: ['Branco'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1620799140408-edc6dcb6d633') },
     // Bottoms
     { id: 'sample-blue-jeans', name: 'Calça Jeans Azul', category: 'bottoms', colors: ['Azul'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1541099649105-f69ad21f3246') },
     { id: 'sample-dark-jeans', name: 'Calça Jeans Escura', category: 'bottoms', colors: ['Preto', 'Azul'], styles: ['Casual'], occasions: ['dia a dia', 'casual'], image: img('photo-1542272604-787c3835535d') },

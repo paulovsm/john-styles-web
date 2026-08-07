@@ -7,7 +7,7 @@ import { geminiService } from '../../services/api/geminiService';
 import { firestoreService } from '../../services/storage/firestoreService';
 import { AutoAwesome, CloudUpload } from '@mui/icons-material';
 import { compressImage } from '../../utils/imageUtils';
-import { mapCategory } from '../../utils/categoryMapper';
+import { mapCategory, mapSubcategory, TOP_SUBCATEGORIES } from '../../utils/categoryMapper';
 import UsageCounter from '../common/UsageCounter';
 
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         name: '',
         description: '',
         category: 'tops',
+        subcategory: '',
         color: '',
         style: '',
         brand: ''
@@ -36,6 +37,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     name: item.name || '',
                     description: item.description || '',
                     category: item.category || 'tops',
+                    subcategory: item.subcategory || '',
                     color: item.colors ? item.colors[0] : '',
                     style: item.styles ? item.styles[0] : '',
                     brand: item.brand || ''
@@ -47,6 +49,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     name: '',
                     description: '',
                     category: 'tops',
+                    subcategory: '',
                     color: '',
                     style: '',
                     brand: ''
@@ -88,11 +91,16 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         try {
             const analysis = await geminiService.analyzeImage(file, i18n.language);
 
+            const mappedCategory = mapCategory(analysis.category);
             setFormData(prev => ({
                 ...prev,
                 name: analysis.name || prev.name,
                 description: analysis.description || prev.description,
-                category: mapCategory(analysis.category),
+                category: mappedCategory,
+                // Sub-type only applies to tops; the AI already gives us a hint.
+                subcategory: mappedCategory === 'tops'
+                    ? (mapSubcategory(analysis.subcategory) || mapSubcategory(analysis.name) || prev.subcategory)
+                    : '',
                 color: analysis.color || prev.color,
                 style: analysis.style || prev.style,
                 brand: analysis.brand || prev.brand
@@ -111,7 +119,12 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            // Sub-type is meaningless outside 'tops' — drop it on category change.
+            ...(name === 'category' && value !== 'tops' ? { subcategory: '' } : {}),
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -134,6 +147,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 ...formData,
                 id,
                 image: imageUrl,
+                subcategory: formData.category === 'tops' ? (formData.subcategory || null) : null,
                 colors: formData.color ? [formData.color] : [],
                 styles: formData.style ? [formData.style] : []
             });
@@ -244,6 +258,23 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                         <option value="outerwear">{t('wardrobe.filters.categories.outerwear')}</option>
                     </select>
                 </div>
+
+                {formData.category === 'tops' && (
+                    <div>
+                        <label className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.subcategory')}</label>
+                        <select
+                            name="subcategory"
+                            value={formData.subcategory}
+                            onChange={handleChange}
+                            className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
+                        >
+                            <option value="">{t('wardrobe.addModal.subcategoryUnset')}</option>
+                            {TOP_SUBCATEGORIES.map((sub) => (
+                                <option key={sub} value={sub}>{t(`wardrobe.filters.subcategories.${sub}`)}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                     <Input
