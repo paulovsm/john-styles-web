@@ -28,7 +28,7 @@ export default function WardrobeFilters() {
                         name="category"
                         value={filters.category}
                         onChange={handleChange}
-                        className="block w-full pl-3 pr-10 py-2 text-base border-grey-light focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
+                        className="wardrobe-filter-select block w-full border border-grey-light pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
                     >
                         <option value="all">{t('wardrobe.filters.allCategories')}</option>
                         <option value="tops">{t('wardrobe.filters.categories.tops')}</option>
@@ -44,7 +44,7 @@ export default function WardrobeFilters() {
                         name="style"
                         value={filters.style}
                         onChange={handleChange}
-                        className="block w-full pl-3 pr-10 py-2 text-base border-grey-light focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
+                        className="wardrobe-filter-select block w-full border border-grey-light pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
                     >
                         <option value="all">{t('wardrobe.filters.allStyles')}</option>
                         <option value="casual">{t('wardrobe.filters.styles.casual')}</option>
@@ -61,7 +61,7 @@ export default function WardrobeFilters() {
                         name="color"
                         value={filters.color}
                         onChange={handleChange}
-                        className="block w-full pl-3 pr-10 py-2 text-base border-grey-light focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
+                        className="wardrobe-filter-select block w-full border border-grey-light pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
                     >
                         <option value="all">{t('wardrobe.filters.allColors')}</option>
                         <option value="black">{t('wardrobe.filters.colors.black')}</option>

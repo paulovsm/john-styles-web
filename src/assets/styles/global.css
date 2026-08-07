@@ -44,4 +44,23 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
+
+  /* Native <select> popups are painted by the OS, so they ignore the theme
+     tokens: on Windows the dark-theme text color landed on a white native
+     background and the labels became unreadable. color-scheme tells the browser
+     which scheme to paint the native chrome in, and the tokens keep the closed
+     control consistent with the surrounding surfaces in both themes. */
+  .wardrobe-filter-select,
+  .wardrobe-filter-select option {
+    background-color: rgb(var(--c-surface));
+    color: rgb(var(--c-content));
+  }
+
+  .wardrobe-filter-select {
+    color-scheme: light;
+  }
+
+  .dark .wardrobe-filter-select {
+    color-scheme: dark;
+  }
 }
