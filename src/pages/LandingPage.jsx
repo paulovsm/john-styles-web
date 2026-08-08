@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './LandingPage.css';
 
+const CONTACT_EMAIL = 'contato@fleekauthority.com';
+
 const serviceCards = [
     {
         image: '/landing/define-seu-estilo.avif',
@@ -66,9 +68,18 @@ export default function LandingPage() {
 
     const closeMenu = () => setMenuOpen(false);
 
+    // There is no subscription backend yet, so hand the address off to the
+    // visitor's mail client rather than claiming a signup we never recorded.
     const handleSubscribe = (event) => {
         event.preventDefault();
-        if (!email.trim()) return;
+        const address = email.trim();
+        if (!address) return;
+
+        const subject = encodeURIComponent('Quero entrar para o movimento Fleek');
+        const body = encodeURIComponent(
+            `Olá! Gostaria de receber as novidades e promoções da Fleek Authority.\n\nE-mail para cadastro: ${address}`
+        );
+        window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
         setSubscribed(true);
     };
 
@@ -205,7 +216,10 @@ export default function LandingPage() {
                             <p>Eleve o seu estilo sendo sempre o primeiro a saber de novidades e promoções.</p>
                         </div>
                         {subscribed ? (
-                            <p className="fleek-subscribe-success" role="status">Obrigado! Você entrou para o movimento Fleek.</p>
+                            <p className="fleek-subscribe-success" role="status">
+                                Abrimos seu app de e-mail com a mensagem pronta — é só enviar para concluir.
+                                Se nada abriu, escreva para <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+                            </p>
                         ) : (
                             <form className="fleek-subscribe-form" onSubmit={handleSubscribe}>
                                 <label className="sr-only" htmlFor="fleek-email">Seu melhor e-mail</label>
@@ -229,7 +243,7 @@ export default function LandingPage() {
                     <Brand />
                     <p>Estilo profissional que evolui com você.</p>
                     <div className="fleek-footer-links">
-                        <a href="mailto:contato@fleekauthority.com">contato@fleekauthority.com</a>
+                        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
                         <Link to="/privacy">Política de Privacidade</Link>
                     </div>
                     <small>© {new Date().getFullYear()} Fleek Authority</small>

@@ -513,6 +513,14 @@
     font-weight: 600;
 }
 
+/* The fallback address is the only link in this block — keep it distinguishable
+   from the surrounding copy without relying on color alone. */
+.fleek-newsletter-inner .fleek-subscribe-success a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 .fleek-footer {
     padding: 40px 0 32px;
     background: #000;
