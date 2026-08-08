@@ -32,4 +32,14 @@ i18n
         }
     });
 
+// index.html only carries the pt-BR default, so keep <html lang> in sync with
+// the active language — screen readers and browser translation rely on it.
+const DOCUMENT_LANGS = { pt: 'pt-BR', en: 'en', es: 'es' };
+const applyDocumentLanguage = (lng) => {
+    document.documentElement.lang = DOCUMENT_LANGS[lng] || lng;
+};
+
+applyDocumentLanguage(i18n.language);
+i18n.on('languageChanged', applyDocumentLanguage);
+
 export default i18n;
