@@ -104,6 +104,19 @@
   "wardrobe": {
     "title": "My Wardrobe",
     "addItem": "Add Item",
+    "tutorial": {
+      "title": "Teach John about your wardrobe",
+      "description": "Add one piece at a time. Clear photos and reviewed information help John create more useful combinations for you.",
+      "dismiss": "Close tutorial",
+      "reopen": "How to add",
+      "steps": {
+        "photo": { "title": "Photograph one piece", "description": "Show the whole piece in good light with little background. Take a photo now or upload an existing one." },
+        "analyze": { "title": "Let AI help", "description": "Use Analyze with AI to prefill the name, category, color and style as a starting point." },
+        "review": { "title": "Review and save", "description": "Confirm the information before saving. Better records lead to better suggestions from John." }
+      },
+      "tip": "Tip: use one complete piece per photo and avoid hangers, folds or other clothes covering it.",
+      "cta": "Add one piece"
+    },
     "noItems": "No items",
     "noItemsDescription": "Get started by adding a new item to your wardrobe.",
     "filters": {
@@ -150,8 +163,11 @@
       "titleEdit": "Edit Item",
       "itemImage": "Item Image",
       "uploadImage": "Upload a file",
+      "takePhoto": "Take photo",
+      "photoPrompt": "How would you like to add the photo?",
+      "photoTip": "Photograph one complete piece from the front, in good light and against a simple background.",
       "dragDrop": "or drag and drop",
-      "fileTypes": "PNG, JPG, GIF up to 10MB",
+      "fileTypes": "JPG, PNG or WebP up to 8MB",
       "analyzeAI": "Analyze with AI",
       "name": "Name",
       "namePlaceholder": "e.g. Blue Denim Jacket",

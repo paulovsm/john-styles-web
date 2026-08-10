@@ -104,6 +104,19 @@
   "wardrobe": {
     "title": "Mi Guardarropa",
     "addItem": "Agregar Artículo",
+    "tutorial": {
+      "title": "Enséñale a John sobre tu guardarropa",
+      "description": "Agrega una prenda a la vez. Las fotos claras y la información revisada ayudan a John a crear combinaciones más útiles para ti.",
+      "dismiss": "Cerrar tutorial",
+      "reopen": "Cómo agregar",
+      "steps": {
+        "photo": { "title": "Fotografía una prenda", "description": "Muestra la prenda completa, con buena luz y poco fondo. Toma una foto ahora o carga una existente." },
+        "analyze": { "title": "Deja que la IA ayude", "description": "Usa Analizar con IA para completar nombre, categoría, color y estilo como punto de partida." },
+        "review": { "title": "Revisa y guarda", "description": "Confirma la información antes de guardar. Mejores registros producen mejores sugerencias de John." }
+      },
+      "tip": "Consejo: usa una sola prenda completa por foto y evita perchas, pliegues u otras prendas que la cubran.",
+      "cta": "Agregar una prenda"
+    },
     "noItems": "Sin artículos",
     "noItemsDescription": "Comienza agregando un nuevo artículo a tu guardarropa.",
     "filters": {
@@ -150,8 +163,11 @@
       "titleEdit": "Editar Artículo",
       "itemImage": "Imagen del Artículo",
       "uploadImage": "Subir archivo",
+      "takePhoto": "Tomar foto",
+      "photoPrompt": "¿Cómo quieres agregar la foto?",
+      "photoTip": "Fotografía una sola prenda completa, de frente, con buena iluminación y un fondo simple.",
       "dragDrop": "o arrastra y suelta",
-      "fileTypes": "PNG, JPG, GIF hasta 10MB",
+      "fileTypes": "JPG, PNG o WebP hasta 8MB",
       "analyzeAI": "Analizar con IA",
       "name": "Nombre",
       "namePlaceholder": "ej: Chaqueta de Mezclilla Azul",

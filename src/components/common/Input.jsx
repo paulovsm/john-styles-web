@@ -13,7 +13,7 @@ export default function Input({
     rows = 3,
     ...props
 }) {
-    const baseStyles = "appearance-none block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm placeholder-grey-medium focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm";
+    const baseStyles = "appearance-none block w-full px-3 py-2 border border-grey-light rounded-md bg-white-pure text-grey-dark shadow-sm placeholder:text-grey-medium focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm";
     const errorStyles = "border-status-error focus:ring-status-error focus:border-status-error";
 
     return (

@@ -104,6 +104,19 @@
   "wardrobe": {
     "title": "Meu Guarda-roupa",
     "addItem": "Adicionar Item",
+    "tutorial": {
+      "title": "Ensine o John sobre o seu guarda-roupa",
+      "description": "Cadastre uma peça por vez. Fotos claras e informações revisadas ajudam o John a criar combinações mais úteis para você.",
+      "dismiss": "Fechar tutorial",
+      "reopen": "Como adicionar",
+      "steps": {
+        "photo": { "title": "Fotografe uma peça", "description": "Mostre a peça inteira, com boa luz e pouco fundo. Você pode tirar a foto agora ou carregar uma existente." },
+        "analyze": { "title": "Deixe a IA ajudar", "description": "Use Analisar com IA para preencher nome, categoria, cor e estilo como ponto de partida." },
+        "review": { "title": "Revise e salve", "description": "Confirme os dados antes de salvar. Quanto melhor o cadastro, melhores serão as sugestões do John." }
+      },
+      "tip": "Dica: prefira uma única peça por foto e evite cabides, dobras ou outras roupas cobrindo o item.",
+      "cta": "Adicionar uma peça"
+    },
     "noItems": "Nenhum item",
     "noItemsDescription": "Comece adicionando um novo item ao seu guarda-roupa.",
     "filters": {
@@ -150,8 +163,11 @@
       "titleEdit": "Editar Item",
       "itemImage": "Imagem do Item",
       "uploadImage": "Enviar arquivo",
+      "takePhoto": "Tirar foto",
+      "photoPrompt": "Como você quer adicionar a foto?",
+      "photoTip": "Fotografe uma única peça inteira, de frente, com boa iluminação e fundo simples.",
       "dragDrop": "ou arraste e solte",
-      "fileTypes": "PNG, JPG, GIF até 10MB",
+      "fileTypes": "JPG, PNG ou WebP até 8MB",
       "analyzeAI": "Analisar com IA",
       "name": "Nome",
       "namePlaceholder": "ex: Jaqueta Jeans Azul",
