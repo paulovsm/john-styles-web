@@ -5,7 +5,7 @@ import Button from '../common/Button';
 import Loading from '../common/Loading';
 import { geminiService } from '../../services/api/geminiService';
 import { firestoreService } from '../../services/storage/firestoreService';
-import { AutoAwesome, CloudUpload } from '@mui/icons-material';
+import { AutoAwesome, CameraAlt, CloudUpload, LightbulbOutlined } from '@mui/icons-material';
 import { compressImage } from '../../utils/imageUtils';
 import { mapCategory, mapSubcategory, TOP_SUBCATEGORIES } from '../../utils/categoryMapper';
 import UsageCounter from '../common/UsageCounter';
@@ -62,6 +62,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
 
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
+        e.target.value = '';
         if (selectedFile) {
             try {
                 const compressedFile = await compressImage(selectedFile);
@@ -165,7 +166,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.itemImage')}</label>
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-grey-light border-dashed rounded-md relative hover:bg-grey-lightest transition-colors cursor-pointer">
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-grey-light border-dashed rounded-md relative hover:bg-grey-lightest transition-colors">
                         {preview ? (
                             <div className="relative w-full">
                                 <img src={preview} alt="Preview" className="mx-auto h-48 object-cover rounded-md" />
@@ -181,21 +182,48 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                 </button>
                             </div>
                         ) : (
-                            <label htmlFor="file-upload" className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+                            <div className="w-full h-full flex flex-col items-center justify-center">
                                 <div className="space-y-1 text-center">
                                     <CloudUpload className="mx-auto h-12 w-12 text-grey-medium" />
-                                    <div className="flex text-sm text-grey-medium justify-center">
-                                        <span className="relative bg-white-pure rounded-md font-medium text-brand-navy hover:text-brand-navy focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-navy">
-                                            <span>{t('wardrobe.addModal.uploadImage')}</span>
-                                            <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/*" onChange={handleFileChange} />
-                                        </span>
-                                        <p className="pl-1">{t('wardrobe.addModal.dragDrop')}</p>
-                                    </div>
+                                    <p className="text-sm text-grey-dark">{t('wardrobe.addModal.photoPrompt')}</p>
                                     <p className="text-xs text-grey-medium">{t('wardrobe.addModal.fileTypes')}</p>
                                 </div>
-                            </label>
+                                <div className="mt-4 flex w-full flex-col justify-center gap-2 sm:flex-row">
+                                    <label htmlFor="camera-capture" className="inline-flex cursor-pointer items-center justify-center rounded-md border border-brand-navy bg-brand-navy px-4 py-2 text-sm font-medium text-white-pure transition-colors hover:bg-opacity-90 focus-within:ring-2 focus-within:ring-brand-navy focus-within:ring-offset-2">
+                                        <CameraAlt className="mr-2" fontSize="small" />
+                                        {t('wardrobe.addModal.takePhoto')}
+                                        <input
+                                            id="camera-capture"
+                                            name="camera-capture"
+                                            type="file"
+                                            className="sr-only"
+                                            accept="image/*"
+                                            capture="environment"
+                                            onChange={handleFileChange}
+                                        />
+                                    </label>
+                                    <label htmlFor="file-upload" className="inline-flex cursor-pointer items-center justify-center rounded-md border border-brand-navy bg-transparent px-4 py-2 text-sm font-medium text-brand-navy transition-colors hover:bg-grey-light focus-within:ring-2 focus-within:ring-brand-navy focus-within:ring-offset-2">
+                                        <CloudUpload className="mr-2" fontSize="small" />
+                                        {t('wardrobe.addModal.uploadImage')}
+                                        <input
+                                            id="file-upload"
+                                            name="file-upload"
+                                            type="file"
+                                            className="sr-only"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                        />
+                                    </label>
+                                </div>
+                            </div>
                         )}
                     </div>
+                    {!preview && (
+                        <div className="mt-2 flex items-start gap-2 rounded-md bg-brand-gold/10 px-3 py-2 text-xs text-grey-dark">
+                            <LightbulbOutlined className="mt-0.5 shrink-0 text-brand-gold-dark" fontSize="small" />
+                            <span>{t('wardrobe.addModal.photoTip')}</span>
+                        </div>
+                    )}
                 </div>
 
                 {preview && (
@@ -233,23 +261,25 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 />
 
                 <div>
-                    <label className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.description') || 'Description'}</label>
+                    <label htmlFor="item-description" className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.description') || 'Description'}</label>
                     <textarea
+                        id="item-description"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
                         placeholder={t('wardrobe.addModal.descriptionPlaceholder') || 'Enter a brief description'}
-                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm min-h-[80px]"
+                        className="block w-full min-h-[80px] rounded-md border border-grey-light bg-white-pure px-3 py-2 text-grey-dark shadow-sm placeholder:text-grey-medium focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.category')}</label>
+                    <label htmlFor="item-category" className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.category')}</label>
                     <select
+                        id="item-category"
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
-                        className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
+                        className="wardrobe-filter-select block w-full rounded-md border border-grey-light bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
                     >
                         <option value="tops">{t('wardrobe.filters.categories.tops')}</option>
                         <option value="bottoms">{t('wardrobe.filters.categories.bottoms')}</option>
@@ -261,12 +291,13 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
 
                 {formData.category === 'tops' && (
                     <div>
-                        <label className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.subcategory')}</label>
+                        <label htmlFor="item-subcategory" className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.subcategory')}</label>
                         <select
+                            id="item-subcategory"
                             name="subcategory"
                             value={formData.subcategory}
                             onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
+                            className="wardrobe-filter-select block w-full rounded-md border border-grey-light bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
                         >
                             <option value="">{t('wardrobe.addModal.subcategoryUnset')}</option>
                             {TOP_SUBCATEGORIES.map((sub) => (
