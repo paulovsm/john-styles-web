@@ -291,12 +291,13 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
 
                 {formData.category === 'tops' && (
                     <div>
-                        <label className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.subcategory')}</label>
+                        <label htmlFor="item-subcategory" className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.subcategory')}</label>
                         <select
+                            id="item-subcategory"
                             name="subcategory"
                             value={formData.subcategory}
                             onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
+                            className="wardrobe-filter-select block w-full rounded-md border border-grey-light bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
                         >
                             <option value="">{t('wardrobe.addModal.subcategoryUnset')}</option>
                             {TOP_SUBCATEGORIES.map((sub) => (
