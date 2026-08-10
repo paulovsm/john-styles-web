@@ -17,6 +17,7 @@ import {
     serializeComment,
     validateCommentInput,
 } from './_blogComments.js';
+import { clientIp, consumeRateLimit, handleRateLimitError } from './_rateLimit.js';
 
 export default async function handler(req, res) {
     if (applyCors(req, res)) return;
@@ -27,6 +28,7 @@ export default async function handler(req, res) {
         res.setHeader('Allow', 'GET, POST, OPTIONS');
         return sendError(res, 405, 'METHOD_NOT_ALLOWED', 'Method not allowed');
     } catch (error) {
+        if (handleRateLimitError(res, error, sendError)) return;
         if (handleBlogError(res, error)) return;
         if (error instanceof AuthError) {
             const code = error.status === 401 ? 'UNAUTHORIZED' : 'AUTH_ERROR';
@@ -63,6 +65,8 @@ async function listComments(req, res) {
 }
 
 async function createComment(req, res) {
+    // Anyone can post, so cap it per address before touching Firestore.
+    await consumeRateLimit('blogComment', clientIp(req));
     const input = validateCommentInput(req.body);
     const post = await findPostBySlug(postCollection(), input.postSlug);
     if (!post || post.data().status !== 'published') {
