@@ -11,7 +11,11 @@ import OnboardingPage from './pages/OnboardingPage';
 import GalleryPage from './pages/GalleryPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
+import AdminBlogPage from './pages/AdminBlogPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import AdminRoute from './components/common/AdminRoute';
 
 const router = createBrowserRouter([
     {
@@ -25,6 +29,22 @@ const router = createBrowserRouter([
     {
         path: '/privacy',
         element: <PrivacyPolicyPage />,
+    },
+    {
+        path: '/blog',
+        element: <BlogPage />,
+    },
+    {
+        path: '/blog/:slug',
+        element: <BlogPostPage />,
+    },
+    {
+        path: '/admin/blog',
+        element: (
+            <AdminRoute>
+                <AdminBlogPage />
+            </AdminRoute>
+        ),
     },
     {
         path: '/dashboard',
