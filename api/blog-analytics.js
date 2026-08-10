@@ -13,6 +13,7 @@ import {
     validateSlug,
 } from './_blog.js';
 import { commentCollection, serializeComment } from './_blogComments.js';
+import { clientIp, consumeRateLimit, handleRateLimitError } from './_rateLimit.js';
 
 export default async function handler(req, res) {
     if (applyCors(req, res)) return;
@@ -23,6 +24,7 @@ export default async function handler(req, res) {
         res.setHeader('Allow', 'GET, POST, OPTIONS');
         return sendError(res, 405, 'METHOD_NOT_ALLOWED', 'Method not allowed');
     } catch (error) {
+        if (handleRateLimitError(res, error, sendError)) return;
         if (handleBlogError(res, error)) return;
         if (error instanceof AuthError) {
             const code = error.status === 401 ? 'UNAUTHORIZED' : 'AUTH_ERROR';
@@ -79,6 +81,9 @@ async function getAnalytics(req, res) {
 }
 
 async function recordView(req, res) {
+    // Unauthenticated counter increment — cap it per address so it cannot be
+    // driven up in a loop. The client also de-dupes per session.
+    await consumeRateLimit('blogView', clientIp(req));
     const slug = validateSlug(req.body?.slug);
     const post = await findPostBySlug(postCollection(), slug);
     if (!post || post.data().status !== 'published') {
