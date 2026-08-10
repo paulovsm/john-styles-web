@@ -22,6 +22,11 @@ export default function BlogPage() {
             .then((result) => {
                 if (active) setPosts(result);
             })
+            // Without this the failure surfaces as an unhandled rejection; the
+            // empty state below is the right thing to show either way.
+            .catch(() => {
+                if (active) setPosts([]);
+            })
             .finally(() => {
                 if (active) setLoading(false);
             });

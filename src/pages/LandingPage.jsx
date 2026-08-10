@@ -53,9 +53,15 @@ export default function LandingPage() {
 
     useEffect(() => {
         let active = true;
-        listPublishedPosts({ featured: true, limit: 12 }).then((posts) => {
-            if (active) setArticles(posts);
-        });
+        listPublishedPosts({ featured: true, limit: 12 })
+            .then((posts) => {
+                if (active) setArticles(posts);
+            })
+            // The landing must render even when the blog API is down; the
+            // highlights section already has an empty state to fall back to.
+            .catch(() => {
+                if (active) setArticles([]);
+            });
         return () => { active = false; };
     }, []);
 
