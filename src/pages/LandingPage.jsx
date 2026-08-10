@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { listPublishedPosts } from '../services/api/blogService';
 import './LandingPage.css';
 
 const CONTACT_EMAIL = 'contato@fleekauthority.com';
@@ -34,24 +35,6 @@ const serviceCards = [
     },
 ];
 
-const articles = [
-    {
-        image: '/landing/article-1.avif',
-        alt: 'Três executivos discutindo estilo e tecnologia',
-        title: 'Como três executivos cansados de PowerPoint criaram a IA que vai transformar seu guarda-roupa (e sua imagem profissional)',
-    },
-    {
-        image: '/landing/article-2.avif',
-        alt: 'Profissional interagindo com tecnologia de moda',
-        title: 'A Revolução no Estilo Profissional Masculino: Como a Fleek Authority Está Mudando as Regras do Jogo',
-    },
-    {
-        image: '/landing/article-3.avif',
-        alt: 'Homem de terno usando uma experiência digital de estilo',
-        title: 'John Styles: O stylist digital que está revolucionando o estilo profissional masculino',
-    },
-];
-
 function Brand() {
     return (
         <a className="fleek-brand" href="#inicio" aria-label="Fleek Authority — início">
@@ -65,8 +48,20 @@ export default function LandingPage() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
+    const [articles, setArticles] = useState([]);
+    const [articlePage, setArticlePage] = useState(0);
+
+    useEffect(() => {
+        let active = true;
+        listPublishedPosts({ featured: true, limit: 12 }).then((posts) => {
+            if (active) setArticles(posts);
+        });
+        return () => { active = false; };
+    }, []);
 
     const closeMenu = () => setMenuOpen(false);
+    const articlePages = Math.max(1, Math.ceil(articles.length / 3));
+    const visibleArticles = articles.slice(articlePage * 3, (articlePage * 3) + 3);
 
     // There is no subscription backend yet, so hand the address off to the
     // visitor's mail client rather than claiming a signup we never recorded.
@@ -104,7 +99,7 @@ export default function LandingPage() {
                         <a href="#assinatura" onClick={closeMenu}>Assinatura</a>
                         <a href="#empresas" onClick={closeMenu}>Empresas</a>
                         <a href="#contato" onClick={closeMenu}>Contato</a>
-                        <a href="#artigos" onClick={closeMenu}>Blog</a>
+                        <Link to="/blog" onClick={closeMenu}>Blog</Link>
                         <a className="fleek-nav-cta" href="#contato" onClick={closeMenu}>Fleek Store</a>
                     </nav>
                 </div>
@@ -166,18 +161,31 @@ export default function LandingPage() {
                         <header className="fleek-section-heading fleek-section-heading--light">
                             <h2 id="articles-title">Artigos e conteúdos exclusivos</h2>
                             <p>Fleek Posts em destaque</p>
+                            <Link className="fleek-all-articles" to="/blog">Ver todos os artigos <span aria-hidden="true">↗</span></Link>
                         </header>
-                        <div className="fleek-article-grid">
-                            {articles.map((article, index) => (
+                        <div className="fleek-article-carousel-head">
+                            <span>{articles.length ? `${articlePage + 1} / ${articlePages}` : 'Sem destaques'}</span>
+                            {articlePages > 1 && <div><button type="button" aria-label="Destaques anteriores" onClick={() => setArticlePage((page) => (page - 1 + articlePages) % articlePages)}>←</button><button type="button" aria-label="Próximos destaques" onClick={() => setArticlePage((page) => (page + 1) % articlePages)}>→</button></div>}
+                        </div>
+                        <div className="fleek-article-grid" aria-live="polite">
+                            {visibleArticles.map((article, index) => (
                                 <article className="fleek-article-card" key={article.title}>
                                     <div className="fleek-article-image-wrap">
-                                        <img src={article.image} alt={article.alt} loading="lazy" />
-                                        <span>0{index + 1}</span>
+                                        <img
+                                            src={article.coverImage || '/og.jpg'}
+                                            alt={article.coverAlt || ''}
+                                            loading="lazy"
+                                            onError={(event) => {
+                                                event.currentTarget.onerror = null;
+                                                event.currentTarget.src = '/og.jpg';
+                                            }}
+                                        />
+                                        <span>{String((articlePage * 3) + index + 1).padStart(2, '0')}</span>
                                     </div>
-                                    <h3>{article.title}</h3>
-                                    <a href="#contato" aria-label={`Ler artigo: ${article.title}`}>
+                                    <h3><Link to={`/blog/${article.slug}`}>{article.title}</Link></h3>
+                                    <Link to={`/blog/${article.slug}`} aria-label={`Ler artigo: ${article.title}`}>
                                         Ler artigo <span aria-hidden="true">↗</span>
-                                    </a>
+                                    </Link>
                                 </article>
                             ))}
                         </div>

@@ -32,7 +32,7 @@ const apiDir = join(dirname(fileURLToPath(import.meta.url)), 'api');
 async function registerRoutes() {
     const files = fs
         .readdirSync(apiDir)
-        .filter((f) => f.endsWith('.js') && !f.startsWith('_'));
+        .filter((f) => f.endsWith('.js') && !f.startsWith('_') && !f.endsWith('.test.js') && !f.endsWith('.spec.js'));
 
     for (const file of files) {
         const route = `/api/${file.replace(/\.js$/, '')}`;

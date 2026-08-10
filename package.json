@@ -11,6 +11,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "admin:set": "node scripts/set-admin.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

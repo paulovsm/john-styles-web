@@ -5,6 +5,18 @@
             "destination": "/api/$1"
         },
         {
+            "source": "/blog",
+            "destination": "/api/blog-page"
+        },
+        {
+            "source": "/blog/:slug",
+            "destination": "/api/blog-page?slug=:slug"
+        },
+        {
+            "source": "/sitemap.xml",
+            "destination": "/api/sitemap"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
@@ -12,7 +24,8 @@
     "functions": {
         "api/*.js": {
             "memory": 1024,
-            "maxDuration": 60
+            "maxDuration": 60,
+            "includeFiles": "dist/**"
         }
     }
 }
