@@ -21,8 +21,9 @@ export async function requireAuth(req) {
     try {
         adminAuth = getAdminAuth();
     } catch (err) {
-        // Misconfiguration (no service account) — surface as 500, not 401.
-        throw new AuthError(500, err.message);
+        // Misconfiguration is a server error, but its details must stay in server logs.
+        console.error('Firebase Admin authentication is unavailable:', err);
+        throw new AuthError(500, 'Authentication service unavailable');
     }
 
     try {
