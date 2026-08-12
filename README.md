@@ -62,7 +62,11 @@ Client-side (`VITE_` — vão no bundle; chaves Firebase web não são segredo):
 ## Deploy (Vercel)
 1. Configure as variáveis de ambiente no projeto Vercel (mesmos nomes acima; use a URL de produção em `ALLOWED_ORIGINS`/`APP_BASE_URL`/`GOOGLE_OAUTH_REDIRECT_URI`).
 2. Publique as regras do Firebase: `firebase deploy --only firestore:rules,storage`.
-3. Se usar a agenda, adicione `https://<seu-domínio>/api/calendar-callback` aos redirect URIs do OAuth Client.
+3. Aplique o CORS do bucket: `gcloud storage buckets update gs://$VITE_FIREBASE_STORAGE_BUCKET --cors-file=cors.json`.
+   O `cors.json` precisa listar **todo domínio que serve o app** (incluindo o domínio próprio, não só o `*.vercel.app`).
+   O guarda-roupa e a prova virtual leem as imagens do Storage via `fetch` no browser; sem a origem no CORS
+   do bucket o `fetch` é bloqueado e a UI mostra "Falha de conexão ao gerar o look".
+4. Se usar a agenda, adicione `https://<seu-domínio>/api/calendar-callback` aos redirect URIs do OAuth Client.
 
 ## Blog e CMS
 

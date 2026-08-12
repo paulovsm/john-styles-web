@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .env
+.claude
 
 # Firebase Admin credentials — never commit
 service-account.json
