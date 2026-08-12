@@ -18,6 +18,7 @@ export const RATE_LIMITS_COLLECTION = 'rateLimits';
 export const RATE_LIMITS = {
     blogComment: { limit: 5, windowSeconds: 3_600 },
     blogView: { limit: 30, windowSeconds: 3_600 },
+    businessContact: { limit: 5, windowSeconds: 3_600 },
 };
 
 export class RateLimitError extends Error {

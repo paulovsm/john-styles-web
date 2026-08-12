@@ -11,6 +11,8 @@ import OnboardingPage from './pages/OnboardingPage';
 import GalleryPage from './pages/GalleryPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import BusinessPage from './pages/BusinessPage';
+import SubscriptionPage from './pages/SubscriptionPage';
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import AdminBlogPage from './pages/AdminBlogPage';
@@ -29,6 +31,14 @@ const router = createBrowserRouter([
     {
         path: '/privacy',
         element: <PrivacyPolicyPage />,
+    },
+    {
+        path: '/empresas',
+        element: <BusinessPage />,
+    },
+    {
+        path: '/assinatura',
+        element: <SubscriptionPage />,
     },
     {
         path: '/blog',

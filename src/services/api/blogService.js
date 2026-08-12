@@ -1,3 +1,14 @@
+const CURATED_COVERS_BY_SLUG = {
+    'como-tres-executivos-criaram-a-ia-que-transforma-seu-guarda-roupa': '/landing/blog-origin-v2.webp',
+    'revolucao-no-estilo-profissional-masculino': '/landing/blog-style-revolution-v2.webp',
+    'john-styles-o-stylist-digital': '/landing/blog-john-styles-v2.webp',
+};
+
+function withCuratedCover(post) {
+    const coverImage = CURATED_COVERS_BY_SLUG[post?.slug];
+    return coverImage ? { ...post, coverImage } : post;
+}
+
 async function parseResponse(response) {
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -20,14 +31,14 @@ export async function listPublishedPosts({ featured = false, limit } = {}) {
     const query = params.toString();
     const response = await fetch(`/api/blog-posts${query ? `?${query}` : ''}`);
     const payload = await parseResponse(response);
-    return Array.isArray(payload.data) ? payload.data : [];
+    return Array.isArray(payload.data) ? payload.data.map(withCuratedCover) : [];
 }
 
 export async function getPublishedPost(slug) {
     const response = await fetch(`/api/blog-post?slug=${encodeURIComponent(slug)}`);
     const payload = await parseResponse(response);
     if (!payload.data) throw new Error('Artigo não encontrado.');
-    return payload.data;
+    return withCuratedCover(payload.data);
 }
 
 export async function listPostComments(slug) {

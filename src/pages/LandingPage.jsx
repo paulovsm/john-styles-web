@@ -4,10 +4,11 @@ import { listPublishedPosts } from '../services/api/blogService';
 import './LandingPage.css';
 
 const CONTACT_EMAIL = 'contato@fleekauthority.com';
+const FLEEK_STORE_URL = 'https://loja.fleekauthority.com';
 
 const serviceCards = [
     {
-        image: '/landing/define-seu-estilo.avif',
+        image: '/landing/service-style-v2.webp',
         alt: 'Defina seu estilo pessoal',
         title: 'Defina o seu estilo pessoal',
         description:
@@ -16,22 +17,22 @@ const serviceCards = [
         href: '/login',
     },
     {
-        image: '/landing/renove-guarda-roupa.avif',
+        image: '/landing/service-store-v2.webp',
         alt: 'Guarda-roupa estiloso de roupas profissionais',
         title: 'Renove seu guarda-roupas',
         description:
             'Compre as peças de roupa da Fleek Authority, com altíssima qualidade e preço justo, para renovar o seu guarda-roupa e transformar seu estilo. Na loja Fleek, selecionamos os melhores itens para elevar seu estilo profissional.',
         action: 'Fleek Store',
-        href: '#contato',
+        href: FLEEK_STORE_URL,
     },
     {
-        image: '/landing/mantenha-estilo.avif',
+        image: '/landing/service-subscription-v2.webp',
         alt: 'Homem elegante se arrumando',
         title: 'Mantenha seu estilo atualizado',
         description:
-            'Tenha um guarda-roupa sempre atualizado e sob medida por apenas R$120/mês! Seu estilo evolui com a sua carreira, acompanha as tendências e ainda contribui para uma moda mais sustentável.',
+            'Tenha um guarda-roupa sempre atualizado por R$199/mês. A cada três meses, receba uma seleção de peças e transforme devoluções elegíveis em créditos ou descontos.',
         action: 'Assinatura',
-        href: '#assinatura',
+        href: '/assinatura',
     },
 ];
 
@@ -102,11 +103,11 @@ export default function LandingPage() {
                     </button>
                     <nav className={`fleek-nav-links${menuOpen ? ' is-open' : ''}`} aria-label="Navegação principal">
                         <Link to="/login" onClick={closeMenu}>John Styles</Link>
-                        <a href="#assinatura" onClick={closeMenu}>Assinatura</a>
-                        <a href="#empresas" onClick={closeMenu}>Empresas</a>
+                        <Link to="/assinatura" onClick={closeMenu}>Assinatura</Link>
+                        <Link to="/empresas" onClick={closeMenu}>Empresas</Link>
                         <a href="#contato" onClick={closeMenu}>Contato</a>
                         <Link to="/blog" onClick={closeMenu}>Blog</Link>
-                        <a className="fleek-nav-cta" href="#contato" onClick={closeMenu}>Fleek Store</a>
+                        <a className="fleek-nav-cta" href={FLEEK_STORE_URL} onClick={closeMenu}>Fleek Store</a>
                     </nav>
                 </div>
             </header>
@@ -206,7 +207,7 @@ export default function LandingPage() {
                         </header>
                         <div className="fleek-testimonial">
                             <div className="fleek-testimonial-photo">
-                                <img src="/landing/testimonial-model.avif" alt="Cliente Fleek Authority vestindo traje profissional" loading="lazy" />
+                                <img src="/landing/testimonial-client-v2.webp" alt="Profissional vestindo alfaiataria em tons de marrom e marfim" loading="lazy" />
                             </div>
                             <blockquote>
                                 <span className="fleek-quote-mark" aria-hidden="true">“</span>
