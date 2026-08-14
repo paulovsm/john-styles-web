@@ -42,14 +42,14 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
     return (
         <Card className="h-full">
             <Card.Body>
-                <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center min-w-0">
                         <div className="bg-brand-gold/15 p-2 rounded-full mr-3">
                             <AutoAwesome className="text-brand-gold-dark" />
                         </div>
-                        <Card.Title>{t('dashboard.outfitOfDay', 'Look do dia')}</Card.Title>
+                        <Card.Title className="truncate">{t('dashboard.outfitOfDay', 'Look do dia')}</Card.Title>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 shrink-0">
                         {weather?.status === 'ready' && (
                             <span className="inline-flex items-center gap-1 text-sm text-grey-medium">
                                 <Thermostat fontSize="small" />
@@ -76,9 +76,9 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                     <button
                         type="button"
                         onClick={connectCalendar}
-                        className="mb-3 inline-flex items-center gap-1.5 text-xs text-brand-gold-dark hover:underline"
+                        className="mb-3 flex items-start gap-1.5 text-left text-xs text-brand-gold-dark hover:underline"
                     >
-                        <CalendarMonth style={{ fontSize: 16 }} />
+                        <CalendarMonth style={{ fontSize: 16 }} className="shrink-0 mt-0.5" />
                         {t('dashboard.connectCalendar', 'Conectar Google Agenda para sugestões pelo seu dia')}
                     </button>
                 )}
