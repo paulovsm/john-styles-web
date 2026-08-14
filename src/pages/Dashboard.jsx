@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import WardrobeSummary from '../components/dashboard/WardrobeSummary';
 import OutfitOfTheDay from '../components/dashboard/OutfitOfTheDay';
@@ -39,16 +39,11 @@ export default function Dashboard() {
 
     return (
         <MainLayout>
-            <div className="mb-6 flex justify-between items-start gap-4">
-                <div>
-                    <h1 className="text-3xl font-serif font-bold text-brand-navy">
-                        {t('dashboard.welcome', { name: currentUser?.displayName?.split(' ')[0] || 'User' })}
-                    </h1>
-                    <p className="mt-2 text-grey-medium">{t('dashboard.subtitle')}</p>
-                </div>
-                <Link to="/onboarding" className="shrink-0 text-brand-navy hover:opacity-80 font-medium underline">
-                    {t('dashboard.myProfile')}
-                </Link>
+            <div className="mb-6">
+                <h1 className="text-3xl font-serif font-bold text-brand-navy">
+                    {t('dashboard.welcome', { name: currentUser?.displayName?.split(' ')[0] || 'User' })}
+                </h1>
+                <p className="mt-2 text-grey-medium">{t('dashboard.subtitle')}</p>
             </div>
 
             {/* Primary actions, inline under the subtitle */}
