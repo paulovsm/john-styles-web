@@ -46,17 +46,17 @@ export default function Dashboard() {
                 <p className="mt-2 text-grey-medium">{t('dashboard.subtitle')}</p>
             </div>
 
-            {/* Primary actions, inline under the subtitle */}
-            <div className="mb-8 flex flex-wrap gap-3">
-                <Button variant="primary" onClick={() => navigate('/chat')}>
+            {/* Primary actions, inline under the subtitle (stacked on mobile) */}
+            <div className="mb-8 flex flex-col sm:flex-row sm:flex-wrap gap-3">
+                <Button variant="primary" className="w-full sm:w-auto" onClick={() => navigate('/chat')}>
                     <Chat className="mr-2 h-5 w-5" />
                     {t('dashboard.askJohn')}
                 </Button>
-                <Button variant="outline" onClick={() => navigate('/wardrobe')}>
+                <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigate('/wardrobe')}>
                     <AddAPhoto className="mr-2 h-5 w-5" />
                     {t('dashboard.addNewItem')}
                 </Button>
-                <Button variant="text" onClick={() => navigate('/history')}>
+                <Button variant="text" className="w-full sm:w-auto" onClick={() => navigate('/history')}>
                     <History className="mr-2 h-5 w-5" />
                     {t('dashboard.viewHistory')}
                 </Button>

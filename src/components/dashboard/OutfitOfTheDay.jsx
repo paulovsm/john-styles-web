@@ -95,7 +95,7 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                         <div className="relative">
                             <div ref={scroller} className="flex gap-3 overflow-x-auto snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                                 {outfit.map((item) => (
-                                    <div key={item.id} className="snap-start shrink-0 w-48 text-center">
+                                    <div key={item.id} className="snap-start shrink-0 w-[46%] sm:w-48 text-center">
                                         <div className="aspect-[3/4] rounded-md overflow-hidden bg-grey-light">
                                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" style={{ imageOrientation: 'from-image' }} />
                                         </div>

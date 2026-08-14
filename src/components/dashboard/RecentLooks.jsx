@@ -63,7 +63,7 @@ export default function RecentLooks() {
                                 <Link
                                     key={look.id}
                                     to="/gallery"
-                                    className="snap-start shrink-0 w-48 block aspect-[3/4] rounded-md overflow-hidden bg-grey-light"
+                                    className="snap-start shrink-0 w-[46%] sm:w-48 block aspect-[3/4] rounded-md overflow-hidden bg-grey-light"
                                 >
                                     <img
                                         src={look.imageUrl}
