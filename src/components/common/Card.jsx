@@ -7,7 +7,7 @@ export default function Card({
     hoverable = false,
     ...props
 }) {
-    const baseStyles = "bg-white-pure border border-grey-light rounded-lg shadow-sm overflow-hidden";
+    const baseStyles = "bg-white-pure border border-grey-light rounded-card shadow-card overflow-hidden";
     const hoverStyles = hoverable ? "transition-shadow hover:shadow-md cursor-pointer" : "";
 
     return (
@@ -39,7 +39,7 @@ Card.Body = function CardBody({ children, className = '' }) {
 
 Card.Title = function CardTitle({ children, className = '' }) {
     return (
-        <h3 className={`text-lg font-medium text-brand-navy ${className}`}>
+        <h3 className={`text-lg font-semibold text-brand-navy ${className}`}>
             {children}
         </h3>
     );

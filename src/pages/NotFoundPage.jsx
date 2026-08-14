@@ -16,7 +16,7 @@ export default function NotFoundPage() {
             </p>
             <Link
                 to="/"
-                className="mt-6 inline-flex items-center px-6 py-3 rounded-md text-white-pure bg-brand-navy hover:bg-opacity-90 font-medium"
+                className="mt-6 inline-flex items-center px-6 py-3 rounded-full text-white-pure bg-brand-navy hover:bg-opacity-90 font-semibold"
             >
                 {t('notFound.backHome', 'Voltar ao início')}
             </Link>

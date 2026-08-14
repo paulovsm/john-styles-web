@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,26 +13,31 @@
  * Identity: editorial "ink & paper" high-contrast base + a cognac accent.
  */
 @layer base {
+  /* Aligned to the Fleek Authority landing design system: strict monochrome
+     (black / white / grey), no accent hue. The accent tokens are kept but
+     collapse to ink so any legacy accent usage renders on-brand. */
   :root {
-    --c-bg: 247 245 241;        /* warm paper (page) */
-    --c-surface: 255 255 255;   /* cards */
-    --c-content: 27 26 29;      /* ink (text) */
-    --c-muted: 110 106 115;     /* muted text */
-    --c-border: 230 225 216;    /* borders / subtle fills */
-    --c-ink: 27 26 29;          /* high-contrast (primary buttons, headers) */
-    --c-accent: 181 97 58;      /* cognac */
-    --c-accent-strong: 138 72 42; /* darker cognac (text on light) */
+    --c-bg: 255 255 255;        /* white (landing light sections) */
+    --c-surface: 255 255 255;   /* cards (defined by border + shadow, not fill) */
+    --c-content: 0 0 0;         /* black ink (text) */
+    --c-muted: 78 78 78;        /* #4e4e4e muted text */
+    --c-border: 231 231 228;    /* #e7e7e4 borders / subtle fills */
+    --c-ink: 0 0 0;             /* pure black (primary buttons, headers) */
+    --c-accent: 0 0 0;          /* monochrome: accent folds into ink */
+    --c-accent-strong: 0 0 0;
   }
 
+  /* Dark theme is kept (app-only) but also monochrome — mirrors the landing's
+     black sections (#000 bg, #171717 raised, #252525 borders). */
   .dark {
-    --c-bg: 15 14 17;
-    --c-surface: 23 22 26;
-    --c-content: 243 241 238;   /* paper */
-    --c-muted: 165 161 170;
-    --c-border: 42 40 48;
-    --c-ink: 243 241 238;       /* flips to paper (primary on dark) */
-    --c-accent: 210 134 92;     /* lighter cognac for dark */
-    --c-accent-strong: 226 170 132;
+    --c-bg: 0 0 0;              /* black */
+    --c-surface: 23 23 23;      /* #171717 raised */
+    --c-content: 255 255 255;   /* white */
+    --c-muted: 171 171 171;     /* #ababab */
+    --c-border: 37 37 37;       /* #252525 */
+    --c-ink: 255 255 255;       /* flips to white (primary on dark) */
+    --c-accent: 255 255 255;
+    --c-accent-strong: 255 255 255;
   }
 
   body {
@@ -42,7 +47,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif;
+    @apply font-display;
+    letter-spacing: -0.02em;   /* tight tracking, matching the landing headings */
   }
 
   /* Native <select> popups are painted by the OS, so they ignore the theme

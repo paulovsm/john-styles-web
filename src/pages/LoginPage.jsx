@@ -53,7 +53,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithGoogle)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Google className="h-5 w-5 text-grey-medium group-hover:text-brand-navy" />
@@ -64,7 +64,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithFacebook)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Facebook className="h-5 w-5 text-blue-600" />
@@ -75,7 +75,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithApple)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-medium rounded-md text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Apple className="h-5 w-5 text-black" />

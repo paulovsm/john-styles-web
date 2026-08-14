@@ -37,8 +37,18 @@ export default {
         },
       },
       fontFamily: {
-        serif: ['Fraunces', 'Playfair Display', 'serif'],
+        // Aligned to the landing: Montserrat for display/headings, Inter for body.
+        // `serif` is aliased to Montserrat too so any legacy font-serif usage
+        // flips to the new display face until the class names are swept.
+        display: ['Montserrat', 'sans-serif'],
+        serif: ['Montserrat', 'sans-serif'],
         sans: ['Inter', 'sans-serif'],
+      },
+      borderRadius: {
+        card: '9px',   // landing service-card radius
+      },
+      boxShadow: {
+        card: '0 18px 48px rgba(0, 0, 0, 0.06)',  // landing soft card shadow
       },
       spacing: {
         '1': '4px',

@@ -122,8 +122,12 @@ export default function LandingPage() {
                                 src="/landing/fleek-title.avif"
                                 alt="Fleek Authority — transforme seu estilo profissional e torne-se a sua melhor versão"
                             />
+                            <p className="fleek-hero-tagline">
+                                John Styles, seu personal stylist com IA. Receba recomendações sob medida,
+                                organize seu guarda-roupa e eleve sua imagem profissional.
+                            </p>
                             <Link className="fleek-outline-button" to="/login">
-                                Transforme seu estilo profissional
+                                Começar grátis com o John Styles
                                 <span aria-hidden="true">↗</span>
                             </Link>
                         </div>
