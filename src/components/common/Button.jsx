@@ -11,7 +11,7 @@ export default function Button({
     onClick,
     ...props
 }) {
-    const baseStyles = "inline-flex items-center justify-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+    const baseStyles = "inline-flex items-center justify-center px-5 py-2 border text-sm font-semibold rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
 
     const variants = {
         primary: "border-transparent text-white-pure bg-brand-navy hover:bg-opacity-90 focus:ring-brand-navy",

@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import { useNavigate } from 'react-router-dom';
-import { AutoAwesome, Checkroom, Thermostat, CalendarMonth, Event } from '@mui/icons-material';
+import { AutoAwesome, Checkroom, Thermostat, CalendarMonth, Event, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { pickOutfitOfTheDay } from '../../utils/outfitOfTheDay';
@@ -22,6 +22,16 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
         const preferStyles = calendarConnected ? preferStylesForFormality(formality) : [];
         return pickOutfitOfTheDay(allItems, undefined, { cold, preferStyles });
     }, [allItems, cold, calendarConnected, formality]);
+
+    // Flag a weak recommendation so the card is honest about it (P1 #4): an
+    // incomplete outfit (missing a core category) or a very thin wardrobe.
+    const thinLook = outfit.length > 0 && (outfit.length < 3 || allItems.length < 6);
+
+    const scroller = useRef(null);
+    const scrollByDir = (dir) => {
+        const el = scroller.current;
+        if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' });
+    };
 
     const tryOn = () => navigate('/try-on', { state: { preselect: outfit.map((i) => i.id) } });
 
@@ -82,16 +92,29 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                     </div>
                 ) : (
                     <>
-                        <div className={`grid gap-3 ${outfit.length === 4 ? 'grid-cols-4' : 'grid-cols-3'}`}>
-                            {outfit.map((item) => (
-                                <div key={item.id} className="text-center">
-                                    <div className="aspect-[3/4] rounded-md overflow-hidden bg-grey-light">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" style={{ imageOrientation: 'from-image' }} />
+                        <div className="relative">
+                            <div ref={scroller} className="flex gap-3 overflow-x-auto snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                                {outfit.map((item) => (
+                                    <div key={item.id} className="snap-start shrink-0 w-48 text-center">
+                                        <div className="aspect-[3/4] rounded-md overflow-hidden bg-grey-light">
+                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" style={{ imageOrientation: 'from-image' }} />
+                                        </div>
+                                        <p className="mt-1 text-xs text-grey-dark truncate" title={item.name}>{item.name}</p>
                                     </div>
-                                    <p className="mt-1 text-xs text-grey-dark truncate" title={item.name}>{item.name}</p>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
+                            {outfit.length > 3 && (
+                                <>
+                                    <button type="button" onClick={() => scrollByDir(-1)} aria-label={t('common.previous', 'Anterior')} className="absolute left-1 top-[42%] -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"><ChevronLeft fontSize="small" /></button>
+                                    <button type="button" onClick={() => scrollByDir(1)} aria-label={t('common.next', 'Próximo')} className="absolute right-1 top-[42%] -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"><ChevronRight fontSize="small" /></button>
+                                </>
+                            )}
                         </div>
+                        {thinLook && (
+                            <p className="mt-3 text-[11px] text-grey-medium">
+                                {t('dashboard.outfitThin', 'Guarda-roupa enxuto — adicione peças para recomendações melhores.')}
+                            </p>
+                        )}
                         {cold && (
                             <p className="mt-3 text-xs text-brand-gold-dark">
                                 {t('dashboard.weatherColdTip', 'Está frio — incluímos uma peça de agasalho no look.')}

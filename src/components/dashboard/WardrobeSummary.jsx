@@ -4,6 +4,7 @@ import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { Checkroom } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { mapSubcategory } from '../../utils/categoryMapper';
+import InsightsCard from './InsightsCard';
 
 export default function WardrobeSummary() {
     const { items } = useWardrobeContext();
@@ -31,35 +32,37 @@ export default function WardrobeSummary() {
                     <div className="bg-brand-navy/10 p-2 rounded-full mr-3">
                         <Checkroom className="text-brand-navy" />
                     </div>
-                    <Card.Title>{t('dashboard.wardrobeSummary')}</Card.Title>
+                    <Card.Title className="whitespace-nowrap">{t('dashboard.wardrobeSummary')}</Card.Title>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white-off p-3 rounded-md text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
                         <span className="block text-2xl font-bold text-brand-navy">{stats.total}</span>
                         <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.totalItems')}</span>
                     </div>
-                    <div className="bg-white-off p-3 rounded-md text-center">
+                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
                         <span className="block text-2xl font-bold text-brand-navy">{stats.shirts}</span>
                         <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.shirts', { count: stats.shirts })}</span>
                     </div>
-                    <div className="bg-white-off p-3 rounded-md text-center">
+                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
                         <span className="block text-2xl font-bold text-brand-navy">{stats.polos}</span>
                         <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.polos', { count: stats.polos })}</span>
                     </div>
-                    <div className="bg-white-off p-3 rounded-md text-center">
+                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
                         <span className="block text-2xl font-bold text-brand-navy">{stats.tshirts}</span>
                         <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.tshirts', { count: stats.tshirts })}</span>
                     </div>
-                    <div className="bg-white-off p-3 rounded-md text-center">
+                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
                         <span className="block text-2xl font-bold text-brand-navy">{stats.bottoms}</span>
                         <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.bottoms', { count: stats.bottoms })}</span>
                     </div>
-                    <div className="bg-white-off p-3 rounded-md text-center">
+                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
                         <span className="block text-2xl font-bold text-brand-navy">{stats.shoes}</span>
                         <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.shoes', { count: stats.shoes })}</span>
                     </div>
                 </div>
+
+                <InsightsCard />
             </Card.Body>
         </Card>
     );

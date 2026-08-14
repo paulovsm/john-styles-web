@@ -70,6 +70,8 @@
     "outfitEmpty": "Adicione peças ao guarda-roupa para receber sugestões de look.",
     "recentLooks": "Looks recentes",
     "viewAll": "Ver todos",
+    "outfitThin": "Guarda-roupa enxuto — adicione peças para recomendações melhores.",
+    "emptyWardrobe": "Seu guarda-roupa está vazio. Adicione peças para começar.",
     "noLooks": "Você ainda não salvou nenhum look. Experimente no Provador Virtual.",
     "weatherColdTip": "Está frio — incluímos uma peça de agasalho no look.",
     "weather": {
@@ -258,7 +260,9 @@
     "userAvatar": "Foto do usuário",
     "saved": "Salvo!",
     "saving": "Salvando...",
-    "toggleTheme": "Alternar tema"
+    "toggleTheme": "Alternar tema",
+    "previous": "Anterior",
+    "next": "Próximo"
   },
   "onboarding": {
     "title": "Bem-vindo ao John Styles",

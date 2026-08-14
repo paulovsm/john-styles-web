@@ -189,7 +189,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                     <p className="text-xs text-grey-medium">{t('wardrobe.addModal.fileTypes')}</p>
                                 </div>
                                 <div className="mt-4 flex w-full flex-col justify-center gap-2 sm:flex-row">
-                                    <label htmlFor="camera-capture" className="inline-flex cursor-pointer items-center justify-center rounded-md border border-brand-navy bg-brand-navy px-4 py-2 text-sm font-medium text-white-pure transition-colors hover:bg-opacity-90 focus-within:ring-2 focus-within:ring-brand-navy focus-within:ring-offset-2">
+                                    <label htmlFor="camera-capture" className="inline-flex cursor-pointer items-center justify-center rounded-full border border-brand-navy bg-brand-navy px-5 py-2 text-sm font-semibold text-white-pure transition-colors hover:bg-opacity-90 focus-within:ring-2 focus-within:ring-brand-navy focus-within:ring-offset-2">
                                         <CameraAlt className="mr-2" fontSize="small" />
                                         {t('wardrobe.addModal.takePhoto')}
                                         <input

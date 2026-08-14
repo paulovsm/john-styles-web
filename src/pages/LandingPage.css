@@ -155,6 +155,15 @@
     object-fit: contain;
 }
 
+.fleek-hero-tagline {
+    max-width: 480px;
+    margin: 18px 0 26px;
+    color: var(--fleek-muted);
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: center;
+}
+
 .fleek-outline-button,
 .fleek-light-button {
     display: inline-flex;

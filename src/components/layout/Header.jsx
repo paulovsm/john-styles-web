@@ -44,22 +44,22 @@ export default function Header() {
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <Link to="/dashboard" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/dashboard" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.dashboard')}
                             </Link>
-                            <Link to="/chat" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/chat" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.chat')}
                             </Link>
-                            <Link to="/wardrobe" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/wardrobe" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.wardrobe')}
                             </Link>
-                            <Link to="/try-on" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/try-on" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.tryOn')}
                             </Link>
-                            <Link to="/history" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/history" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.history')}
                             </Link>
-                            <Link to="/gallery" className="border-transparent text-grey-medium hover:border-brand-navy hover:text-brand-navy inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <Link to="/gallery" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.gallery', 'Galeria')}
                             </Link>
                         </div>
@@ -176,7 +176,7 @@ export default function Header() {
                             </div>
                         ) : (
                             <div className="px-4">
-                                <Link to="/login" className="block text-center w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white-pure bg-brand-navy hover:bg-opacity-90">
+                                <Link to="/login" className="block text-center w-full py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-semibold text-white-pure bg-brand-navy hover:bg-opacity-90">
                                     {t('auth.login')}
                                 </Link>
                             </div>
