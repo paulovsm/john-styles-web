@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import WardrobeSummary from '../components/dashboard/WardrobeSummary';
 import OutfitOfTheDay from '../components/dashboard/OutfitOfTheDay';
@@ -39,29 +39,24 @@ export default function Dashboard() {
 
     return (
         <MainLayout>
-            <div className="mb-6 flex justify-between items-start gap-4">
-                <div>
-                    <h1 className="text-3xl font-serif font-bold text-brand-navy">
-                        {t('dashboard.welcome', { name: currentUser?.displayName?.split(' ')[0] || 'User' })}
-                    </h1>
-                    <p className="mt-2 text-grey-medium">{t('dashboard.subtitle')}</p>
-                </div>
-                <Link to="/onboarding" className="shrink-0 text-brand-navy hover:opacity-80 font-medium underline">
-                    {t('dashboard.myProfile')}
-                </Link>
+            <div className="mb-6">
+                <h1 className="text-3xl font-serif font-bold text-brand-navy">
+                    {t('dashboard.welcome', { name: currentUser?.displayName?.split(' ')[0] || 'User' })}
+                </h1>
+                <p className="mt-2 text-grey-medium">{t('dashboard.subtitle')}</p>
             </div>
 
-            {/* Primary actions, inline under the subtitle */}
-            <div className="mb-8 flex flex-wrap gap-3">
-                <Button variant="primary" onClick={() => navigate('/chat')}>
+            {/* Primary actions, inline under the subtitle (stacked on mobile) */}
+            <div className="mb-8 flex flex-col sm:flex-row sm:flex-wrap gap-3">
+                <Button variant="primary" className="w-full sm:w-auto" onClick={() => navigate('/chat')}>
                     <Chat className="mr-2 h-5 w-5" />
                     {t('dashboard.askJohn')}
                 </Button>
-                <Button variant="outline" onClick={() => navigate('/wardrobe')}>
+                <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigate('/wardrobe')}>
                     <AddAPhoto className="mr-2 h-5 w-5" />
                     {t('dashboard.addNewItem')}
                 </Button>
-                <Button variant="text" onClick={() => navigate('/history')}>
+                <Button variant="text" className="w-full sm:w-auto" onClick={() => navigate('/history')}>
                     <History className="mr-2 h-5 w-5" />
                     {t('dashboard.viewHistory')}
                 </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,18 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { isSyncing, syncNow } = useSyncStatus();
     const { theme, toggleTheme } = useTheme();
+    const [accountOpen, setAccountOpen] = useState(false);
+    const accountRef = useRef(null);
+
+    // Close the account menu on any outside click.
+    useEffect(() => {
+        if (!accountOpen) return;
+        const onClick = (e) => {
+            if (accountRef.current && !accountRef.current.contains(e.target)) setAccountOpen(false);
+        };
+        document.addEventListener('mousedown', onClick);
+        return () => document.removeEventListener('mousedown', onClick);
+    }, [accountOpen]);
 
     const handleSync = async () => {
         try {
@@ -84,26 +96,50 @@ export default function Header() {
                         </button>
                         <LanguageSelector />
                         {currentUser ? (
-                            <div className="ml-3 relative flex items-center space-x-4">
-                                <span className="text-sm text-grey-dark">{currentUser.displayName || currentUser.email}</span>
+                            <div className="ml-3 relative" ref={accountRef}>
                                 <button
-                                    onClick={handleLogout}
-                                    className="p-1 rounded-full text-grey-medium hover:text-brand-navy focus:outline-none"
-                                    aria-label={t('common.logout', 'Sair')}
-                                    title={t('common.logout', 'Sair')}
+                                    type="button"
+                                    onClick={() => setAccountOpen((o) => !o)}
+                                    aria-haspopup="menu"
+                                    aria-expanded={accountOpen}
+                                    aria-label={t('common.account', 'Conta')}
+                                    className="flex rounded-full focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2"
                                 >
-                                    <Logout />
+                                    {currentUser.photoURL ? (
+                                        <img
+                                            className="h-8 w-8 rounded-full object-cover"
+                                            src={currentUser.photoURL}
+                                            alt={t('common.userAvatar', 'Foto do usuário')}
+                                            referrerPolicy="no-referrer"
+                                        />
+                                    ) : (
+                                        <div className="h-8 w-8 rounded-full bg-brand-navy flex items-center justify-center text-white-pure">
+                                            <Person />
+                                        </div>
+                                    )}
                                 </button>
-                                {currentUser.photoURL ? (
-                                    <img
-                                        className="h-8 w-8 rounded-full object-cover"
-                                        src={currentUser.photoURL}
-                                        alt={t('common.userAvatar', 'Foto do usuário')}
-                                        referrerPolicy="no-referrer"
-                                    />
-                                ) : (
-                                    <div className="h-8 w-8 rounded-full bg-brand-navy flex items-center justify-center text-white-pure">
-                                        <Person />
+                                {accountOpen && (
+                                    <div role="menu" className="absolute right-0 mt-2 w-56 rounded-card border border-grey-light bg-white-pure shadow-card py-1 z-50">
+                                        <div className="px-4 py-3 border-b border-grey-light">
+                                            <p className="text-sm font-semibold text-brand-navy truncate">{currentUser.displayName || 'User'}</p>
+                                            <p className="text-xs text-grey-medium truncate">{currentUser.email}</p>
+                                        </div>
+                                        <Link
+                                            to="/onboarding"
+                                            role="menuitem"
+                                            onClick={() => setAccountOpen(false)}
+                                            className="flex items-center gap-2 px-4 py-2 text-sm text-grey-dark hover:bg-grey-light"
+                                        >
+                                            <Person fontSize="small" /> {t('dashboard.myProfile')}
+                                        </Link>
+                                        <button
+                                            type="button"
+                                            role="menuitem"
+                                            onClick={() => { setAccountOpen(false); handleLogout(); }}
+                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-grey-dark hover:bg-grey-light"
+                                        >
+                                            <Logout fontSize="small" /> {t('common.logout', 'Sair')}
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -148,6 +184,9 @@ export default function Header() {
                         </Link>
                         <Link to="/gallery" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
                             {t('nav.gallery', 'Galeria')}
+                        </Link>
+                        <Link to="/onboarding" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
+                            {t('dashboard.myProfile')}
                         </Link>
                     </div>
                     <div className="pt-4 pb-4 border-t border-grey-light">

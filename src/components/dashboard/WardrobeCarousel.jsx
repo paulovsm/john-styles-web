@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import Card from '../common/Card';
 import { Link } from 'react-router-dom';
 import { Checkroom, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { mapSubcategory } from '../../utils/categoryMapper';
+import { useHorizontalCarousel } from '../../hooks/useHorizontalCarousel';
 
 /**
  * Full-width strip of the user's wardrobe photos on the dashboard. Horizontal
@@ -14,12 +15,7 @@ import { mapSubcategory } from '../../utils/categoryMapper';
 export default function WardrobeCarousel() {
     const { allItems } = useWardrobeContext();
     const { t } = useTranslation();
-    const scroller = useRef(null);
-
-    const scrollByDir = (dir) => {
-        const el = scroller.current;
-        if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' });
-    };
+    const { scroller, canScroll, scrollByDir } = useHorizontalCarousel(allItems.length);
 
     const typeLabel = (item) => {
         const sub = item.category === 'tops' ? (item.subcategory || mapSubcategory(item.name)) : null;
@@ -71,7 +67,7 @@ export default function WardrobeCarousel() {
                                 </Link>
                             ))}
                         </div>
-                        {allItems.length > 4 && (
+                        {canScroll && (
                             <>
                                 <button
                                     type="button"
