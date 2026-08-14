@@ -44,22 +44,22 @@ export default function Header() {
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <Link to="/dashboard" className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
+                            <Link to="/dashboard" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.dashboard')}
                             </Link>
-                            <Link to="/chat" className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
+                            <Link to="/chat" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.chat')}
                             </Link>
-                            <Link to="/wardrobe" className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
+                            <Link to="/wardrobe" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.wardrobe')}
                             </Link>
-                            <Link to="/try-on" className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
+                            <Link to="/try-on" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.tryOn')}
                             </Link>
-                            <Link to="/history" className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
+                            <Link to="/history" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.history')}
                             </Link>
-                            <Link to="/gallery" className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
+                            <Link to="/gallery" className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold text-grey-medium hover:text-brand-navy hover:bg-grey-light transition-colors">
                                 {t('nav.gallery', 'Galeria')}
                             </Link>
                         </div>

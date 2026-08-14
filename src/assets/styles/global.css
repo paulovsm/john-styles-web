@@ -25,6 +25,7 @@
     --c-ink: 0 0 0;             /* pure black (primary buttons, headers) */
     --c-accent: 0 0 0;          /* monochrome: accent folds into ink */
     --c-accent-strong: 0 0 0;
+    --c-subtle: 244 244 242;    /* #f4f4f2 inset panels (stat tiles) — off the white card */
   }
 
   /* Dark theme is kept (app-only) but also monochrome — mirrors the landing's
@@ -38,6 +39,7 @@
     --c-ink: 255 255 255;       /* flips to white (primary on dark) */
     --c-accent: 255 255 255;
     --c-accent-strong: 255 255 255;
+    --c-subtle: 0 0 0;          /* black tiles inset on the #171717 card */
   }
 
   body {

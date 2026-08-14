@@ -23,6 +23,7 @@ export default {
           DEFAULT: withVar('--c-surface'),
           pure: withVar('--c-surface'),    // cards / on-primary text
           off: withVar('--c-bg'),          // page background
+          sunken: withVar('--c-subtle'),   // inset panels (stat tiles) — off the card
         },
         grey: {
           light: withVar('--c-border'),    // borders / subtle fills

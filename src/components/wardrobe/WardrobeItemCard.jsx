@@ -3,9 +3,18 @@ import Card from '../common/Card';
 import { Delete } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { colorToHex } from '../../utils/colorMap';
+import { mapSubcategory } from '../../utils/categoryMapper';
 
 export default function WardrobeItemCard({ item, onDelete, onClick }) {
     const { t } = useTranslation();
+
+    // Show the specific garment type (Camisa / Polo / Camiseta …) rather than the
+    // coarse bucket. For tops, prefer the sub-type (inferred from the name when
+    // unset); otherwise fall back to the translated category.
+    const sub = item.category === 'tops' ? (item.subcategory || mapSubcategory(item.name)) : null;
+    const typeLabel = sub
+        ? t(`wardrobe.filters.subcategories.${sub}`)
+        : t(`wardrobe.filters.categories.${item.category}`, item.category);
 
     return (
         <Card hoverable onClick={() => onClick && onClick(item)} className="relative group">
@@ -17,7 +26,7 @@ export default function WardrobeItemCard({ item, onDelete, onClick }) {
             )}
             <Card.Body>
                 <Card.Title className="truncate">{item.name}</Card.Title>
-                <Card.Subtitle className="capitalize">{item.category}</Card.Subtitle>
+                <Card.Subtitle>{typeLabel}</Card.Subtitle>
                 <div className="mt-2 flex flex-wrap gap-1">
                     {item.colors && item.colors.map((color, index) => {
                         const hex = colorToHex(color);

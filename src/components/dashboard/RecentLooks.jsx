@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Card from '../common/Card';
 import { Link } from 'react-router-dom';
-import { Collections } from '@mui/icons-material';
+import { Collections, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { firestoreService } from '../../services/storage/firestoreService';
@@ -10,15 +10,21 @@ export default function RecentLooks() {
     const { currentUser } = useAuth();
     const { t } = useTranslation();
     const [looks, setLooks] = useState(null); // null = loading
+    const scroller = useRef(null);
 
     useEffect(() => {
         let active = true;
         if (!currentUser) return;
         firestoreService.getGalleryItems(currentUser.uid).then((items) => {
-            if (active) setLooks(Array.isArray(items) ? items.slice(0, 4) : []);
+            if (active) setLooks(Array.isArray(items) ? items.slice(0, 8) : []);
         });
         return () => { active = false; };
     }, [currentUser]);
+
+    const scrollByDir = (dir) => {
+        const el = scroller.current;
+        if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' });
+    };
 
     return (
         <Card className="h-full">
@@ -38,9 +44,9 @@ export default function RecentLooks() {
                 </div>
 
                 {looks === null ? (
-                    <div className="grid grid-cols-4 gap-3">
-                        {[0, 1, 2, 3].map((i) => (
-                            <div key={i} className="aspect-[3/4] rounded-md bg-grey-light animate-pulse" />
+                    <div className="flex gap-3">
+                        {[0, 1].map((i) => (
+                            <div key={i} className="aspect-[3/4] w-1/2 rounded-md bg-grey-light animate-pulse" />
                         ))}
                     </div>
                 ) : looks.length === 0 ? (
@@ -48,12 +54,47 @@ export default function RecentLooks() {
                         {t('dashboard.noLooks', 'Você ainda não salvou nenhum look. Experimente no Provador Virtual.')}
                     </p>
                 ) : (
-                    <div className="grid grid-cols-4 gap-3">
-                        {looks.map((look) => (
-                            <Link key={look.id} to="/gallery" className="block aspect-[3/4] rounded-md overflow-hidden bg-grey-light">
-                                <img src={look.imageUrl} alt={t('dashboard.recentLooks', 'Looks recentes')} className="w-full h-full object-cover hover:opacity-90" loading="lazy" style={{ imageOrientation: 'from-image' }} />
-                            </Link>
-                        ))}
+                    <div className="relative">
+                        <div
+                            ref={scroller}
+                            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                        >
+                            {looks.map((look) => (
+                                <Link
+                                    key={look.id}
+                                    to="/gallery"
+                                    className="snap-start shrink-0 w-48 block aspect-[3/4] rounded-md overflow-hidden bg-grey-light"
+                                >
+                                    <img
+                                        src={look.imageUrl}
+                                        alt={t('dashboard.recentLooks', 'Looks recentes')}
+                                        className="w-full h-full object-cover hover:opacity-90"
+                                        loading="lazy"
+                                        style={{ imageOrientation: 'from-image' }}
+                                    />
+                                </Link>
+                            ))}
+                        </div>
+                        {looks.length > 2 && (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => scrollByDir(-1)}
+                                    aria-label={t('common.previous', 'Anterior')}
+                                    className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"
+                                >
+                                    <ChevronLeft fontSize="small" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => scrollByDir(1)}
+                                    aria-label={t('common.next', 'Próximo')}
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"
+                                >
+                                    <ChevronRight fontSize="small" />
+                                </button>
+                            </>
+                        )}
                     </div>
                 )}
             </Card.Body>
