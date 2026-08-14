@@ -1,16 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '../common/Card';
 import { Link } from 'react-router-dom';
 import { Collections, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { firestoreService } from '../../services/storage/firestoreService';
+import { useHorizontalCarousel } from '../../hooks/useHorizontalCarousel';
 
 export default function RecentLooks() {
     const { currentUser } = useAuth();
     const { t } = useTranslation();
     const [looks, setLooks] = useState(null); // null = loading
-    const scroller = useRef(null);
+    const { scroller, canScroll, scrollByDir } = useHorizontalCarousel(looks?.length ?? 0);
 
     useEffect(() => {
         let active = true;
@@ -20,11 +21,6 @@ export default function RecentLooks() {
         });
         return () => { active = false; };
     }, [currentUser]);
-
-    const scrollByDir = (dir) => {
-        const el = scroller.current;
-        if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' });
-    };
 
     return (
         <Card className="h-full">
@@ -75,7 +71,7 @@ export default function RecentLooks() {
                                 </Link>
                             ))}
                         </div>
-                        {looks.length > 2 && (
+                        {canScroll && (
                             <>
                                 <button
                                     type="button"

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { pickOutfitOfTheDay } from '../../utils/outfitOfTheDay';
 import { preferStylesForFormality } from '../../hooks/useDailyContext';
 import { calendarService } from '../../services/api/calendarService';
+import { useHorizontalCarousel } from '../../hooks/useHorizontalCarousel';
 
 export default function OutfitOfTheDay({ weather, dailyContext }) {
     const { allItems } = useWardrobeContext();
@@ -27,11 +28,7 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
     // incomplete outfit (missing a core category) or a very thin wardrobe.
     const thinLook = outfit.length > 0 && (outfit.length < 3 || allItems.length < 6);
 
-    const scroller = useRef(null);
-    const scrollByDir = (dir) => {
-        const el = scroller.current;
-        if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' });
-    };
+    const { scroller, canScroll, scrollByDir } = useHorizontalCarousel(outfit.length);
 
     const tryOn = () => navigate('/try-on', { state: { preselect: outfit.map((i) => i.id) } });
 
@@ -103,7 +100,7 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                                     </div>
                                 ))}
                             </div>
-                            {outfit.length > 3 && (
+                            {canScroll && (
                                 <>
                                     <button type="button" onClick={() => scrollByDir(-1)} aria-label={t('common.previous', 'Anterior')} className="absolute left-1 top-[42%] -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"><ChevronLeft fontSize="small" /></button>
                                     <button type="button" onClick={() => scrollByDir(1)} aria-label={t('common.next', 'Próximo')} className="absolute right-1 top-[42%] -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"><ChevronRight fontSize="small" /></button>

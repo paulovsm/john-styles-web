@@ -46,10 +46,15 @@
      (a flex/grid row, a carousel, a long unbreakable string) ends up wider
      than the viewport, this stops the whole page from scrolling sideways and
      clipping the left edge of the content instead of just the offending
-     element's overflow. */
+     element's overflow.
+     `clip` — NOT `hidden`: `overflow-x: hidden` turns these into scroll
+     containers, which silently breaks every `position: sticky` descendant
+     (the app header, the blog header, the try-on sidebar). `clip` cuts the
+     overflow without creating a scroll container, so sticky keeps working.
+     `max-width: 100vw` is deliberately absent: 100vw includes the classic
+     scrollbar's width, so it overflows by a few px on its own. */
   html, body {
-    overflow-x: hidden;
-    max-width: 100vw;
+    overflow-x: clip;
   }
 
   body {
