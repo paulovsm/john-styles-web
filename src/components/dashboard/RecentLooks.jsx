@@ -16,7 +16,9 @@ export default function RecentLooks() {
     useEffect(() => {
         let active = true;
         if (!currentUser) return;
-        firestoreService.getGalleryItems(currentUser.uid).then((items) => {
+        // Ask for only what this card renders instead of downloading the whole
+        // gallery and discarding all but the newest few.
+        firestoreService.getGalleryItems(currentUser.uid, 8).then((items) => {
             if (active) setLooks(Array.isArray(items) ? items.slice(0, 8) : []);
         });
         return () => { active = false; };
