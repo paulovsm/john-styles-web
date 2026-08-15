@@ -16,7 +16,14 @@
     "logout": "Sair",
     "signInWith": "Entrar com {{provider}}",
     "welcome": "Bem-vindo de volta",
-    "legalPrefix": "Ao entrar, você concorda com nossa"
+    "legalPrefix": "Ao entrar, você concorda com nossa",
+    "signingIn": "Entrando...",
+    "errors": {
+      "popupBlocked": "Seu navegador bloqueou a janela de login. Permita pop-ups ou tente novamente.",
+      "network": "Falha de conexão. Verifique sua internet e tente novamente.",
+      "accountExists": "Já existe uma conta com este e-mail usando outro método de login.",
+      "generic": "Não foi possível entrar. Tente novamente."
+    }
   },
   "landing": {
     "hero": {
@@ -95,6 +102,7 @@
     "typing": "John está digitando...",
     "error": "Desculpe, encontrei um erro. Por favor, tente novamente.",
     "noResponse": "Desculpe, não entendi.",
+    "inputLabel": "Mensagem para o John Styles",
     "send": "Enviar",
     "thinking": "John está pensando...",
     "connectionError": "Desculpe, estou com dificuldades para conectar agora. Tente novamente.",
@@ -195,6 +203,8 @@
     "exploreSamples": "Explorar com peças de exemplo",
     "exploreSamplesHint": "Peças de exemplo para testar o app — você pode removê-las quando quiser.",
     "sampleBadge": "Exemplo",
+    "deleteTitle": "Excluir peça",
+    "deleteConfirm": "Tem certeza que deseja excluir esta peça do guarda-roupa?",
     "sampleNotice": "Seu guarda-roupa inclui peças de exemplo para você testar.",
     "removeSamples": "Remover exemplos"
   },

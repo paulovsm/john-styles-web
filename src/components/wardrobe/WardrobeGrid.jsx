@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import WardrobeItemCard from './WardrobeItemCard';
+import ConfirmDialog from '../common/ConfirmDialog';
 import { Add, AutoAwesome } from '@mui/icons-material';
 import Button from '../common/Button';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 export default function WardrobeGrid({ onAddItem, onItemClick }) {
     const { items, removeItem, addSampleItems } = useWardrobeContext();
     const { t } = useTranslation();
+    // Deleting a garment is destructive and irreversible — always confirm.
+    const [pendingDelete, setPendingDelete] = useState(null);
 
     if (items.length === 0) {
         return (
@@ -35,15 +38,27 @@ export default function WardrobeGrid({ onAddItem, onItemClick }) {
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {items.map((item) => (
-                <WardrobeItemCard
-                    key={item.id}
-                    item={item}
-                    onDelete={removeItem}
-                    onClick={onItemClick}
-                />
-            ))}
-        </div>
+        <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+                {items.map((item) => (
+                    <WardrobeItemCard
+                        key={item.id}
+                        item={item}
+                        onDelete={() => setPendingDelete(item)}
+                        onClick={onItemClick}
+                    />
+                ))}
+            </div>
+
+            <ConfirmDialog
+                isOpen={!!pendingDelete}
+                onCancel={() => setPendingDelete(null)}
+                onConfirm={() => { removeItem(pendingDelete.id); setPendingDelete(null); }}
+                title={t('wardrobe.deleteTitle', 'Excluir peça')}
+                message={t('wardrobe.deleteConfirm', 'Tem certeza que deseja excluir esta peça do guarda-roupa?')}
+                confirmLabel={t('common.delete', 'Excluir')}
+                danger
+            />
+        </>
     );
 }

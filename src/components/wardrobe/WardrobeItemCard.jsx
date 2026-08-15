@@ -53,7 +53,7 @@ export default function WardrobeItemCard({ item, onDelete, onClick }) {
                         e.stopPropagation();
                         onDelete(item.id);
                     }}
-                    className="absolute top-2 right-2 p-1 bg-white-pure rounded-full shadow-sm text-grey-medium hover:text-status-error opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-2 right-2 grid place-items-center h-11 w-11 bg-white-pure/90 rounded-full shadow-sm text-grey-medium hover:text-status-error active:text-status-error transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
                     aria-label={t('common.delete', 'Excluir')}
                     title={t('common.delete', 'Excluir')}
                 >
