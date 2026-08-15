@@ -38,6 +38,16 @@ describe('HybridStorageService local-data clearing (cross-user isolation)', () =
         expect(notified).not.toContain(STORAGE_KEYS.USER_PROFILE);
     });
 
+    it('clearLocalData drops an abandoned onboarding draft', () => {
+        // Otherwise the next user on a shared browser starts onboarding with the
+        // previous user's answers already filled in.
+        local.setItem(STORAGE_KEYS.ONBOARDING_DRAFT, { step: 2, sel: { archetypes: ['classic'] } });
+
+        storageService.clearLocalData();
+
+        expect(local.getItem(STORAGE_KEYS.ONBOARDING_DRAFT, null)).toBeNull();
+    });
+
     it('resetProfileLocal clears the profile locally and notifies (no cloud write)', () => {
         local.setItem(STORAGE_KEYS.USER_PROFILE, { onboardingCompleted: true, modelPhotoUrl: 'x.jpg' });
 

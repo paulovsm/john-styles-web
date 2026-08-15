@@ -179,6 +179,8 @@
       "dragDrop": "or drag and drop",
       "fileTypes": "JPG, PNG or WebP up to 8MB",
       "analyzeAI": "Analyze with AI",
+      "processingPhoto": "Processing photo...",
+      "previewAlt": "Preview of the selected item",
       "name": "Name",
       "namePlaceholder": "e.g. Blue Denim Jacket",
       "description": "Description",

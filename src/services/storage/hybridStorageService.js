@@ -64,6 +64,10 @@ class HybridStorageService {
             localStorageService.setItem(key, def);
             this.notify(key, def);
         }
+        // Has no empty-default form (its absence is the empty state), so drop it
+        // outright — otherwise an abandoned onboarding would pre-fill the next
+        // user's answers on a shared browser.
+        localStorageService.removeItem(STORAGE_KEYS.ONBOARDING_DRAFT);
     }
 
     /**

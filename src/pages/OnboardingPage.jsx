@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUserProfileContext } from '../contexts/UserProfileContext';
@@ -7,6 +7,7 @@ import { colorToHex } from '../utils/colorMap';
 import Loading from '../components/common/Loading';
 import { Close } from '@mui/icons-material';
 import { ARCHETYPES, inferArchetypes } from '../utils/archetypes';
+import { STORAGE_KEYS } from '../services/storage/localStorageService';
 
 // Option catalogs. `value` is the canonical (PT) token stored on the profile so
 // it matches the wardrobe/sample color names; the label is translated via i18n.
@@ -45,6 +46,10 @@ const canonOne = (value, options) => {
     return match ? match.value : (value || '');
 };
 
+// Registered in STORAGE_KEYS so the user-switch wipe in clearLocalData()
+// picks it up — an abandoned draft must not pre-fill the next user's answers.
+const DRAFT_KEY = STORAGE_KEYS.ONBOARDING_DRAFT;
+
 function initSelection(profile) {
     return {
         archetypes: profile.styleArchetypes || [],
@@ -63,8 +68,28 @@ export default function OnboardingPage() {
     const { profile, updateProfile } = useUserProfileContext();
     const navigate = useNavigate();
 
-    const [step, setStep] = useState(0);
-    const [sel, setSel] = useState(() => initSelection(profile));
+    // Restore an in-progress draft — iOS silently evicts backgrounded tabs, and
+    // without this the user loses every answer if they leave mid-flow.
+    const draft = (() => {
+        try {
+            const raw = localStorage.getItem(DRAFT_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch {
+            return null;
+        }
+    })();
+
+    const [step, setStep] = useState(() => draft?.step ?? 0);
+    const [sel, setSel] = useState(() => ({ ...initSelection(profile), ...(draft?.sel || {}) }));
+
+    // Persist the draft on every change.
+    useEffect(() => {
+        try {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify({ step, sel }));
+        } catch {
+            // Best-effort; storage may be full or blocked (private mode).
+        }
+    }, [step, sel]);
     // AI free-text escape hatch
     const [aiOpen, setAiOpen] = useState(false);
     const [aiText, setAiText] = useState('');
@@ -100,6 +125,7 @@ export default function OnboardingPage() {
             styleArchetypes: sel.archetypes,
             onboardingCompleted: true,
         });
+        try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
         navigate('/dashboard');
     };
 
@@ -277,16 +303,17 @@ export default function OnboardingPage() {
 }
 
 function ReviewChips({ label, items, onRemove }) {
+    const { t } = useTranslation();
     if (!items || items.length === 0) return null;
     return (
         <div>
             <h3 className="font-medium text-sm text-grey-medium uppercase tracking-wide mb-2">{label}</h3>
             <div className="flex flex-wrap gap-2">
                 {items.map((item) => (
-                    <span key={item} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm bg-brand-navy/10 text-brand-navy capitalize">
-                        {item}
-                        <button type="button" onClick={() => onRemove(item)} className="hover:text-status-error" aria-label="remover">
-                            <Close style={{ fontSize: 14 }} />
+                    <span key={item} className="inline-flex items-center rounded-full text-sm bg-brand-navy/10 text-brand-navy capitalize">
+                        <span className="py-1.5 pl-3">{item}</span>
+                        <button type="button" onClick={() => onRemove(item)} className="grid place-items-center h-8 w-8 -my-1 mr-0.5 shrink-0 hover:text-status-error active:text-status-error" aria-label={t('common.remove', 'Remover')}>
+                            <Close style={{ fontSize: 16 }} />
                         </button>
                     </span>
                 ))}

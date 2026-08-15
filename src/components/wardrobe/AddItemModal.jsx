@@ -16,6 +16,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const { t, i18n } = useTranslation();
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState('');
+    const [processingPhoto, setProcessingPhoto] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
     const [analyzeError, setAnalyzeError] = useState('');
     const [saving, setSaving] = useState(false);
@@ -63,24 +64,24 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
         e.target.value = '';
-        if (selectedFile) {
-            try {
-                const compressedFile = await compressImage(selectedFile);
-                setFile(compressedFile);
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    setPreview(reader.result);
-                };
-                reader.readAsDataURL(compressedFile);
-            } catch (error) {
-                console.error("Error compressing image:", error);
-                setFile(selectedFile);
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    setPreview(reader.result);
-                };
-                reader.readAsDataURL(selectedFile);
-            }
+        if (!selectedFile) return;
+        // Compressing a 12MP phone photo takes 0.5–2s on the main thread; without
+        // a flag the dropzone looks unchanged and the user re-taps the camera.
+        setProcessingPhoto(true);
+        try {
+            const compressedFile = await compressImage(selectedFile);
+            setFile(compressedFile);
+            const reader = new FileReader();
+            reader.onloadend = () => setPreview(reader.result);
+            reader.readAsDataURL(compressedFile);
+        } catch (error) {
+            console.error("Error compressing image:", error);
+            setFile(selectedFile);
+            const reader = new FileReader();
+            reader.onloadend = () => setPreview(reader.result);
+            reader.readAsDataURL(selectedFile);
+        } finally {
+            setProcessingPhoto(false);
         }
     };
 
@@ -167,16 +168,21 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 <div>
                     <label className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.itemImage')}</label>
                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-grey-light border-dashed rounded-md relative hover:bg-grey-lightest transition-colors">
-                        {preview ? (
+                        {processingPhoto ? (
+                            <div className="flex flex-col items-center justify-center h-48 text-grey-medium" role="status">
+                                <Loading type="spinner" size={32} className="mb-2" />
+                                <p className="text-sm">{t('wardrobe.addModal.processingPhoto', 'Processando foto...')}</p>
+                            </div>
+                        ) : preview ? (
                             <div className="relative w-full">
-                                <img src={preview} alt="Preview" className="mx-auto h-48 object-cover rounded-md" />
+                                <img src={preview} alt={t('wardrobe.addModal.previewAlt', 'Prévia da peça selecionada')} className="mx-auto h-48 object-cover rounded-md" style={{ imageOrientation: 'from-image' }} />
                                 <button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); setFile(null); setPreview(''); }}
-                                    className="absolute top-0 right-0 -mt-2 -mr-2 bg-white-pure rounded-full p-1 shadow-md text-grey-medium hover:text-status-error z-10"
+                                    aria-label={t('common.remove', 'Remover')}
+                                    className="absolute top-0 right-0 -mt-2 -mr-2 grid place-items-center h-10 w-10 bg-white-pure rounded-full shadow-md text-grey-medium hover:text-status-error active:text-status-error z-10"
                                 >
-                                    <span className="sr-only">Remove</span>
-                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>

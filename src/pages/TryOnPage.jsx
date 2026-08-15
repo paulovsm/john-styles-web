@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import Button from '../components/common/Button';
 import Loading from '../components/common/Loading';
@@ -41,6 +41,7 @@ export default function TryOnPage() {
     const [outfits, setOutfits] = useState([]);
     const [savingOutfit, setSavingOutfit] = useState(false);
     const [sharing, setSharing] = useState(false);
+    const resultRef = useRef(null);
 
     const handleShare = async () => {
         if (!generatedImage) return;
@@ -235,6 +236,13 @@ export default function TryOnPage() {
         setErrorMessage('');
         setRetryAfter(null);
 
+        // On mobile the result panel stacks BELOW the (long) input column, so a
+        // tap on Generate looks like nothing happened. Bring the result — with
+        // its loading state — into view.
+        if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+            requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        }
+
         try {
             let prompt;
 
@@ -295,7 +303,7 @@ export default function TryOnPage() {
 
     return (
         <MainLayout>
-            <h1 className="text-2xl font-serif font-bold text-brand-navy mb-6">{t('tryOn.title')}</h1>
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-navy mb-6">{t('tryOn.title')}</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column: Inputs */}
@@ -397,17 +405,17 @@ export default function TryOnPage() {
                                     <p className="text-sm font-medium text-brand-navy mb-2">{t('tryOn.myOutfits', 'Meus looks')}</p>
                                     <div className="flex flex-wrap gap-2">
                                         {outfits.map((outfit) => (
-                                            <span key={outfit.id} className="inline-flex items-center gap-1 pl-2.5 pr-1 py-0.5 rounded-full text-xs font-medium bg-brand-gold/15 text-brand-gold-dark">
-                                                <button type="button" onClick={() => applyOutfit(outfit)} className="max-w-[160px] truncate" title={outfit.name}>
+                                            <span key={outfit.id} className="inline-flex items-center rounded-full text-xs font-medium bg-brand-gold/15 text-brand-gold-dark">
+                                                <button type="button" onClick={() => applyOutfit(outfit)} className="max-w-[160px] truncate py-1.5 pl-3 pr-1" title={outfit.name}>
                                                     {outfit.name}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDeleteOutfit(outfit)}
                                                     aria-label={t('common.delete', 'Excluir')}
-                                                    className="hover:text-status-error"
+                                                    className="grid place-items-center h-9 w-9 pr-1 shrink-0 hover:text-status-error active:text-status-error"
                                                 >
-                                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                                 </button>
                                             </span>
                                         ))}
@@ -479,9 +487,9 @@ export default function TryOnPage() {
                 </div>
 
                 {/* Right Column: Result — the hero moment */}
-                <div className="lg:sticky lg:top-6 h-fit">
+                <div ref={resultRef} className="lg:sticky lg:top-6 h-fit scroll-mt-4">
                     {generating ? (
-                        <div className="rounded-2xl border border-grey-light bg-white-off flex items-center justify-center min-h-[500px]">
+                        <div className="rounded-2xl border border-grey-light bg-white-off flex items-center justify-center min-h-[280px] sm:min-h-[500px]">
                             <div className="text-center px-6">
                                 <Loading type="spinner" size={48} className="mb-4" />
                                 <p className="text-brand-navy font-medium">{t('tryOn.generating')}</p>
@@ -521,7 +529,7 @@ export default function TryOnPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="rounded-2xl border border-dashed border-grey-light bg-white-off flex items-center justify-center min-h-[500px]">
+                        <div className="rounded-2xl border border-dashed border-grey-light bg-white-off flex items-center justify-center min-h-[240px] sm:min-h-[500px]">
                             <div className="text-center text-grey-medium px-6">
                                 <AutoAwesome className="h-16 w-16 mx-auto mb-4 opacity-20" />
                                 <p>{t('tryOn.placeholder')}</p>

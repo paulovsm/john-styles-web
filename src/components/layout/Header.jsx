@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Menu, Close, Logout, Person, Sync, DarkMode, LightMode } from '@mui/icons-material';
@@ -166,28 +166,27 @@ export default function Header() {
             {/* Mobile menu */}
             {isMenuOpen && (
                 <div className="sm:hidden bg-white-pure border-t border-grey-light">
-                    <div className="pt-2 pb-3 space-y-1">
-                        <Link to="/dashboard" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
-                            {t('nav.dashboard')}
-                        </Link>
-                        <Link to="/chat" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
-                            {t('nav.chat')}
-                        </Link>
-                        <Link to="/wardrobe" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
-                            {t('nav.wardrobe')}
-                        </Link>
-                        <Link to="/try-on" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
-                            {t('nav.tryOn')}
-                        </Link>
-                        <Link to="/history" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
-                            {t('nav.history')}
-                        </Link>
-                        <Link to="/gallery" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
-                            {t('nav.gallery', 'Galeria')}
-                        </Link>
-                        <Link to="/onboarding" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy">
-                            {t('dashboard.myProfile')}
-                        </Link>
+                    <div className="pt-2 pb-3">
+                        {[
+                            { to: '/dashboard', label: t('nav.dashboard') },
+                            { to: '/chat', label: t('nav.chat') },
+                            { to: '/wardrobe', label: t('nav.wardrobe') },
+                            { to: '/try-on', label: t('nav.tryOn') },
+                            { to: '/history', label: t('nav.history') },
+                            { to: '/gallery', label: t('nav.gallery', 'Galeria') },
+                            { to: '/onboarding', label: t('dashboard.myProfile') },
+                        ].map(({ to, label }) => (
+                            <NavLink
+                                key={to}
+                                to={to}
+                                onClick={() => setIsMenuOpen(false)}
+                                className={({ isActive }) => `flex items-center pl-3 pr-4 py-3 min-h-[48px] border-l-4 text-base font-medium ${isActive
+                                    ? 'border-brand-navy text-brand-navy bg-grey-light'
+                                    : 'border-transparent text-grey-medium hover:bg-grey-light hover:border-brand-navy hover:text-brand-navy'}`}
+                            >
+                                {label}
+                            </NavLink>
+                        ))}
                     </div>
                     <div className="pt-4 pb-4 border-t border-grey-light">
                         {currentUser ? (

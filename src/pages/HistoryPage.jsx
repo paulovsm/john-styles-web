@@ -14,7 +14,7 @@ export default function HistoryPage() {
 
     return (
         <MainLayout>
-            <h1 className="text-2xl font-serif font-bold text-brand-navy mb-6">{t('history.title')}</h1>
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-navy mb-6">{t('history.title')}</h1>
 
             {reversedHistory.length === 0 ? (
                 <div className="text-center py-12 bg-white-pure rounded-lg border border-grey-light">
