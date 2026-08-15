@@ -45,15 +45,70 @@ a lot, since the benefit scales with photo count.
 _Est: ~1–2 h._
 
 ### Mobile Tier 4 — accessibility & polish
-Two items worth doing:
+Two items worth doing first:
 - **Error text is hard to read** — error messages use a red below the readability
-  standard on white, so people misread or miss them.
+  standard on white, so people misread or miss them. Same for the "1 of 5 left
+  today" usage warning.
 - **Filter dropdowns have no labels** — a screen-reader user hears three identical
   "combo box" controls on the wardrobe page with no idea what each one filters.
+  The chat message box and the wardrobe search field are also unlabelled.
 
-The rest is cosmetic: alt text on user photos, skip link, reduced-motion support,
-missing `h1` on chat, heading levels, carousel arrows overlapping photos on touch.
+The rest is cosmetic: alt text on user photos (several are hardcoded English, e.g.
+"Saved Look" repeated for every gallery image), a skip link, reduced-motion
+support, a missing `h1` on chat, heading levels that jump, hardcoded English
+screen-reader labels ("Close", "Open main menu"), and the account dropdown missing
+Escape-to-close / focus restore.
 _Est: ~2–3 h total._
+
+---
+
+## Mobile audit — remaining findings
+
+Everything below was identified in the four-part mobile audit but consciously not
+implemented in Tiers 1–3. Grouped so a future pass can pick a batch.
+
+### Touch & navigation
+- **Carousel arrows sit on top of the photos** — on a phone the left/right edge of
+  the first and last item is an arrow, not the item, so taps scroll instead of
+  opening. Should be desktop-only (swipe is native on touch).
+- **Horizontal carousels can trigger the browser's back-swipe** on iOS — needs
+  `overscroll-behavior-x: contain`.
+- **Nested scroll trap in try-on** — the item picker is a 256px scroll region
+  inside a long scrolling page; drags move the wrong thing.
+- **"Add item" sits top-right** of an endlessly long wardrobe — a bottom-right
+  floating button would be in the thumb zone. Same idea for a bottom tab bar
+  instead of the hamburger (6 destinations, currently 2 taps each).
+- **Modal is a floating card, not a sheet** — 80px of dead space at the bottom
+  where the thumb is, and on iOS the page behind still scrolls.
+- **Truncated names are unrecoverable on touch** — item/outfit names rely on
+  `title` tooltips, which do not exist on phones.
+
+### Forms & flows
+- **No mobile keyboard hints** on the wardrobe fields — brand/colour/style get
+  autocorrect and wrong capitalisation; search has no search keyboard.
+- **No file validation** — an unsupported or very large photo (e.g. HEIC from an
+  iPhone) fails late with a generic error instead of being caught on selection.
+- **Try-on has no camera option** (unlike add-item), so the user hunts through the
+  share sheet.
+- **Try-on steps are unnumbered** — three undifferentiated cards with no progress.
+- **Onboarding ergonomics** — Skip sits next to Continue and is easy to hit by
+  accident; selection chips are below the touch minimum; the card wastes width on
+  small screens.
+- **Save button disabled with no explanation** in add-item (two hidden conditions).
+
+### Performance & cost (follow-ups to #15 / #16)
+- **`syncAllToCloud` still writes one request per item** — the header's "sync now"
+  button. #16 fixed the automatic sync path only.
+- **`getWardrobe` is unbounded** — the whole closet downloads on every app open.
+- **Gallery page is still unbounded** — #16 limited the dashboard card only; the
+  gallery itself needs "load more" pagination.
+- **No fetch caching** — navigating dashboard → gallery → dashboard re-reads the
+  same collection three times. A small request cache (or TanStack Query) would fix
+  it broadly.
+- **Long lists are not virtualised** — the dashboard wardrobe carousel renders
+  every item even though ~3 are visible.
+- **Previews hold base64 in memory** — `URL.createObjectURL` would avoid the copy;
+  and the try-on path re-downloads an already-uploaded image just to re-encode it.
 
 ---
 
