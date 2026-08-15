@@ -7,6 +7,7 @@ import { colorToHex } from '../utils/colorMap';
 import Loading from '../components/common/Loading';
 import { Close } from '@mui/icons-material';
 import { ARCHETYPES, inferArchetypes } from '../utils/archetypes';
+import { STORAGE_KEYS } from '../services/storage/localStorageService';
 
 // Option catalogs. `value` is the canonical (PT) token stored on the profile so
 // it matches the wardrobe/sample color names; the label is translated via i18n.
@@ -45,7 +46,9 @@ const canonOne = (value, options) => {
     return match ? match.value : (value || '');
 };
 
-const DRAFT_KEY = 'john-styles.onboarding-draft';
+// Registered in STORAGE_KEYS so the user-switch wipe in clearLocalData()
+// picks it up — an abandoned draft must not pre-fill the next user's answers.
+const DRAFT_KEY = STORAGE_KEYS.ONBOARDING_DRAFT;
 
 function initSelection(profile) {
     return {

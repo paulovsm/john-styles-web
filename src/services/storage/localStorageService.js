@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
     WARDROBE: `${STORAGE_PREFIX}wardrobe`,
     CHAT_HISTORY: `${STORAGE_PREFIX}chat_history`,
     VIRTUAL_TRYONS: `${STORAGE_PREFIX}virtual_tryons`,
+    ONBOARDING_DRAFT: `${STORAGE_PREFIX}onboarding_draft`,
 };
 
 class LocalStorageService {
