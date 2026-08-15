@@ -9,7 +9,9 @@ import {
     addDoc,
     serverTimestamp,
     query,
-    orderBy
+    orderBy,
+    limit as fsLimit,
+    writeBatch
 } from 'firebase/firestore';
 import {
     ref,
@@ -17,6 +19,51 @@ import {
     getDownloadURL,
     deleteObject
 } from 'firebase/storage';
+
+/** Firestore caps a batched write at 500 operations. */
+const BATCH_LIMIT = 500;
+
+/**
+ * True only when a local item is provably identical to its stored counterpart,
+ * so the write can be skipped.
+ *
+ * This gates data persistence, so it fails SAFE: any uncertainty (missing doc,
+ * unknown field, value that does not serialise identically, or a thrown error)
+ * returns false and the item is written. A false negative costs one redundant
+ * write; a false positive would silently drop a user's edit.
+ *
+ * `updatedAt` is ignored: it is written server-side on every save and would
+ * otherwise make every item look changed.
+ *
+ * @param {Object} local - item from local state
+ * @param {Object|undefined} cloud - the stored document's data, if any
+ * @returns {boolean}
+ */
+export function isUnchanged(local, cloud) {
+    if (!cloud) return false; // not in the cloud yet — must write
+    try {
+        const normalize = (obj) => {
+            const out = {};
+            for (const key of Object.keys(obj).sort()) {
+                if (key === 'updatedAt') continue;
+                const value = obj[key];
+                // Only plain JSON-serialisable values can be compared reliably.
+                // Anything else (Timestamp, DocumentReference, function…) is
+                // treated as "cannot prove equal".
+                if (value !== null && typeof value === 'object' && !Array.isArray(value)) return null;
+                out[key] = value;
+            }
+            return out;
+        };
+
+        const a = normalize(local);
+        const b = normalize(cloud);
+        if (a === null || b === null) return false;
+        return JSON.stringify(a) === JSON.stringify(b);
+    } catch {
+        return false; // never skip a write because comparison failed
+    }
+}
 
 /**
  * Firestore Service
@@ -381,13 +428,18 @@ class FirestoreService {
      * @param {string} userId - User ID
      * @returns {Promise<Array>} Array of gallery items
      */
-    async getGalleryItems(userId = null) {
+    async getGalleryItems(userId = null, max = null) {
         try {
             const uid = userId || this.getCurrentUserId();
             if (!uid) return [];
 
+            // `max` bounds the read: the dashboard only shows a handful of looks,
+            // and without a limit this downloaded every look the user had ever
+            // generated. Omitting it preserves the previous unbounded behaviour.
             const collectionRef = collection(db, 'users', uid, 'gallery');
-            const q = query(collectionRef, orderBy('createdAt', 'desc'));
+            const constraints = [orderBy('createdAt', 'desc')];
+            if (max) constraints.push(fsLimit(max));
+            const q = query(collectionRef, ...constraints);
             const querySnapshot = await getDocs(q);
 
             const items = [];
@@ -504,23 +556,45 @@ class FirestoreService {
                 return false;
             }
 
-            // 1. Get all existing items from Firestore to identify deletions
+            // 1. Read the current cloud state (also needed to detect deletions).
             const collectionRef = collection(db, 'users', uid, 'wardrobe');
             const querySnapshot = await getDocs(collectionRef);
-            const cloudItemIds = new Set();
-            querySnapshot.forEach(doc => cloudItemIds.add(doc.id));
+            const cloudItems = new Map();
+            querySnapshot.forEach(d => cloudItems.set(d.id, d.data()));
 
-            // 2. Identify items to delete (in cloud but not in local list)
+            // 2. Identify items to delete (in cloud but not in the local list).
             const localItemIds = new Set(items.map(item => item.id));
-            const itemsToDelete = [...cloudItemIds].filter(id => !localItemIds.has(id));
+            const itemsToDelete = [...cloudItems.keys()].filter(id => !localItemIds.has(id));
 
-            // 3. Perform updates/adds
-            const savePromises = items.map(item => this.saveWardrobeItem(item, uid));
+            // 3. Write only the items that actually changed. Previously every
+            //    sync rewrote the whole wardrobe, so adding one garment to a
+            //    50-item closet cost 50 writes. isUnchanged() is deliberately
+            //    conservative: anything it cannot prove identical is rewritten,
+            //    so the cloud still converges on the local state exactly.
+            const changed = items.filter(item => !isUnchanged(item, cloudItems.get(item.id)));
 
-            // 4. Perform deletions
-            const deletePromises = itemsToDelete.map(id => this.deleteWardrobeItem(id, uid));
+            // 4. Apply writes and deletes in batches (one round trip per 500 ops
+            //    instead of one request per document).
+            const operations = [
+                ...changed.map(item => ({
+                    type: 'set',
+                    ref: doc(db, 'users', uid, 'wardrobe', item.id),
+                    data: { ...item, updatedAt: serverTimestamp() },
+                })),
+                ...itemsToDelete.map(id => ({
+                    type: 'delete',
+                    ref: doc(db, 'users', uid, 'wardrobe', id),
+                })),
+            ];
 
-            await Promise.all([...savePromises, ...deletePromises]);
+            for (let i = 0; i < operations.length; i += BATCH_LIMIT) {
+                const batch = writeBatch(db);
+                for (const op of operations.slice(i, i + BATCH_LIMIT)) {
+                    if (op.type === 'set') batch.set(op.ref, op.data);
+                    else batch.delete(op.ref);
+                }
+                await batch.commit();
+            }
 
             return true;
         } catch (error) {

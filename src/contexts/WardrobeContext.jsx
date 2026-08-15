@@ -74,7 +74,9 @@ export function WardrobeProvider({ children }) {
 
     const hasDemoItems = useMemo(() => items.some((i) => i.demo), [items]);
 
-    const value = {
+    // Memoised: a fresh object here re-renders every consumer (wardrobe grid,
+    // filters, dashboard carousels, try-on) on any provider render.
+    const value = useMemo(() => ({
         items: filteredItems,
         allItems: items,
         addItem,
@@ -85,7 +87,18 @@ export function WardrobeProvider({ children }) {
         addSampleItems,
         removeSampleItems,
         hasDemoItems,
-    };
+    }), [
+        filteredItems,
+        items,
+        addItem,
+        removeItem,
+        updateItem,
+        filters,
+        setFilters,
+        addSampleItems,
+        removeSampleItems,
+        hasDemoItems,
+    ]);
 
     return (
         <WardrobeContext.Provider value={value}>
