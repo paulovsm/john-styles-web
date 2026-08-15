@@ -22,10 +22,26 @@ export default function LoginPage() {
             setError('');
             setLoading(true);
             await providerMethod();
+            // On mobile this is a redirect: the browser navigates away and the
+            // session is picked up by getRedirectResult/onAuthStateChanged.
             navigate('/dashboard');
         } catch (err) {
-            setError('Failed to sign in: ' + err.message);
             console.error(err);
+            // Raw Firebase messages are English and unhelpful; map the ones a
+            // user can actually act on, and never treat a self-cancelled popup
+            // as a failure.
+            const code = err?.code || '';
+            if (code === 'auth/cancelled-popup-request' || code === 'auth/popup-closed-by-user') {
+                setError('');
+            } else if (code === 'auth/popup-blocked') {
+                setError(t('auth.errors.popupBlocked', 'Seu navegador bloqueou a janela de login. Permita pop-ups ou tente novamente.'));
+            } else if (code === 'auth/network-request-failed') {
+                setError(t('auth.errors.network', 'Falha de conexão. Verifique sua internet e tente novamente.'));
+            } else if (code === 'auth/account-exists-with-different-credential') {
+                setError(t('auth.errors.accountExists', 'Já existe uma conta com este e-mail usando outro método de login.'));
+            } else {
+                setError(t('auth.errors.generic', 'Não foi possível entrar. Tente novamente.'));
+            }
         } finally {
             setLoading(false);
         }
@@ -33,11 +49,11 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-white-off px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white-pure p-10 rounded-xl shadow-lg border border-grey-light">
+            <div className="max-w-md w-full space-y-8 bg-white-pure p-6 sm:p-10 rounded-xl shadow-lg border border-grey-light">
                 <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-serif font-bold text-brand-navy">
+                    <h1 className="mt-6 text-2xl sm:text-3xl font-serif font-bold text-brand-navy">
                         {t('app.name')}
-                    </h2>
+                    </h1>
                     <p className="mt-2 text-sm text-grey-medium">
                         {t('app.tagline')}
                     </p>
@@ -49,11 +65,17 @@ export default function LoginPage() {
                     </div>
                 )}
 
+                {loading && (
+                    <p className="text-center text-sm text-grey-medium" role="status">
+                        {t('auth.signingIn', 'Entrando...')}
+                    </p>
+                )}
+
                 <div className="mt-8 space-y-4">
                     <button
                         onClick={() => handleLogin(loginWithGoogle)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Google className="h-5 w-5 text-grey-medium group-hover:text-brand-navy" />
@@ -64,7 +86,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithFacebook)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Facebook className="h-5 w-5 text-blue-600" />
@@ -75,7 +97,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithApple)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             {/* Theme-aware: a hard-coded black mark is invisible on the dark surface. */}

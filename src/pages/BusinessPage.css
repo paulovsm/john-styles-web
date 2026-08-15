@@ -450,8 +450,19 @@
     background: #fbfaf8;
     color: #171512;
     font: inherit;
-    font-size: 14px;
+    /* 16px on phones: iOS Safari auto-zooms into any focused control below
+       16px and never zooms back out. */
+    font-size: 16px;
     outline: 0;
+    color-scheme: light;
+}
+
+@media (min-width: 768px) {
+    .business-form input,
+    .business-form select,
+    .business-form textarea {
+        font-size: 14px;
+    }
 }
 
 .business-form input,

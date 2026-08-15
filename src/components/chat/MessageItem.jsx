@@ -33,12 +33,20 @@ export default function MessageItem({ message, userAvatar }) {
                 </div>
             )}
             <div
-                className={`max-w-[75%] rounded-lg px-4 py-3 shadow-sm ${isUser
-                    ? 'bg-brand-gold text-[#1b1a1d] rounded-br-none'
+                className={`max-w-[85%] sm:max-w-[75%] break-words rounded-lg px-4 py-3 shadow-sm ${isUser
+                    ? 'bg-brand-navy text-white-pure rounded-br-none'
                     : 'bg-white-pure border border-grey-light text-grey-dark rounded-bl-none'
                     }`}
             >
-                <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-a:text-brand-gold-dark">
+                {/* The user bubble is filled with ink, which FLIPS with the theme
+                    (black in light, white in dark), so a fixed `prose-invert` is
+                    only right half the time. Inherit the bubble's own foreground
+                    instead — `text-white-pure` already tracks the fill. The
+                    assistant bubble sits on a surface and keeps the defaults. */}
+                <div className={`text-sm prose prose-sm max-w-none prose-p:my-1 ${isUser
+                    ? 'text-inherit prose-p:text-inherit prose-headings:text-inherit prose-strong:text-inherit prose-em:text-inherit prose-li:text-inherit prose-code:text-inherit prose-blockquote:text-inherit prose-a:text-inherit prose-a:underline'
+                    : 'dark:prose-invert prose-a:text-brand-navy'
+                    }`}>
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
                 </div>
                 {!isUser && message.actions?.length > 0 && (
@@ -55,7 +63,7 @@ export default function MessageItem({ message, userAvatar }) {
                         ))}
                     </div>
                 )}
-                <div className={`text-xs mt-1 ${isUser ? 'text-[#1b1a1d]/60' : 'text-grey-medium'}`}>
+                <div className={`text-xs mt-1 ${isUser ? 'text-white-pure/70' : 'text-grey-medium'}`}>
                     {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
             </div>

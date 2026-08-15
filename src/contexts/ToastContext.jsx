@@ -41,7 +41,9 @@ export function ToastProvider({ children }) {
     return (
         <ToastContext.Provider value={toast}>
             {children}
-            <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-full max-w-sm pointer-events-none" aria-live="polite">
+            {/* Inset from BOTH edges on mobile: `w-full` + `right-4` alone pushes
+                the left edge off-screen, where overflow-x:hidden clips the text. */}
+            <div className="fixed top-4 left-4 right-4 sm:left-auto sm:w-full sm:max-w-sm z-[100] flex flex-col gap-2 pointer-events-none" aria-live="polite">
                 {toasts.map(({ id, message, type }) => {
                     const { icon: Icon, cls } = STYLES[type] || STYLES.info;
                     return (
@@ -54,7 +56,7 @@ export function ToastProvider({ children }) {
                             <p className="text-sm text-grey-dark flex-1">{message}</p>
                             <button
                                 onClick={() => dismiss(id)}
-                                className="text-grey-medium hover:text-grey-dark shrink-0"
+                                className="grid place-items-center h-9 w-9 -my-1.5 -mr-2 text-grey-medium hover:text-grey-dark shrink-0"
                                 aria-label="Fechar notificação"
                             >
                                 <Close fontSize="small" />

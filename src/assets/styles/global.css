@@ -68,6 +68,24 @@
     letter-spacing: -0.02em;   /* tight tracking, matching the landing headings */
   }
 
+  /* iOS Safari auto-zooms the page when a focused form control renders below
+     16px, and never zooms back out — leaving the user horizontally scrolled
+     inside the form. Enforce 16px on phones for every control, including the
+     hand-written marketing/blog forms that set their own 13-14px sizes. */
+  @media (max-width: 767px) {
+    input, select, textarea {
+      font-size: 16px;
+    }
+  }
+
+  /* Visible keyboard focus. Several controls clear the UA outline with
+     `focus:outline-none` (or set a ring colour without a ring width), which
+     leaves keyboard users with no indicator at all. */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid rgb(var(--c-ink));
+    outline-offset: 2px;
+  }
+
   /* Native <select> popups are painted by the OS, so they ignore the theme
      tokens: on Windows the dark-theme text color landed on a white native
      background and the labels became unreadable. color-scheme tells the browser

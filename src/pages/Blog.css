@@ -95,7 +95,13 @@
 .blog-comment-form h3 { margin: 0 0 4px; font: 700 22px/1.2 'Montserrat', sans-serif; }
 .blog-comment-form label { display: grid; gap: 7px; font-size: 13px; font-weight: 700; }
 .blog-comment-form label small { color: var(--blog-muted); font-weight: 400; }
-.blog-comment-form input, .blog-comment-form textarea { width: 100%; border: 1px solid #cbc8c1; border-radius: 9px; padding: 11px 12px; background: #fff; color: #111; font: inherit; }
+/* font-size 16px on phones: iOS Safari auto-zooms into any focused control
+   below 16px and never zooms back out (`font: inherit` here would otherwise
+   pull in the 13px label size). */
+.blog-comment-form input, .blog-comment-form textarea { width: 100%; border: 1px solid #cbc8c1; border-radius: 9px; padding: 11px 12px; background: #fff; color: #111; font: inherit; font-size: 16px; }
+@media (min-width: 768px) {
+  .blog-comment-form input, .blog-comment-form textarea { font-size: 14px; }
+}
 .blog-comment-form textarea { resize: vertical; line-height: 1.55; }
 .blog-comment-form input:focus, .blog-comment-form textarea:focus { outline: 2px solid #000; outline-offset: 2px; }
 .blog-comment-form button { cursor: pointer; border: 0; border-radius: 999px; padding: 13px 18px; background: #000; color: #fff; font-weight: 700; }

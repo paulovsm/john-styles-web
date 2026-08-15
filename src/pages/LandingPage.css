@@ -527,7 +527,15 @@
     background: transparent;
     color: #000;
     font: inherit;
-    font-size: 14px;
+    /* 16px on phones: iOS Safari auto-zooms into any focused control below
+       16px and never zooms back out. */
+    font-size: 16px;
+}
+
+@media (min-width: 768px) {
+    .fleek-subscribe-form input {
+        font-size: 14px;
+    }
 }
 
 .fleek-subscribe-form button {

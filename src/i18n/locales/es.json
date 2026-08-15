@@ -16,7 +16,14 @@
     "logout": "Cerrar Sesión",
     "signInWith": "Iniciar sesión con {{provider}}",
     "welcome": "Bienvenido de nuevo",
-    "legalPrefix": "Al iniciar sesión, aceptas nuestra"
+    "legalPrefix": "Al iniciar sesión, aceptas nuestra",
+    "signingIn": "Iniciando sesión...",
+    "errors": {
+      "popupBlocked": "Tu navegador bloqueó la ventana de inicio de sesión. Permite ventanas emergentes o inténtalo de nuevo.",
+      "network": "Error de conexión. Verifica tu internet e inténtalo de nuevo.",
+      "accountExists": "Ya existe una cuenta con este correo usando otro método de inicio de sesión.",
+      "generic": "No se pudo iniciar sesión. Inténtalo de nuevo."
+    }
   },
   "landing": {
     "hero": {
@@ -95,6 +102,7 @@
     "typing": "John está escribiendo...",
     "error": "Lo siento, encontré un error. Por favor, intenta de nuevo.",
     "noResponse": "Lo siento, no entendí.",
+    "inputLabel": "Mensaje para John Styles",
     "send": "Enviar",
     "thinking": "John está pensando...",
     "connectionError": "Lo siento, tengo problemas para conectar ahora. Inténtalo de nuevo.",
@@ -195,6 +203,8 @@
     "exploreSamples": "Explorar con prendas de ejemplo",
     "exploreSamplesHint": "Prendas de ejemplo para probar la app — puedes quitarlas cuando quieras.",
     "sampleBadge": "Ejemplo",
+    "deleteTitle": "Eliminar prenda",
+    "deleteConfirm": "¿Seguro que deseas eliminar esta prenda del guardarropa?",
     "sampleNotice": "Tu guardarropa incluye prendas de ejemplo para que pruebes.",
     "removeSamples": "Quitar ejemplos"
   },
