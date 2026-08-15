@@ -22,7 +22,10 @@ export default function GalleryPage() {
             if (currentUser) {
                 try {
                     const galleryItems = await firestoreService.getGalleryItems(currentUser.uid);
-                    setItems(galleryItems);
+                    // getGalleryItems resolves to null on a read failure rather
+                    // than rejecting, so the catch below never sees it — and an
+                    // unguarded null here crashes the page on `items.length`.
+                    setItems(Array.isArray(galleryItems) ? galleryItems : []);
                 } catch (error) {
                     console.error('Error loading gallery:', error);
                 } finally {

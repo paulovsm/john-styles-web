@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap');
+/* Fonts are loaded from index.html (preconnect + preload) — an @import here
+   would be discovered too late to be preloaded. */
 
 @tailwind base;
 @tailwind components;
