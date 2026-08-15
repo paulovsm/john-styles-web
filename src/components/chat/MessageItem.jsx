@@ -38,10 +38,13 @@ export default function MessageItem({ message, userAvatar }) {
                     : 'bg-white-pure border border-grey-light text-grey-dark rounded-bl-none'
                     }`}
             >
-                {/* The user bubble is filled with ink, so its markdown must invert;
-                    the assistant bubble sits on a surface and keeps the default. */}
+                {/* The user bubble is filled with ink, which FLIPS with the theme
+                    (black in light, white in dark), so a fixed `prose-invert` is
+                    only right half the time. Inherit the bubble's own foreground
+                    instead — `text-white-pure` already tracks the fill. The
+                    assistant bubble sits on a surface and keeps the defaults. */}
                 <div className={`text-sm prose prose-sm max-w-none prose-p:my-1 ${isUser
-                    ? 'prose-invert prose-a:text-white-pure prose-a:underline'
+                    ? 'text-inherit prose-p:text-inherit prose-headings:text-inherit prose-strong:text-inherit prose-em:text-inherit prose-li:text-inherit prose-code:text-inherit prose-blockquote:text-inherit prose-a:text-inherit prose-a:underline'
                     : 'dark:prose-invert prose-a:text-brand-navy'
                     }`}>
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
