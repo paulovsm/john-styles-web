@@ -19,6 +19,20 @@ export default defineConfig(({ command }) => ({
       '@assets': path.resolve(__dirname, './src/assets'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split the large, rarely-changing vendors into their own chunks so a
+        // deploy of app code doesn't invalidate them in the browser cache.
+        manualChunks: {
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+          markdown: ['react-markdown', 'remark-gfm'],
+          i18n: ['i18next', 'react-i18next'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
   server: {
     proxy: {
       '/api': {

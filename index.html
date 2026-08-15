@@ -4,7 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/avif" href="/FA_Icon_White.avif" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- Fonts are loaded here rather than via @import in CSS: an @import inside a
+       JS-imported stylesheet is invisible to the browser's preload scanner and
+       serialises HTML -> JS -> CSS -> DNS -> CSS -> font (4 round trips) before
+       text renders in the right face. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" />
   <meta name="description" content="Fleek Authority: transforme seu estilo profissional com John Styles, seu personal stylist digital." />
   <meta name="theme-color" content="#000000" />
   <meta name="robots" content="index, follow" />

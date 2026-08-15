@@ -1,23 +1,40 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import Dashboard from './pages/Dashboard';
-import ChatPage from './pages/ChatPage';
-import WardrobePage from './pages/WardrobePage';
-import HistoryPage from './pages/HistoryPage';
-import TryOnPage from './pages/TryOnPage';
-import OnboardingPage from './pages/OnboardingPage';
-import GalleryPage from './pages/GalleryPage';
-import NotFoundPage from './pages/NotFoundPage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import BusinessPage from './pages/BusinessPage';
-import SubscriptionPage from './pages/SubscriptionPage';
-import BlogPage from './pages/BlogPage';
-import BlogPostPage from './pages/BlogPostPage';
-import AdminBlogPage from './pages/AdminBlogPage';
+import Loading from './components/common/Loading';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
+
+// Only the landing page is bundled eagerly — it is the first paint for anonymous
+// visitors. Every other route is fetched on demand, so a visitor no longer
+// downloads the try-on engine, the chat/markdown stack and the blog CMS before
+// the landing page can render.
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ChatPage = lazy(() => import('./pages/ChatPage'));
+const WardrobePage = lazy(() => import('./pages/WardrobePage'));
+const HistoryPage = lazy(() => import('./pages/HistoryPage'));
+const TryOnPage = lazy(() => import('./pages/TryOnPage'));
+const OnboardingPage = lazy(() => import('./pages/OnboardingPage'));
+const GalleryPage = lazy(() => import('./pages/GalleryPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const BusinessPage = lazy(() => import('./pages/BusinessPage'));
+const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
+const AdminBlogPage = lazy(() => import('./pages/AdminBlogPage'));
+
+function RouteFallback() {
+    return (
+        <div className="flex justify-center items-center min-h-[60vh]">
+            <Loading type="spinner" size={40} />
+        </div>
+    );
+}
+
+/** Wraps a lazily-loaded route element in the shared Suspense fallback. */
+const withSuspense = (element) => <Suspense fallback={<RouteFallback />}>{element}</Suspense>;
 
 const router = createBrowserRouter([
     {
@@ -26,33 +43,33 @@ const router = createBrowserRouter([
     },
     {
         path: '/login',
-        element: <LoginPage />,
+        element: withSuspense(<LoginPage />),
     },
     {
         path: '/privacy',
-        element: <PrivacyPolicyPage />,
+        element: withSuspense(<PrivacyPolicyPage />),
     },
     {
         path: '/empresas',
-        element: <BusinessPage />,
+        element: withSuspense(<BusinessPage />),
     },
     {
         path: '/assinatura',
-        element: <SubscriptionPage />,
+        element: withSuspense(<SubscriptionPage />),
     },
     {
         path: '/blog',
-        element: <BlogPage />,
+        element: withSuspense(<BlogPage />),
     },
     {
         path: '/blog/:slug',
-        element: <BlogPostPage />,
+        element: withSuspense(<BlogPostPage />),
     },
     {
         path: '/admin/blog',
         element: (
             <AdminRoute>
-                <AdminBlogPage />
+                {withSuspense(<AdminBlogPage />)}
             </AdminRoute>
         ),
     },
@@ -60,7 +77,7 @@ const router = createBrowserRouter([
         path: '/dashboard',
         element: (
             <ProtectedRoute>
-                <Dashboard />
+                {withSuspense(<Dashboard />)}
             </ProtectedRoute>
         ),
     },
@@ -68,7 +85,7 @@ const router = createBrowserRouter([
         path: '/chat',
         element: (
             <ProtectedRoute>
-                <ChatPage />
+                {withSuspense(<ChatPage />)}
             </ProtectedRoute>
         ),
     },
@@ -76,7 +93,7 @@ const router = createBrowserRouter([
         path: '/wardrobe',
         element: (
             <ProtectedRoute>
-                <WardrobePage />
+                {withSuspense(<WardrobePage />)}
             </ProtectedRoute>
         ),
     },
@@ -84,7 +101,7 @@ const router = createBrowserRouter([
         path: '/history',
         element: (
             <ProtectedRoute>
-                <HistoryPage />
+                {withSuspense(<HistoryPage />)}
             </ProtectedRoute>
         ),
     },
@@ -92,7 +109,7 @@ const router = createBrowserRouter([
         path: '/try-on',
         element: (
             <ProtectedRoute>
-                <TryOnPage />
+                {withSuspense(<TryOnPage />)}
             </ProtectedRoute>
         ),
     },
@@ -100,7 +117,7 @@ const router = createBrowserRouter([
         path: '/onboarding',
         element: (
             <ProtectedRoute>
-                <OnboardingPage />
+                {withSuspense(<OnboardingPage />)}
             </ProtectedRoute>
         ),
     },
@@ -108,13 +125,13 @@ const router = createBrowserRouter([
         path: '/gallery',
         element: (
             <ProtectedRoute>
-                <GalleryPage />
+                {withSuspense(<GalleryPage />)}
             </ProtectedRoute>
         ),
     },
     {
         path: '*',
-        element: <NotFoundPage />,
+        element: withSuspense(<NotFoundPage />),
     },
 ]);
 
