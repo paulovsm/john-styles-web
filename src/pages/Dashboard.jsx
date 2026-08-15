@@ -40,7 +40,7 @@ export default function Dashboard() {
     return (
         <MainLayout>
             <div className="mb-6">
-                <h1 className="text-3xl font-serif font-bold text-brand-navy">
+                <h1 className="text-2xl sm:text-3xl font-serif font-bold text-brand-navy">
                     {t('dashboard.welcome', { name: currentUser?.displayName?.split(' ')[0] || 'User' })}
                 </h1>
                 <p className="mt-2 text-grey-medium">{t('dashboard.subtitle')}</p>

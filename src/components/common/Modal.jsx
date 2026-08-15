@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Close } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 export default function Modal({ isOpen, onClose, title, children, size = 'md' }) {
     const modalRef = useRef(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!isOpen) return;
@@ -79,17 +81,17 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
                     <div className="bg-white-pure px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div className="sm:flex sm:items-start">
                             <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <div className="flex justify-between items-center mb-4">
+                                <div className="flex justify-between items-center gap-3 mb-4">
                                     {title && (
-                                        <h3 className="text-lg leading-6 font-medium text-brand-navy" id="modal-title">
+                                        <h3 className="text-lg leading-6 font-medium text-brand-navy min-w-0 truncate" id="modal-title">
                                             {title}
                                         </h3>
                                     )}
                                     <button
                                         onClick={onClose}
-                                        className="bg-white-pure rounded-md text-grey-medium hover:text-grey-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy"
+                                        aria-label={t('common.close', 'Fechar')}
+                                        className="ml-auto grid place-items-center h-11 w-11 -mr-2 shrink-0 bg-white-pure rounded-full text-grey-medium hover:text-grey-dark active:text-grey-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy"
                                     >
-                                        <span className="sr-only">Close</span>
                                         <Close />
                                     </button>
                                 </div>

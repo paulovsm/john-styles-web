@@ -66,7 +66,7 @@ export default function GalleryPage() {
     return (
         <MainLayout>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-serif font-bold text-brand-navy">{t('gallery.title', 'Galeria de Looks')}</h1>
+                <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-navy">{t('gallery.title', 'Galeria de Looks')}</h1>
             </div>
 
             {loading ? (
@@ -80,7 +80,7 @@ export default function GalleryPage() {
                     <p className="text-grey-medium">{t('gallery.emptyDescription', 'Gere looks no Provador Virtual e salve-os aqui.')}</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                     {items.map((item) => (
                         <div key={item.id} className="bg-white-pure rounded-lg shadow-sm border border-grey-light overflow-hidden hover:shadow-md transition-shadow">
                             <div className="relative aspect-[3/4] bg-grey-light">

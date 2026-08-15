@@ -58,16 +58,16 @@ export default function WardrobePage() {
 
     return (
         <MainLayout>
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-serif font-bold text-brand-navy">{t('wardrobe.title')}</h1>
+            <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
+                <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-navy">{t('wardrobe.title')}</h1>
                 <div className="flex flex-wrap justify-end gap-2">
                     {!showTutorial && (
-                        <Button variant="text" onClick={() => setShowTutorial(true)}>
+                        <Button variant="text" className="px-3 sm:px-5" onClick={() => setShowTutorial(true)}>
                             <HelpOutline className="mr-2 h-5 w-5" />
                             {t('wardrobe.tutorial.reopen')}
                         </Button>
                     )}
-                    <Button onClick={openNewItem}>
+                    <Button className="px-3 sm:px-5" onClick={openNewItem}>
                         <Add className="mr-2 h-5 w-5" />
                         {t('wardrobe.addItem')}
                     </Button>
@@ -79,9 +79,9 @@ export default function WardrobePage() {
             )}
 
             {hasDemoItems && (
-                <div className="mb-4 flex items-center justify-between gap-3 px-4 py-2 rounded-md bg-brand-gold/10 border border-brand-gold/30 text-sm text-brand-gold-dark">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 rounded-md bg-brand-gold/10 border border-brand-gold/30 text-sm text-brand-gold-dark">
                     <span>{t('wardrobe.sampleNotice', 'Seu guarda-roupa inclui peças de exemplo para você testar.')}</span>
-                    <button onClick={removeSampleItems} className="font-medium underline whitespace-nowrap hover:opacity-80">
+                    <button onClick={removeSampleItems} className="min-h-[44px] font-medium underline whitespace-nowrap hover:opacity-80 active:opacity-70">
                         {t('wardrobe.removeSamples', 'Remover exemplos')}
                     </button>
                 </div>

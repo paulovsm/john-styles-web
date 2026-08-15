@@ -179,6 +179,8 @@
       "dragDrop": "o arrastra y suelta",
       "fileTypes": "JPG, PNG o WebP hasta 8MB",
       "analyzeAI": "Analizar con IA",
+      "processingPhoto": "Procesando foto...",
+      "previewAlt": "Vista previa de la prenda seleccionada",
       "name": "Nombre",
       "namePlaceholder": "ej: Chaqueta de Mezclilla Azul",
       "description": "Descripción",
