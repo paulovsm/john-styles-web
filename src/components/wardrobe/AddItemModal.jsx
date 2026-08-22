@@ -15,6 +15,7 @@ import {
     deriveCategory,
     DEFAULT_STYLE_PREFERENCE,
     typesForPreference,
+    GARMENT_TYPE_KEYS,
     normalizeGarmentType,
     resolveGarmentType,
 } from '../../utils/garmentTaxonomy';
@@ -24,7 +25,9 @@ import { useUserProfileContext } from '../../contexts/UserProfileContext';
 
 export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const { t, i18n } = useTranslation();
-    const { profile } = useUserProfileContext();
+    // Optional on purpose: the modal must still render if it is mounted outside
+    // the profile provider. Without a profile we fall back to the neutral register.
+    const profile = useUserProfileContext()?.profile;
 
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState('');
@@ -40,10 +43,12 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     // "ver todos" reveals everything, and a type already saved on the item
     // stays selectable even when hidden.
     const preference = profile?.stylePreference || DEFAULT_STYLE_PREFERENCE;
-    const allowedTypes = useMemo(
-        () => (showAllTypes ? null : new Set(typesForPreference(preference))),
-        [preference, showAllTypes],
-    );
+    const allowedTypes = useMemo(() => {
+        if (showAllTypes) return null;
+        const allowed = typesForPreference(preference);
+        // 'both' already covers everything — treat as unfiltered.
+        return allowed.length === GARMENT_TYPE_KEYS.length ? null : new Set(allowed);
+    }, [preference, showAllTypes]);
     const [formData, setFormData] = useState({
         name: '',
         description: '',

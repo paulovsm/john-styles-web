@@ -42,12 +42,12 @@ describe('AddItemModal photo sources', () => {
             .toHaveClass('wardrobe-filter-select', 'text-grey-dark');
     });
 
-    it('offers one required type selector with all 40 canonical types', () => {
+    it('offers one required type selector with all 48 canonical types', () => {
         render(<AddItemModal isOpen onClose={() => {}} onSave={() => {}} />);
 
         const select = screen.getByRole('combobox', { name: 'wardrobe.addModal.garmentType' });
         expect(select).toBeRequired();
-        expect(screen.getAllByRole('option')).toHaveLength(41);
+        expect(screen.getAllByRole('option')).toHaveLength(49);
         expect(screen.getByRole('option', { name: 'wardrobe.types.polo' })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: 'wardrobe.types.dress_shoes' })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: 'wardrobe.types.suit' })).toBeInTheDocument();

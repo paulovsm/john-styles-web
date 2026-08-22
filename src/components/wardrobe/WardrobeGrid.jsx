@@ -11,7 +11,7 @@ import { samplesForPreference } from '../../data/demoWardrobe';
 export default function WardrobeGrid({ onAddItem, onItemClick }) {
     const { items, removeItem, addSampleItems } = useWardrobeContext();
     const { t } = useTranslation();
-    const { profile } = useUserProfileContext();
+    const profile = useUserProfileContext()?.profile;
     // Only offer the sample closet when samples exist for this styling register.
     const hasSamples = samplesForPreference(profile?.stylePreference).length > 0;
     // Deleting a garment is destructive and irreversible — always confirm.
