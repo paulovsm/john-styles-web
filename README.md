@@ -31,6 +31,13 @@ Google Gemini + Firebase.
   (`firebase.json`). O caminho `users/{uid}/private/**` é somente-servidor.
 - Integração de agenda: OAuth 2.0 server-side (ver `docs/google-calendar-setup.md`).
 
+## Design e experiência
+
+Consulte [`DESIGN.md`](DESIGN.md) antes de criar ou alterar telas, componentes ou
+conteúdo de interface. O guia consolida a estratégia da marca Fleek Authority,
+tokens, tipografia, componentes, responsividade, acessibilidade e critérios de
+revisão do produto.
+
 ## Getting started
 
 ### Pré-requisitos
