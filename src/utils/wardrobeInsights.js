@@ -3,6 +3,8 @@
  * wardrobe. Highlights missing/thin categories and turns them into shopping
  * suggestions (a monetization hook — the query can later point to an affiliate).
  */
+import { WARDROBE_CATEGORIES, getOccupiedCategories } from './garmentTaxonomy';
+
 const CORE = ['tops', 'bottoms', 'shoes'];
 const EXTRA = ['outerwear', 'accessories'];
 
@@ -12,8 +14,10 @@ const EXTRA = ['outerwear', 'accessories'];
  */
 export function computeWardrobeInsights(items = [], profile = {}) {
     const counts = { total: items.length };
-    for (const c of [...CORE, ...EXTRA]) {
-        counts[c] = items.filter((i) => i.category === c).length;
+    for (const c of WARDROBE_CATEGORIES) {
+        counts[c] = c === 'sets'
+            ? items.filter((item) => item.category === 'sets').length
+            : items.filter((item) => getOccupiedCategories(item).includes(c)).length;
     }
 
     // Gaps: missing/thin core categories, then missing extras.

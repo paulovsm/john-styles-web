@@ -4,6 +4,8 @@
  * changing daily. No AI cost — a lightweight daily hook to bring users back.
  */
 
+import { garmentsConflict, getOccupiedCategories } from './garmentTaxonomy';
+
 function hashString(str) {
     let h = 0;
     for (let i = 0; i < str.length; i++) {
@@ -27,9 +29,6 @@ export function todayKey(date = new Date()) {
  * @returns {Array} one item per available core category (+ outerwear when cold)
  */
 export function pickOutfitOfTheDay(items = [], seed = todayKey(), opts = {}) {
-    const categories = ['tops', 'bottoms', 'shoes'];
-    if (opts.cold) categories.push('outerwear');
-
     const prefer = (opts.preferStyles || []).map((s) => s.toLowerCase());
     const matchesPreferred = (item) => {
         if (prefer.length === 0) return false;
@@ -37,14 +36,30 @@ export function pickOutfitOfTheDay(items = [], seed = todayKey(), opts = {}) {
         return styles.some((s) => prefer.some((p) => s.includes(p) || p.includes(s)));
     };
 
+    const pickFrom = (candidates, slot) => {
+        if (candidates.length === 0) return null;
+        const preferred = candidates.filter(matchesPreferred);
+        const pool = preferred.length > 0 ? preferred : candidates;
+        return pool[hashString(`${seed}:${slot}`) % pool.length];
+    };
+
     const outfit = [];
-    for (const category of categories) {
-        const inCat = items.filter((i) => i.category === category);
-        if (inCat.length === 0) continue;
-        const preferred = inCat.filter(matchesPreferred);
-        const pool = preferred.length > 0 ? preferred : inCat;
-        const idx = hashString(`${seed}:${category}`) % pool.length;
-        outfit.push(pool[idx]);
-    }
+    const addForSlot = (slot, acceptedCategories = [slot]) => {
+        if (outfit.some((item) => getOccupiedCategories(item).includes(slot))) return;
+
+        const candidates = items.filter((item) =>
+            acceptedCategories.includes(item.category)
+            && !outfit.some((selected) => garmentsConflict(selected, item)));
+        const selected = pickFrom(candidates, slot);
+        if (selected) outfit.push(selected);
+    };
+
+    // A set competes with a separate bottom as the structural base of the look.
+    // Its occupied slots determine which individual pieces can still be added.
+    addForSlot('bottoms', ['bottoms', 'sets']);
+    addForSlot('tops');
+    addForSlot('shoes');
+    if (opts.cold) addForSlot('outerwear');
+
     return outfit;
 }

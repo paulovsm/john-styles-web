@@ -6,6 +6,7 @@ import { AutoAwesome, Checkroom, Thermostat, CalendarMonth, Event, ChevronLeft, 
 import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { pickOutfitOfTheDay } from '../../utils/outfitOfTheDay';
+import { getOccupiedCategories } from '../../utils/garmentTaxonomy';
 import { preferStylesForFormality } from '../../hooks/useDailyContext';
 import { calendarService } from '../../services/api/calendarService';
 import { useHorizontalCarousel } from '../../hooks/useHorizontalCarousel';
@@ -26,7 +27,9 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
 
     // Flag a weak recommendation so the card is honest about it (P1 #4): an
     // incomplete outfit (missing a core category) or a very thin wardrobe.
-    const thinLook = outfit.length > 0 && (outfit.length < 3 || allItems.length < 6);
+    const occupiedSlots = new Set(outfit.flatMap((item) => getOccupiedCategories(item)));
+    const hasCoreCoverage = ['tops', 'bottoms', 'shoes'].every((slot) => occupiedSlots.has(slot));
+    const thinLook = outfit.length > 0 && (!hasCoreCoverage || allItems.length < 6);
 
     const { scroller, canScroll, scrollByDir } = useHorizontalCarousel(outfit.length);
 

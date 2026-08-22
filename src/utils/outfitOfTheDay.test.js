@@ -40,4 +40,25 @@ describe('pickOutfitOfTheDay', () => {
     it('returns empty for an empty wardrobe', () => {
         expect(pickOutfitOfTheDay([], '2026-01-01')).toEqual([]);
     });
+
+    it('uses a suit as the bottom and outerwear slots without blocking a shirt', () => {
+        const outfit = pickOutfitOfTheDay([
+            { id: 'set1', type: 'suit', category: 'sets' },
+            { id: 't1', type: 'shirt', category: 'tops' },
+            { id: 's1', type: 'dress_shoes', category: 'shoes' },
+            { id: 'o1', type: 'coat', category: 'outerwear' },
+        ], '2026-01-01', { cold: true });
+
+        expect(outfit.map((item) => item.id)).toEqual(['set1', 't1', 's1']);
+    });
+
+    it('does not add a separate top or bottom to a matching set', () => {
+        const outfit = pickOutfitOfTheDay([
+            { id: 'set1', type: 'matching_set', category: 'sets' },
+            { id: 't1', type: 'polo', category: 'tops' },
+            { id: 's1', type: 'sneakers', category: 'shoes' },
+        ], '2026-01-01');
+
+        expect(outfit.map((item) => item.id)).toEqual(['set1', 's1']);
+    });
 });

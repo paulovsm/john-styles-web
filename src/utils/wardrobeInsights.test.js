@@ -36,6 +36,20 @@ describe('computeWardrobeInsights', () => {
         expect(suggestions[0].color).toBe('Azul');
     });
 
+    it('counts a suit toward bottoms and outerwear coverage', () => {
+        const { counts, coverage, gaps } = computeWardrobeInsights([
+            { id: 'set1', type: 'suit', category: 'sets' },
+            { id: 't1', type: 'shirt', category: 'tops' },
+            { id: 's1', type: 'dress_shoes', category: 'shoes' },
+        ]);
+
+        expect(counts.sets).toBe(1);
+        expect(counts.bottoms).toBe(1);
+        expect(counts.outerwear).toBe(1);
+        expect(coverage).toBe(100);
+        expect(gaps.find((gap) => gap.category === 'outerwear')).toBeUndefined();
+    });
+
     it('shoppingSearchUrl encodes the query', () => {
         expect(shoppingSearchUrl('sapato social azul')).toContain('sapato%20social%20azul');
     });

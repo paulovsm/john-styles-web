@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Checkroom, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
-import { mapSubcategory } from '../../utils/categoryMapper';
+import { resolveGarmentType } from '../../utils/garmentTaxonomy';
 import { useHorizontalCarousel } from '../../hooks/useHorizontalCarousel';
 
 /**
@@ -18,10 +18,8 @@ export default function WardrobeCarousel() {
     const { scroller, canScroll, scrollByDir } = useHorizontalCarousel(allItems.length);
 
     const typeLabel = (item) => {
-        const sub = item.category === 'tops' ? (item.subcategory || mapSubcategory(item.name)) : null;
-        return sub
-            ? t(`wardrobe.filters.subcategories.${sub}`)
-            : t(`wardrobe.filters.categories.${item.category}`, item.category);
+        const type = resolveGarmentType(item);
+        return type ? t(`wardrobe.types.${type}`) : t('wardrobe.types.unclassified');
     };
 
     return (
