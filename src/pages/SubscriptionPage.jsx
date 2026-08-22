@@ -100,7 +100,7 @@ export default function SubscriptionPage() {
                 </div>
             </header>
 
-            <main>
+            <main id="main-content" tabIndex={-1}>
                 <section className="subscription-hero">
                     <div className="subscription-shell subscription-hero-grid">
                         <div className="subscription-hero-copy">

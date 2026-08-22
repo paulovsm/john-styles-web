@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Lightweight, dependency-free loading primitive.
@@ -6,6 +7,8 @@ import React from 'react';
  * - type="skeleton": a pulsing placeholder block
  */
 export default function Loading({ type = 'spinner', size = 40, className = '', ...props }) {
+    const { t } = useTranslation();
+
     if (type === 'spinner') {
         return (
             <span className={`inline-flex justify-center items-center text-brand-navy ${className}`} {...props}>
@@ -16,7 +19,7 @@ export default function Loading({ type = 'spinner', size = 40, className = '', .
                     viewBox="0 0 24 24"
                     fill="none"
                     role="status"
-                    aria-label="Loading"
+                    aria-label={t('common.loading', 'Carregando...')}
                 >
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-20" />
                     <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />

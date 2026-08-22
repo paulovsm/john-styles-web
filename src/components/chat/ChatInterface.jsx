@@ -19,7 +19,7 @@ export default function ChatInterface() {
     return (
         <div className="flex flex-col h-[calc(100dvh-10rem)] sm:h-[calc(100vh-8rem)] bg-white-pure border border-grey-light rounded-xl shadow-sm overflow-hidden">
             <div className="bg-brand-navy px-4 py-3 flex flex-wrap items-center gap-x-2 gap-y-1">
-                <h2 className="text-white-pure font-medium min-w-0 truncate mr-auto">{t('chat.title')}</h2>
+                <h1 className="text-white-pure font-medium min-w-0 truncate mr-auto">{t('chat.title')}</h1>
                 <span className="shrink-0 text-xs text-white-pure bg-white-pure/15 px-2 py-1 rounded-full border border-white-pure/30">
                     {t('chat.beta')}
                 </span>

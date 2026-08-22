@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import Input from '../common/Input';
+import Select from '../common/Select';
 import { useTranslation } from 'react-i18next';
 
 export default function WardrobeFilters() {
@@ -21,31 +22,19 @@ export default function WardrobeFilters() {
                     value={filters.search}
                     onChange={handleChange}
                     className="md:col-span-1"
+                    aria-label={t('wardrobe.filters.search')}
                 />
 
-                <div>
-                    <select
-                        name="category"
-                        value={filters.category}
-                        onChange={handleChange}
-                        className="wardrobe-filter-select block w-full border border-grey-light pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
-                    >
+                <Select name="category" value={filters.category} onChange={handleChange} aria-label={t('wardrobe.filters.allCategories')}>
                         <option value="all">{t('wardrobe.filters.allCategories')}</option>
                         <option value="tops">{t('wardrobe.filters.categories.tops')}</option>
                         <option value="bottoms">{t('wardrobe.filters.categories.bottoms')}</option>
                         <option value="shoes">{t('wardrobe.filters.categories.shoes')}</option>
                         <option value="accessories">{t('wardrobe.filters.categories.accessories')}</option>
                         <option value="outerwear">{t('wardrobe.filters.categories.outerwear')}</option>
-                    </select>
-                </div>
+                </Select>
 
-                <div>
-                    <select
-                        name="style"
-                        value={filters.style}
-                        onChange={handleChange}
-                        className="wardrobe-filter-select block w-full border border-grey-light pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
-                    >
+                <Select name="style" value={filters.style} onChange={handleChange} aria-label={t('wardrobe.filters.allStyles')}>
                         <option value="all">{t('wardrobe.filters.allStyles')}</option>
                         <option value="casual">{t('wardrobe.filters.styles.casual')}</option>
                         <option value="formal">{t('wardrobe.filters.styles.formal')}</option>
@@ -53,16 +42,9 @@ export default function WardrobeFilters() {
                         <option value="sporty">{t('wardrobe.filters.styles.sporty')}</option>
                         <option value="chic">{t('wardrobe.filters.styles.chic')}</option>
                         <option value="boho">{t('wardrobe.filters.styles.boho')}</option>
-                    </select>
-                </div>
+                </Select>
 
-                <div>
-                    <select
-                        name="color"
-                        value={filters.color}
-                        onChange={handleChange}
-                        className="wardrobe-filter-select block w-full border border-grey-light pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm rounded-md"
-                    >
+                <Select name="color" value={filters.color} onChange={handleChange} aria-label={t('wardrobe.filters.allColors')}>
                         <option value="all">{t('wardrobe.filters.allColors')}</option>
                         <option value="black">{t('wardrobe.filters.colors.black')}</option>
                         <option value="white">{t('wardrobe.filters.colors.white')}</option>
@@ -75,8 +57,7 @@ export default function WardrobeFilters() {
                         <option value="grey">{t('wardrobe.filters.colors.grey')}</option>
                         <option value="brown">{t('wardrobe.filters.colors.brown')}</option>
                         <option value="beige">{t('wardrobe.filters.colors.beige')}</option>
-                    </select>
-                </div>
+                </Select>
             </div>
         </div>
     );

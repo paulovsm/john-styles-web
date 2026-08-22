@@ -112,7 +112,7 @@ export default function LandingPage() {
                 </div>
             </header>
 
-            <main>
+            <main id="main-content" tabIndex={-1}>
                 <section className="fleek-hero" aria-labelledby="hero-title">
                     <div className="fleek-shell fleek-hero-grid">
                         <div className="fleek-hero-copy">

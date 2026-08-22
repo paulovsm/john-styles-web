@@ -40,7 +40,7 @@
     place-items: center;
     background: #e8e0ff;
     color: #5633bb;
-    font: 700 18px Georgia, serif;
+    font: 700 18px Montserrat, sans-serif;
 }
 
 .admin-users-list article > div {
@@ -93,7 +93,20 @@
 
 .admin-add-user h2 {
     margin: 0;
-    font: 500 28px/1.1 Georgia, serif;
+    font: 600 28px/1.1 Montserrat, sans-serif;
+}
+
+.dark .admin-users-list > article {
+    border-color: var(--cms-line);
+}
+
+.dark .admin-users-list article > div span,
+.dark .admin-add-user label {
+    color: var(--cms-ink);
+}
+
+.dark .admin-access-note {
+    background: rgb(var(--c-subtle));
 }
 
 .admin-add-user > p,

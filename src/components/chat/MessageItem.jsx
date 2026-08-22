@@ -55,7 +55,7 @@ export default function MessageItem({ message, userAvatar }) {
                             <button
                                 key={i}
                                 onClick={() => runAction(action)}
-                                className="inline-flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full bg-brand-navy text-white-pure hover:bg-opacity-90 transition-colors"
+                                className="inline-flex min-h-11 items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full bg-brand-navy text-white-pure hover:bg-opacity-90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2"
                             >
                                 {action.type === 'tryOn' ? <AutoAwesome style={{ fontSize: 14 }} /> : <ArrowForward style={{ fontSize: 14 }} />}
                                 {actionLabel(action)}
@@ -69,7 +69,7 @@ export default function MessageItem({ message, userAvatar }) {
             </div>
             {isUser && (
                 <div className="flex-shrink-0 ml-3">
-                    <Avatar src={userAvatar} alt="User" size="sm" />
+                    <Avatar src={userAvatar} alt={t('common.userAvatar', 'Foto do usuário')} size="sm" />
                 </div>
             )}
         </div>

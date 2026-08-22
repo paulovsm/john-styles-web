@@ -32,7 +32,7 @@ export default function WardrobeSummary() {
                     <div className="bg-brand-navy/10 p-2 rounded-full mr-3">
                         <Checkroom className="text-brand-navy" />
                     </div>
-                    <Card.Title className="whitespace-nowrap">{t('dashboard.wardrobeSummary')}</Card.Title>
+                    <Card.Title as="h2" className="whitespace-nowrap">{t('dashboard.wardrobeSummary')}</Card.Title>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">

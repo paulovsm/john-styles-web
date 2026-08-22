@@ -274,7 +274,12 @@
     "saving": "Guardando...",
     "toggleTheme": "Cambiar tema",
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "skipToContent": "Saltar al contenido",
+    "homeLabel": "Fleek Authority — inicio",
+    "openMainMenu": "Abrir menú principal",
+    "closeMainMenu": "Cerrar menú principal",
+    "closeNotification": "Cerrar notificación"
   },
   "onboarding": {
     "title": "Bienvenido a John Styles",
@@ -406,7 +411,10 @@
     "deleteTitle": "Eliminar look",
     "deleteConfirm": "¿Seguro que deseas eliminar este look?",
     "deleteError": "Error al eliminar el look. Inténtalo de nuevo.",
-    "deleteSuccess": "Look eliminado."
+    "deleteSuccess": "Look eliminado.",
+    "savedLook": "Look guardado",
+    "savedLookAlt": "Look guardado el {{date}}",
+    "savedLookNumber": "Look guardado {{number}}"
   },
   "footer": {
     "rights": "Todos los derechos reservados.",

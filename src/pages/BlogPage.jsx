@@ -36,7 +36,7 @@ export default function BlogPage() {
     return (
         <div className="blog-site">
             <BlogHeader />
-            <main>
+            <main id="main-content" tabIndex={-1}>
                 <section className="blog-index-hero">
                     <div className="blog-shell">
                         <span className="blog-kicker">Fleek Posts</span>

@@ -44,7 +44,7 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                         <div className="bg-brand-gold/15 p-2 rounded-full mr-3">
                             <AutoAwesome className="text-brand-gold-dark" />
                         </div>
-                        <Card.Title className="truncate">{t('dashboard.outfitOfDay', 'Look do dia')}</Card.Title>
+                        <Card.Title as="h2" className="truncate">{t('dashboard.outfitOfDay', 'Look do dia')}</Card.Title>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
                         {weather?.status === 'ready' && (
@@ -73,7 +73,7 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                     <button
                         type="button"
                         onClick={connectCalendar}
-                        className="mb-3 flex items-start gap-1.5 text-left text-xs text-brand-gold-dark hover:underline"
+                        className="mb-3 flex min-h-11 items-center gap-1.5 rounded-md text-left text-sm text-brand-gold-dark hover:bg-grey-light hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                     >
                         <CalendarMonth style={{ fontSize: 16 }} className="shrink-0 mt-0.5" />
                         {t('dashboard.connectCalendar', 'Conectar Google Agenda para sugestões pelo seu dia')}
@@ -90,25 +90,25 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                 ) : (
                     <>
                         <div className="relative">
-                            <div ref={scroller} className="flex gap-3 overflow-x-auto snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            <div ref={scroller} className="flex gap-3 overflow-x-auto overscroll-x-contain snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                                 {outfit.map((item) => (
                                     <div key={item.id} className="snap-start shrink-0 w-[46%] sm:w-48 text-center">
                                         <div className="aspect-[3/4] rounded-md overflow-hidden bg-grey-light">
                                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" style={{ imageOrientation: 'from-image' }} />
                                         </div>
-                                        <p className="mt-1 text-xs text-grey-dark truncate" title={item.name}>{item.name}</p>
+                                        <p className="mt-1 break-words text-xs text-grey-dark lg:truncate" title={item.name}>{item.name}</p>
                                     </div>
                                 ))}
                             </div>
                             {canScroll && (
                                 <>
-                                    <button type="button" onClick={() => scrollByDir(-1)} aria-label={t('common.previous', 'Anterior')} className="absolute left-1 top-[42%] -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"><ChevronLeft fontSize="small" /></button>
-                                    <button type="button" onClick={() => scrollByDir(1)} aria-label={t('common.next', 'Próximo')} className="absolute right-1 top-[42%] -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"><ChevronRight fontSize="small" /></button>
+                                    <button type="button" onClick={() => scrollByDir(-1)} aria-label={t('common.previous', 'Anterior')} className="absolute left-1 top-[42%] hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-control-border bg-white-pure/90 shadow-sm hover:bg-white-pure focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy lg:grid"><ChevronLeft fontSize="small" /></button>
+                                    <button type="button" onClick={() => scrollByDir(1)} aria-label={t('common.next', 'Próximo')} className="absolute right-1 top-[42%] hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-control-border bg-white-pure/90 shadow-sm hover:bg-white-pure focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy lg:grid"><ChevronRight fontSize="small" /></button>
                                 </>
                             )}
                         </div>
                         {thinLook && (
-                            <p className="mt-3 text-[11px] text-grey-medium">
+                            <p className="mt-3 text-xs text-grey-medium">
                                 {t('dashboard.outfitThin', 'Guarda-roupa enxuto — adicione peças para recomendações melhores.')}
                             </p>
                         )}

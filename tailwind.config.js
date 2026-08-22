@@ -30,11 +30,18 @@ export default {
           medium: withVar('--c-muted'),    // muted text
           dark: withVar('--c-content'),    // body text
         },
+        control: {
+          border: withVar('--c-control-border'),
+        },
         status: {
           success: '#10B981',
           error: '#EF4444',
           warning: '#F59E0B',
           info: '#3B82F6',
+          'success-content': withVar('--c-status-success-content'),
+          'error-content': withVar('--c-status-error-content'),
+          'warning-content': withVar('--c-status-warning-content'),
+          'info-content': withVar('--c-status-info-content'),
         },
       },
       fontFamily: {

@@ -10,7 +10,7 @@ export default function Footer() {
                 <p className="text-sm text-grey-medium">
                     &copy; {new Date().getFullYear()} John Styles. {t('footer.rights', 'Todos os direitos reservados.')}
                 </p>
-                <Link to="/privacy" className="text-sm text-grey-medium hover:text-brand-navy">
+                <Link to="/privacy" className="inline-flex min-h-11 items-center text-sm text-grey-medium hover:text-brand-navy">
                     {t('footer.privacy', 'Política de Privacidade')}
                 </Link>
             </div>

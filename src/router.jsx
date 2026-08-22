@@ -27,9 +27,9 @@ const AdminBlogPage = lazy(() => import('./pages/AdminBlogPage'));
 
 function RouteFallback() {
     return (
-        <div className="flex justify-center items-center min-h-[60vh]">
+        <main id="main-content" tabIndex={-1} className="flex justify-center items-center min-h-[60vh]">
             <Loading type="spinner" size={40} />
-        </div>
+        </main>
     );
 }
 

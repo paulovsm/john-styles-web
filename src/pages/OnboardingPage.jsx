@@ -157,7 +157,7 @@ export default function OnboardingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white-off flex flex-col items-center justify-center p-4">
+        <main id="main-content" tabIndex={-1} className="min-h-screen bg-white-off flex flex-col items-center justify-center p-4">
             <div className="max-w-2xl w-full bg-white-pure p-8 rounded-2xl shadow-lg border border-grey-light">
                 {/* Header + progress */}
                 <div className="mb-6">
@@ -181,24 +181,24 @@ export default function OnboardingPage() {
                                     const active = sel.archetypes.includes(a.id);
                                     return (
                                         <button key={a.id} type="button" onClick={() => toggle('archetypes', a.id)}
-                                            className={`text-left p-3 rounded-xl border-2 transition-colors ${active ? 'border-brand-gold bg-brand-gold/10' : 'border-grey-light hover:border-grey-medium'}`}>
+                                            className={`min-h-11 text-left p-3 rounded-xl border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy ${active ? 'border-brand-gold bg-brand-gold/10' : 'border-control-border hover:border-grey-medium'}`}>
                                             <span className="block font-medium text-brand-navy">{t(`onboarding.archetypes.${a.id}.label`)}</span>
                                             <span className="block text-xs text-grey-medium mt-0.5">{t(`onboarding.archetypes.${a.id}.desc`)}</span>
                                         </button>
                                     );
                                 })}
                             </div>
-                            <button type="button" onClick={() => setAiOpen((v) => !v)} className="mt-4 text-sm text-brand-gold-dark hover:underline">
+                            <button type="button" onClick={() => setAiOpen((v) => !v)} className="mt-4 min-h-11 rounded-md text-sm text-brand-gold-dark hover:bg-grey-light hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy">
                                 {t('onboarding.describeWithAI', 'Prefere descrever com suas palavras?')}
                             </button>
                             {aiOpen && (
                                 <div className="mt-3 space-y-2">
                                     <textarea value={aiText} onChange={(e) => setAiText(e.target.value)} disabled={aiLoading}
                                         placeholder={t('onboarding.placeholder')}
-                                        className="w-full h-28 p-3 border border-grey-light rounded-lg bg-white-pure text-grey-dark focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none" />
-                                    {aiError && <p className="text-status-error text-sm">{aiError}</p>}
+                                        className="theme-control w-full h-28 p-3 border border-control-border rounded-lg bg-white-pure text-grey-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy resize-none" />
+                                    {aiError && <p className="text-status-error-content text-sm">{aiError}</p>}
                                     <button type="button" onClick={runAI} disabled={!aiText.trim() || aiLoading}
-                                        className="inline-flex items-center px-4 py-2 rounded-lg bg-brand-navy text-white-pure text-sm disabled:opacity-50">
+                                        className="inline-flex min-h-11 items-center px-4 py-2 rounded-lg bg-brand-navy text-white-pure text-sm disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2">
                                         {aiLoading && <Loading type="spinner" size={16} className="mr-2" />}
                                         {aiLoading ? t('onboarding.analyzing') : t('onboarding.analyzeButton')}
                                     </button>
@@ -213,7 +213,7 @@ export default function OnboardingPage() {
                                 const active = sel.favoriteColors.includes(c.value);
                                 return (
                                     <button key={c.id} type="button" onClick={() => toggle('favoriteColors', c.value)}
-                                        className={`inline-flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border-2 transition-colors ${active ? 'border-brand-gold bg-brand-gold/10' : 'border-grey-light hover:border-grey-medium'}`}>
+                                        className={`inline-flex min-h-11 items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy ${active ? 'border-brand-gold bg-brand-gold/10' : 'border-control-border hover:border-grey-medium'}`}>
                                         <span className="w-5 h-5 rounded-full border border-grey-light" style={{ backgroundColor: colorToHex(c.value) || '#ccc' }} />
                                         <span className="text-sm text-brand-navy">{t(`onboarding.colors.${c.id}`)}</span>
                                     </button>
@@ -228,7 +228,7 @@ export default function OnboardingPage() {
                                 const active = sel.occasions.includes(o.value);
                                 return (
                                     <button key={o.id} type="button" onClick={() => toggle('occasions', o.value)}
-                                        className={`p-3 rounded-xl border-2 text-sm font-medium transition-colors ${active ? 'border-brand-gold bg-brand-gold/10 text-brand-navy' : 'border-grey-light text-grey-dark hover:border-grey-medium'}`}>
+                                        className={`min-h-11 p-3 rounded-xl border-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy ${active ? 'border-brand-gold bg-brand-gold/10 text-brand-navy' : 'border-control-border text-grey-dark hover:border-grey-medium'}`}>
                                         {t(`onboarding.occasionOptions.${o.id}`)}
                                     </button>
                                 );
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
                                 const active = sel.bodyType === b.value;
                                 return (
                                     <button key={b.id} type="button" onClick={() => setField('bodyType', b.value)}
-                                        className={`p-3 rounded-xl border-2 text-sm font-medium transition-colors ${active ? 'border-brand-gold bg-brand-gold/10 text-brand-navy' : 'border-grey-light text-grey-dark hover:border-grey-medium'}`}>
+                                        className={`min-h-11 p-3 rounded-xl border-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy ${active ? 'border-brand-gold bg-brand-gold/10 text-brand-navy' : 'border-control-border text-grey-dark hover:border-grey-medium'}`}>
                                         {t(`onboarding.bodyTypes.${b.id}`)}
                                     </button>
                                 );
@@ -256,7 +256,7 @@ export default function OnboardingPage() {
                                 const active = sel.dislikes.includes(d.value);
                                 return (
                                     <button key={d.id} type="button" onClick={() => toggle('dislikes', d.value)}
-                                        className={`px-3 py-1.5 rounded-full border-2 text-sm transition-colors ${active ? 'border-status-error bg-status-error/10 text-status-error' : 'border-grey-light text-grey-dark hover:border-grey-medium'}`}>
+                                        className={`min-h-11 px-3 py-1.5 rounded-full border-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy ${active ? 'border-status-error bg-status-error/10 text-status-error-content' : 'border-control-border text-grey-dark hover:border-grey-medium'}`}>
                                         {t(`onboarding.dislikeOptions.${d.id}`)}
                                     </button>
                                 );
@@ -273,7 +273,7 @@ export default function OnboardingPage() {
                                 <h3 className="font-medium text-sm text-grey-medium uppercase tracking-wide mb-1">{t('onboarding.styleGoals')}</h3>
                                 <textarea value={sel.styleGoals} onChange={(e) => setField('styleGoals', e.target.value)}
                                     placeholder={t('onboarding.goalsPlaceholder', 'Ex.: Quero um visual casual e confortável para o trabalho.')}
-                                    className="w-full h-24 p-3 border border-grey-light rounded-lg bg-white-pure text-grey-dark focus:outline-none focus:ring-2 focus:ring-brand-navy resize-none" />
+                                    className="theme-control w-full h-24 p-3 border border-control-border rounded-lg bg-white-pure text-grey-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy resize-none" />
                             </div>
                         </div>
                     )}
@@ -282,23 +282,23 @@ export default function OnboardingPage() {
                 {/* Nav */}
                 <div className="mt-6 flex items-center justify-between gap-3">
                     <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}
-                        className="px-4 py-2.5 rounded-lg text-brand-navy font-medium disabled:opacity-40 hover:bg-grey-light/50">
+                        className="min-h-11 px-4 py-2.5 rounded-lg text-brand-navy font-medium disabled:opacity-40 hover:bg-grey-light/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy">
                         {t('onboarding.back', 'Voltar')}
                     </button>
                     <div className="flex items-center gap-3">
                         {!isLast && (
-                            <button type="button" onClick={() => setStep((s) => s + 1)} className="text-sm text-grey-medium hover:text-brand-navy">
+                            <button type="button" onClick={() => setStep((s) => s + 1)} className="min-h-11 rounded-md px-2 text-sm text-grey-medium hover:bg-grey-light hover:text-brand-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy">
                                 {t('onboarding.skip', 'Pular')}
                             </button>
                         )}
                         <button type="button" onClick={() => (isLast ? finish() : setStep((s) => s + 1))}
-                            className="px-6 py-2.5 rounded-lg bg-brand-navy text-white-pure font-medium hover:bg-opacity-90">
+                            className="min-h-11 px-6 py-2.5 rounded-lg bg-brand-navy text-white-pure font-medium hover:bg-opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2">
                             {isLast ? t('onboarding.saveButton') : t('onboarding.next', 'Continuar')}
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }
 
@@ -312,7 +312,7 @@ function ReviewChips({ label, items, onRemove }) {
                 {items.map((item) => (
                     <span key={item} className="inline-flex items-center rounded-full text-sm bg-brand-navy/10 text-brand-navy capitalize">
                         <span className="py-1.5 pl-3">{item}</span>
-                        <button type="button" onClick={() => onRemove(item)} className="grid place-items-center h-8 w-8 -my-1 mr-0.5 shrink-0 hover:text-status-error active:text-status-error" aria-label={t('common.remove', 'Remover')}>
+                        <button type="button" onClick={() => onRemove(item)} className="grid place-items-center h-11 w-11 shrink-0 hover:text-status-error-content active:text-status-error-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy" aria-label={t('common.remove', 'Remover')}>
                             <Close style={{ fontSize: 16 }} />
                         </button>
                     </span>

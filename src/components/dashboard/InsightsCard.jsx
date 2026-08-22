@@ -24,9 +24,9 @@ export default function InsightsCard() {
 
     return (
         <div className="mt-6 pt-5 border-t border-grey-light">
-            <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-grey-medium">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-grey-medium">
                 {t('insights.title', 'Insights do guarda-roupa')}
-            </h4>
+            </h3>
 
             {/* Coverage */}
             <div className="mb-4">
@@ -40,7 +40,7 @@ export default function InsightsCard() {
             </div>
 
             {insights.gaps.length === 0 ? (
-                <div className="flex items-center gap-2 text-sm text-status-success">
+                <div className="flex items-center gap-2 text-sm text-status-success-content">
                     <CheckCircle fontSize="small" />
                     {t('insights.complete', 'Seu guarda-roupa cobre o essencial. Boa!')}
                 </div>
@@ -63,7 +63,7 @@ export default function InsightsCard() {
                                         href={shoppingSearchUrl(query)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="shrink-0 inline-flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full bg-brand-navy text-white-pure hover:bg-opacity-90"
+                                        className="shrink-0 inline-flex min-h-11 items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full bg-brand-navy text-white-pure hover:bg-opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2"
                                     >
                                         <ShoppingBag style={{ fontSize: 14 }} />
                                         {t('insights.shop', 'Buscar')}

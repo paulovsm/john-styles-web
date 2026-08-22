@@ -64,11 +64,11 @@ Card.Body = function CardBody({ children, className = '' }) {
     );
 };
 
-Card.Title = function CardTitle({ children, className = '' }) {
-    return (
-        <h3 className={`text-lg font-semibold text-brand-navy ${className}`}>
-            {children}
-        </h3>
+Card.Title = function CardTitle({ children, className = '', as = 'h3' }) {
+    return React.createElement(
+        as,
+        { className: `text-lg font-semibold text-brand-navy ${className}` },
+        children
     );
 };
 

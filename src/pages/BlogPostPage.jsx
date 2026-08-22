@@ -78,7 +78,7 @@ export default function BlogPostPage() {
     return (
         <div className="blog-site">
             <BlogHeader />
-            <main>
+            <main id="main-content" tabIndex={-1}>
                 {loading ? (
                     <div className="blog-shell blog-status" role="status">Carregando artigo...</div>
                 ) : notFound || !post ? (

@@ -4,9 +4,9 @@
 >
 > **Status:** fonte de verdade para novos desenvolvimentos de interface
 >
-> **Versão:** 1.0
+> **Versão:** 1.1
 >
-> **Última atualização:** 21 de agosto de 2026
+> **Última atualização:** 22 de agosto de 2026
 
 ## 1. Como usar este documento
 
@@ -36,6 +36,26 @@ uma reescrita desnecessária.
 
 > O produto deve fazer o usuário se sentir mais seguro, mais bem posicionado e
 > mais eficiente — nunca julgado, confuso ou sobrecarregado.
+
+### Política obrigatória: mobile first
+
+John Styles é um produto **mobile first**. Mobile não é uma versão reduzida do
+desktop nem uma etapa final de responsividade: é o ponto de partida para
+decisões de produto, conteúdo, layout, interação, implementação e testes.
+
+- Comece todo fluxo em **360 px**, orientação vertical, e garanta funcionamento
+  sem overflow a partir de **320 px**.
+- Defina primeiro hierarquia, ordem do conteúdo, ação principal e estados no
+  mobile; depois acrescente espaço, colunas e recursos nos breakpoints maiores.
+- CSS base representa mobile. Use preferencialmente media queries progressivas
+  com `min-width`; evite construir desktop para depois desfazer regras no mobile.
+- Uma funcionalidade não está pronta se o fluxo principal não puder ser
+  concluído por toque, com uma mão e com o teclado virtual aberto quando houver
+  formulário.
+- Priorize dispositivos e conexões modestos: mídia, dependências e carregamento
+  devem ser avaliados primeiro no contexto móvel.
+- Exceções precisam de justificativa de produto documentada no PR e não podem
+  comprometer acesso, leitura ou conclusão do fluxo em mobile.
 
 ---
 
@@ -117,7 +137,9 @@ sugestões” a “seu guarda-roupa está incompleto”.
 
 Fotografar peças, consultar looks e conversar com John são ações naturalmente
 móveis. Todo fluxo novo deve funcionar primeiro em 360 px de largura, com toque,
-teclado virtual, conexão lenta e uso com uma mão.
+teclado virtual, conexão lenta e uso com uma mão. Decisões desktop devem ser
+tratadas como aprimoramentos progressivos e nunca alterar a prioridade, a ordem
+ou a disponibilidade das ações essenciais definidas no mobile.
 
 ### 3.6 Consistência acima da novidade
 
@@ -236,6 +258,10 @@ lugar, transforme-o em token antes de replicá-lo.
 
 ### 4.5 Layout e grid
 
+- O estilo base deve representar o mobile; adicione complexidade com
+  breakpoints `min-width`.
+- Defina a ordem semântica do DOM para mobile. Não use CSS apenas para inverter
+  visualmente uma ordem que ficaria incoerente para teclado ou leitor de tela.
 - Conteúdo editorial pode usar container de até **1140 px**.
 - Texto corrido deve ficar entre **600 e 780 px** para preservar leitura.
 - Use uma coluna no mobile e expanda progressivamente.
@@ -514,7 +540,20 @@ John não deve:
 
 ## 9. Responsividade e interação mobile
 
-Todo fluxo novo deve ser revisado em pelo menos 360, 768, 1024 e 1440 px.
+Projete e implemente primeiro em 360 px. Só depois valide a expansão em 768,
+1024 e 1440 px. A ordem de revisão também é mobile primeiro: um problema em
+360 px bloqueia a aprovação mesmo quando a experiência desktop está correta.
+
+### Sequência obrigatória de trabalho
+
+1. Estruture conteúdo e HTML semântico para 360 px.
+2. Garanta a conclusão do fluxo com toque e uma mão.
+3. Teste campos com teclado virtual aberto, mensagens de erro e estados de
+   loading, vazio, sucesso e indisponibilidade.
+4. Verifique 320 px como largura mínima suportada, sem perda de conteúdo ou
+   rolagem horizontal.
+5. Expanda progressivamente para 768, 1024 e 1440 px sem duplicar conteúdo ou
+   criar uma experiência paralela.
 
 ### Requisitos mínimos
 
@@ -528,6 +567,11 @@ Todo fluxo novo deve ser revisado em pelo menos 360, 768, 1024 e 1440 px.
 - Conteúdo e CTA permanecem visíveis com teclado virtual aberto.
 - Considere safe areas em aparelhos com notch e barra inferior.
 - Teste orientação vertical; horizontal apenas quando o fluxo depender dela.
+- Não esconda no mobile uma funcionalidade necessária para concluir o fluxo.
+- A ação principal deve aparecer cedo, permanecer alcançável e não competir
+  com navegação, banners ou controles secundários.
+- Menus, drawers e bottom sheets devem fechar por ação explícita, Escape quando
+  houver teclado físico e retorno previsível do foco.
 
 ---
 
@@ -542,6 +586,8 @@ O mínimo esperado é WCAG 2.2 AA.
 - Foco visível em links, botões, campos e itens interativos.
 - Navegação completa por teclado.
 - Ordem de foco coerente com a ordem visual.
+- Link global “Pular para o conteúdo” apontando para `#main-content` em todas as
+  rotas, inclusive estados de carregamento.
 - Labels programáticos em todos os campos, filtros e buscas.
 - `h1` único por página e hierarquia de headings sem saltos arbitrários.
 - Texto alternativo contextual para imagens informativas.
@@ -587,6 +633,7 @@ Performance faz parte da experiência premium.
 
 ### Faça
 
+- Implemente o estilo base para mobile e use `min-width` para aprimoramentos.
 - Use tokens semânticos e classes mapeadas no Tailwind.
 - Reutilize `Button`, `Card`, `Input`, `Modal`, `ConfirmDialog`, `Loading` e
   padrões existentes.
@@ -597,6 +644,9 @@ Performance faz parte da experiência premium.
 
 ### Não faça
 
+- Não trate mobile como redução posterior do layout desktop.
+- Não mantenha duas árvores de conteúdo — uma mobile e outra desktop — salvo
+  necessidade técnica documentada e acessível.
 - Não use cores literais em JSX.
 - Não crie um botão ou input isolado com estilo próprio se o componente comum
   puder ser estendido.
@@ -628,13 +678,14 @@ Um novo token é justificável quando:
 1. Defina usuário, contexto, problema e ação principal.
 2. Identifique o padrão de página mais próximo.
 3. Liste componentes e tokens reutilizáveis.
-4. Esboce primeiro o estado mobile.
+4. Esboce primeiro o estado mobile em 360 px, incluindo teclado virtual e ação
+   principal ao alcance do polegar.
 5. Defina estados vazio, loading, erro, sucesso e indisponibilidade.
 6. Revise riscos de privacidade, dados e ações irreversíveis.
 
 ### Durante o desenvolvimento
 
-1. Construa com componentes comuns.
+1. Construa e valide primeiro o fluxo mobile com componentes comuns.
 2. Use conteúdo realista nos três idiomas quando o fluxo for traduzido.
 3. Preserve HTML semântico antes de adicionar ARIA.
 4. Teste teclado, foco, toque e dark mode durante a implementação.
@@ -643,12 +694,16 @@ Um novo token é justificável quando:
 ### Definition of Done visual
 
 - [ ] A ação principal é evidente em até cinco segundos.
+- [ ] O fluxo principal foi concluído primeiro em 360 px por toque.
+- [ ] A tela preserva conteúdo e funcionalidade entre 320 e 359 px.
 - [ ] A tela funciona em 360, 768, 1024 e 1440 px.
 - [ ] Não há overflow horizontal.
 - [ ] Temas claro e escuro foram verificados.
 - [ ] Loading, vazio, erro, sucesso e disabled foram considerados.
 - [ ] Contraste, foco, labels e teclado foram verificados.
 - [ ] Alvos de toque têm pelo menos 44 × 44 px.
+- [ ] Formulários foram testados com teclado virtual e tipo de teclado adequado.
+- [ ] A ação principal respeita ergonomia de uma mão e safe areas.
 - [ ] Texto e imagens seguem a marca.
 - [ ] Não há novo valor visual hardcoded sem justificativa.
 - [ ] Componentes comuns foram usados ou evoluídos.
@@ -668,8 +723,6 @@ Estas diferenças existem hoje, mas não devem ser replicadas:
 - A variante `accent` e classes legadas `brand-gold` permanecem por
   compatibilidade, mas atualmente são monocromáticas.
 - O modal comum ainda não implementa um bottom sheet mobile completo.
-- Alguns erros, filtros e campos ainda têm pendências de contraste, labels e
-  acessibilidade registradas no backlog.
 - A biblioteca de ícones é maior do que a necessidade real e deve ser reduzida
   sem mudar a linguagem visual.
 
@@ -681,6 +734,8 @@ planejamento.
 
 ## 16. Governança
 
+- PRs de interface devem descrever como o fluxo foi resolvido e verificado no
+  mobile; captura apenas de desktop não é evidência suficiente.
 - Mudanças neste sistema devem passar por PR dedicado ou estar claramente
   descritas no PR da funcionalidade.
 - Alterações de token exigem busca de impacto em toda a aplicação.

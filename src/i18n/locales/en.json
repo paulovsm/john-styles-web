@@ -274,7 +274,12 @@
     "saving": "Saving...",
     "toggleTheme": "Toggle theme",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "skipToContent": "Skip to content",
+    "homeLabel": "Fleek Authority — home",
+    "openMainMenu": "Open main menu",
+    "closeMainMenu": "Close main menu",
+    "closeNotification": "Close notification"
   },
   "onboarding": {
     "title": "Welcome to John Styles",
@@ -406,7 +411,10 @@
     "deleteTitle": "Delete look",
     "deleteConfirm": "Are you sure you want to delete this look?",
     "deleteError": "Failed to delete the look. Please try again.",
-    "deleteSuccess": "Look deleted."
+    "deleteSuccess": "Look deleted.",
+    "savedLook": "Saved look",
+    "savedLookAlt": "Look saved on {{date}}",
+    "savedLookNumber": "Saved look {{number}}"
   },
   "footer": {
     "rights": "All rights reserved.",

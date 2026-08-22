@@ -25,7 +25,7 @@ export default function WardrobeItemCard({ item, onDelete, onClick }) {
                 </span>
             )}
             <Card.Body>
-                <Card.Title className="truncate">{item.name}</Card.Title>
+                <Card.Title as="h2" className="break-words lg:truncate">{item.name}</Card.Title>
                 <Card.Subtitle>{typeLabel}</Card.Subtitle>
                 <div className="mt-2 flex flex-wrap gap-1">
                     {item.colors && item.colors.map((color, index) => {
@@ -53,7 +53,7 @@ export default function WardrobeItemCard({ item, onDelete, onClick }) {
                         e.stopPropagation();
                         onDelete(item.id);
                     }}
-                    className="absolute top-2 right-2 grid place-items-center h-11 w-11 bg-white-pure/90 rounded-full shadow-sm text-grey-medium hover:text-status-error active:text-status-error transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+                    className="absolute top-2 right-2 grid place-items-center h-11 w-11 bg-white-pure/90 rounded-full shadow-sm text-grey-medium hover:text-status-error-content active:text-status-error-content transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
                     aria-label={t('common.delete', 'Excluir')}
                     title={t('common.delete', 'Excluir')}
                 >

@@ -6,7 +6,7 @@ export default function NotFoundPage() {
     const { t } = useTranslation();
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-white-off px-4 text-center">
+        <main id="main-content" tabIndex={-1} className="min-h-screen flex flex-col items-center justify-center bg-white-off px-4 text-center">
             <p className="text-6xl font-serif font-bold text-brand-navy">404</p>
             <h1 className="mt-4 text-xl font-medium text-brand-navy">
                 {t('notFound.title', 'Página não encontrada')}
@@ -20,6 +20,6 @@ export default function NotFoundPage() {
             >
                 {t('notFound.backHome', 'Voltar ao início')}
             </Link>
-        </div>
+        </main>
     );
 }

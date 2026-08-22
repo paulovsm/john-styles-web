@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Google, Facebook, Apple } from '@mui/icons-material';
+import { Google, Facebook, Apple, DarkMode, LightMode } from '@mui/icons-material';
+import { useTheme } from '../contexts/ThemeContext';
+import IconButton from '../components/common/IconButton';
 
 export default function LoginPage() {
     const { loginWithGoogle, loginWithFacebook, loginWithApple, currentUser } = useAuth();
@@ -10,6 +12,7 @@ export default function LoginPage() {
     const { t } = useTranslation();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const { theme, toggleTheme } = useTheme();
 
     React.useEffect(() => {
         if (currentUser) {
@@ -48,7 +51,14 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white-off px-4 sm:px-6 lg:px-8">
+        <main id="main-content" tabIndex={-1} className="login-page relative min-h-screen flex items-center justify-center bg-white-off px-4 sm:px-6 lg:px-8">
+            <IconButton
+                label={t('common.toggleTheme', 'Alternar tema')}
+                onClick={toggleTheme}
+                className="absolute right-4 top-4 bg-white-pure shadow-sm"
+            >
+                {theme === 'dark' ? <LightMode /> : <DarkMode />}
+            </IconButton>
             <div className="max-w-md w-full space-y-8 bg-white-pure p-6 sm:p-10 rounded-xl shadow-lg border border-grey-light">
                 <div className="text-center">
                     <h1 className="mt-6 text-2xl sm:text-3xl font-serif font-bold text-brand-navy">
@@ -60,7 +70,7 @@ export default function LoginPage() {
                 </div>
 
                 {error && (
-                    <div className="bg-status-error/10 border border-status-error text-status-error px-4 py-3 rounded relative" role="alert">
+                    <div className="bg-status-error/10 border border-status-error text-status-error-content px-4 py-3 rounded relative" role="alert">
                         <span className="block sm:inline">{error}</span>
                     </div>
                 )}
@@ -75,7 +85,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithGoogle)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold rounded-full text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Google className="h-5 w-5 text-grey-medium group-hover:text-brand-navy" />
@@ -86,7 +96,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithFacebook)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold rounded-full text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Facebook className="h-5 w-5 text-blue-600" />
@@ -97,7 +107,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithApple)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-grey-light text-sm font-semibold rounded-full text-grey-dark bg-white hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-colors"
+                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold rounded-full text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors"
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             {/* Theme-aware: a hard-coded black mark is invisible on the dark surface. */}
@@ -108,14 +118,14 @@ export default function LoginPage() {
                 </div>
 
                 <div className="text-center mt-4">
-                    <p className="text-xs text-grey-medium">
+                    <p className="text-sm text-grey-medium">
                         {t('auth.legalPrefix', 'Ao entrar, você concorda com nossa')}{' '}
-                        <Link to="/privacy" className="underline hover:text-brand-navy">
+                        <Link to="/privacy" className="inline-flex min-h-11 items-center underline hover:text-brand-navy">
                             {t('footer.privacy', 'Política de Privacidade')}
                         </Link>.
                     </p>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }

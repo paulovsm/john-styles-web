@@ -17,7 +17,7 @@ export default function WardrobeTutorial({ onAddItem, onDismiss }) {
             <button
                 type="button"
                 onClick={onDismiss}
-                className="absolute right-3 top-3 rounded-md p-1 text-grey-medium hover:bg-white-pure hover:text-grey-dark focus:outline-none focus:ring-2 focus:ring-brand-navy"
+                className="absolute right-3 top-3 grid h-11 w-11 place-items-center rounded-md text-grey-medium hover:bg-white-pure hover:text-grey-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                 aria-label={t('wardrobe.tutorial.dismiss')}
             >
                 <Close fontSize="small" />

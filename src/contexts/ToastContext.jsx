@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { CheckCircle, Error as ErrorIcon, Info, Close } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 const ToastContext = createContext();
 
@@ -12,13 +13,14 @@ export function useToast() {
 let nextId = 0;
 
 const STYLES = {
-    success: { icon: CheckCircle, cls: 'border-status-success text-status-success' },
-    error: { icon: ErrorIcon, cls: 'border-status-error text-status-error' },
-    info: { icon: Info, cls: 'border-brand-navy text-brand-navy' },
+    success: { icon: CheckCircle, cls: 'border-status-success text-status-success-content' },
+    error: { icon: ErrorIcon, cls: 'border-status-error text-status-error-content' },
+    info: { icon: Info, cls: 'border-status-info text-status-info-content' },
 };
 
 export function ToastProvider({ children }) {
     const [toasts, setToasts] = useState([]);
+    const { t } = useTranslation();
 
     const dismiss = useCallback((id) => {
         setToasts((list) => list.filter((t) => t.id !== id));
@@ -56,8 +58,8 @@ export function ToastProvider({ children }) {
                             <p className="text-sm text-grey-dark flex-1">{message}</p>
                             <button
                                 onClick={() => dismiss(id)}
-                                className="grid place-items-center h-9 w-9 -my-1.5 -mr-2 text-grey-medium hover:text-grey-dark shrink-0"
-                                aria-label="Fechar notificação"
+                                className="grid place-items-center h-11 w-11 -my-2.5 -mr-2 text-grey-medium hover:text-grey-dark shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
+                                aria-label={t('common.closeNotification', 'Fechar notificação')}
                             >
                                 <Close fontSize="small" />
                             </button>
