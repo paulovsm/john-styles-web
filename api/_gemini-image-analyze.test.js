@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeAnalysisResult } from './gemini-image-analyze';
+import { normalizeAnalysisResult } from './gemini-image-analyze.js';
 
 describe('gemini image analysis taxonomy contract', () => {
     it('normalizes a known type and derives its category', () => {
