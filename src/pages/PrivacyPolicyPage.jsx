@@ -13,12 +13,12 @@ export default function PrivacyPolicyPage() {
         <div className="min-h-screen flex flex-col bg-white-off">
             <header className="border-b border-grey-light bg-white-pure">
                 <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-                    <Link to="/" className="text-xl font-serif font-bold text-brand-navy">John Styles</Link>
-                    <Link to="/" className="text-sm text-brand-navy hover:underline">Início</Link>
+                    <Link to="/" className="inline-flex min-h-11 items-center text-xl font-serif font-bold text-brand-navy">John Styles</Link>
+                    <Link to="/" className="inline-flex min-h-11 min-w-11 items-center justify-center text-sm text-brand-navy hover:underline">Início</Link>
                 </div>
             </header>
 
-            <main className="flex-1 max-w-3xl mx-auto px-4 py-10">
+            <main id="main-content" tabIndex={-1} className="flex-1 max-w-3xl mx-auto px-4 py-10">
                 <article className="prose dark:prose-invert max-w-none prose-headings:font-serif">
                     <h1>Política de Privacidade — John Styles</h1>
                     <p className="text-grey-medium">Última atualização: {updated}</p>
@@ -50,7 +50,7 @@ export default function PrivacyPolicyPage() {
                     <h2>Uso Limitado dos dados do Google (Limited Use)</h2>
                     <p>
                         O uso e a transferência, pelo John Styles, de informações recebidas das APIs do Google
-                        obedecem à <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Política
+                        obedecem à <a className="inline-flex min-h-11 items-center" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Política
                         de Dados do Usuário dos Serviços de API do Google</a>, incluindo os requisitos de Uso Limitado.
                         Os dados da sua Google Agenda são usados exclusivamente para gerar a sugestão de look do dia,
                         não são vendidos, não são usados para publicidade e não são compartilhados com terceiros
@@ -70,7 +70,7 @@ export default function PrivacyPolicyPage() {
                         Mantemos seus dados enquanto sua conta existir. Você pode remover peças, fotos e looks a
                         qualquer momento no app. Para excluir sua conta e dados associados (incluindo a conexão com
                         a Google Agenda), entre em contato pelo e-mail abaixo. Você também pode revogar o acesso à
-                        agenda em <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>.
+                        agenda em <a className="inline-flex min-h-11 items-center break-all" href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>.
                     </p>
 
                     <h2>Segurança</h2>

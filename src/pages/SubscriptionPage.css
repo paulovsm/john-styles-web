@@ -51,6 +51,7 @@
 }
 
 .subscription-brand {
+    min-height: 44px;
     display: inline-flex;
     align-items: center;
     gap: 12px;
@@ -79,13 +80,13 @@
 }
 
 .subscription-nav nav a {
-    min-height: 42px;
+    min-height: 44px;
     padding: 0 13px;
     display: inline-flex;
     align-items: center;
     border-radius: 999px;
     color: #fff;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     text-decoration: none;
 }
@@ -96,7 +97,7 @@
 }
 
 .subscription-nav nav .subscription-nav-cta {
-    min-height: 34px;
+    min-height: 44px;
     margin-left: 8px;
     padding-inline: 18px;
     background: #fff;
@@ -141,7 +142,7 @@
 .subscription-hero-copy > p {
     max-width: 670px;
     margin-top: 26px;
-    color: #c9c6c1;
+    color: #c9c9c9;
     font-size: 17px;
     line-height: 1.7;
 }
@@ -171,7 +172,7 @@
 
 .subscription-price span,
 .subscription-price p {
-    color: #b9b5b0;
+    color: #b9b9b9;
     font-size: 12px;
     line-height: 1.45;
 }
@@ -202,6 +203,7 @@
 
 .subscription-text-link {
     display: inline-flex;
+    min-height: 44px;
     align-items: center;
     gap: 9px;
     color: #fff;
@@ -237,7 +239,7 @@
 }
 
 .subscription-section-label {
-    color: #6b5b4d;
+    color: #666;
 }
 
 .subscription-manifesto h2,
@@ -254,7 +256,7 @@
 .subscription-manifesto p {
     max-width: 780px;
     margin-top: 28px;
-    color: #59534c;
+    color: #595959;
     font-size: 17px;
     line-height: 1.75;
 }
@@ -299,7 +301,7 @@
 
 .subscription-steps li::before {
     content: '0' counter(subscription-step);
-    color: #8d8176;
+    color: #4e4e4e;
     font-size: 12px;
     font-weight: 700;
 }
@@ -313,7 +315,7 @@
 
 .subscription-steps li span {
     margin-top: 14px;
-    color: #625e58;
+    color: #5f5f5f;
     font-size: 13px;
     line-height: 1.65;
 }
@@ -335,7 +337,7 @@
 .subscription-section-heading--dark > p {
     max-width: 750px;
     margin-top: 22px;
-    color: #cfc7c0;
+    color: #cfcfcf;
     font-size: 14px;
     line-height: 1.7;
 }
@@ -380,14 +382,14 @@
 .subscription-shipment-grid li {
     padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-    color: #ebe7e3;
+    color: #e7e7e4;
     font-size: 13px;
 }
 
 .subscription-shipment-grid p {
     margin-top: auto;
     padding-top: 28px;
-    color: #c8c1ba;
+    color: #c8c8c8;
     font-size: 13px;
     line-height: 1.65;
 }
@@ -405,7 +407,7 @@
 
 .subscription-return-grid > div > p {
     margin-top: 26px;
-    color: #59534c;
+    color: #595959;
     font-size: 16px;
     line-height: 1.75;
 }
@@ -413,7 +415,7 @@
 .subscription-return-grid > div > small {
     display: block;
     margin-top: 20px;
-    color: #7d756e;
+    color: #707070;
     font-size: 11px;
     line-height: 1.6;
 }
@@ -434,7 +436,7 @@
 }
 
 .subscription-return li > span {
-    color: #8d8176;
+    color: #4e4e4e;
     font-size: 12px;
     font-weight: 700;
 }
@@ -446,7 +448,7 @@
 
 .subscription-return li p {
     margin-top: 8px;
-    color: #625e58;
+    color: #5f5f5f;
     font-size: 13px;
     line-height: 1.6;
 }
@@ -484,7 +486,7 @@
 .subscription-value li::before {
     content: '↗';
     margin-right: 14px;
-    color: #786657;
+    color: #666;
 }
 
 .subscription-contact {
@@ -515,7 +517,7 @@
 
 .subscription-contact-copy > p {
     margin-top: 26px;
-    color: #bdb9b4;
+    color: #bdbdbd;
     font-size: 16px;
     line-height: 1.7;
 }
@@ -534,12 +536,14 @@
 }
 
 .subscription-contact-price span {
-    color: #aaa6a1;
+    color: #aaa;
     font-size: 13px;
 }
 
 .subscription-contact-copy > a {
-    display: inline-block;
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
     margin-top: 24px;
     color: #fff;
     font-size: 14px;
@@ -556,7 +560,7 @@
 .subscription-form label {
     display: grid;
     gap: 9px;
-    color: #332f2b;
+    color: #333;
     font-size: 12px;
     font-weight: 750;
 }
@@ -568,7 +572,7 @@
 }
 
 .subscription-form label span {
-    color: #8a837b;
+    color: #4e4e4e;
     font-weight: 500;
 }
 
@@ -586,10 +590,10 @@
 .subscription-form select,
 .subscription-form textarea {
     width: 100%;
-    border: 1px solid #d9d5ce;
+    border: 1px solid #949494;
     border-radius: 10px;
-    background: #fbfaf8;
-    color: #171512;
+    background: #f4f4f2;
+    color: #171717;
     font: inherit;
     /* 16px on phones: iOS Safari auto-zooms into any focused control below
        16px and never zooms back out. */
@@ -622,8 +626,9 @@
 .subscription-form input:focus,
 .subscription-form select:focus,
 .subscription-form textarea:focus {
-    border-color: #4a3a2e;
-    box-shadow: 0 0 0 3px rgba(74, 58, 46, 0.1);
+    border-color: #000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.14);
+    outline: 2px solid transparent;
 }
 
 .subscription-honeypot {
@@ -661,7 +666,7 @@
 .subscription-form-status {
     min-height: 20px;
     margin-top: 16px !important;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.5;
 }
 
@@ -676,12 +681,15 @@
 .subscription-form small {
     display: block;
     margin-top: 12px;
-    color: #777169;
-    font-size: 10px;
+    color: #4e4e4e;
+    font-size: 12px;
     line-height: 1.55;
 }
 
 .subscription-form small a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
     color: inherit;
     text-underline-offset: 2px;
 }
@@ -706,6 +714,9 @@
 }
 
 .subscription-footer > .subscription-shell > a:last-child {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
     text-underline-offset: 4px;
 }
 

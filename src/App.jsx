@@ -7,10 +7,12 @@ import { UserProfileProvider } from './contexts/UserProfileContext';
 import { WardrobeProvider } from './contexts/WardrobeContext';
 import { ConversationProvider } from './contexts/ConversationContext';
 import router from './router';
+import SkipLink from './components/common/SkipLink';
 
 function App() {
   return (
     <ThemeProvider>
+      <SkipLink />
       <ToastProvider>
         <AuthProvider>
           <UserProfileProvider>

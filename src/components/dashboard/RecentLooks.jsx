@@ -32,10 +32,10 @@ export default function RecentLooks() {
                         <div className="bg-brand-navy/10 p-2 rounded-full mr-3">
                             <Collections className="text-brand-navy" />
                         </div>
-                        <Card.Title>{t('dashboard.recentLooks', 'Looks recentes')}</Card.Title>
+                        <Card.Title as="h2">{t('dashboard.recentLooks', 'Looks recentes')}</Card.Title>
                     </div>
                     {looks && looks.length > 0 && (
-                        <Link to="/gallery" className="text-sm font-medium text-brand-navy hover:opacity-80">
+                        <Link to="/gallery" className="inline-flex min-h-11 items-center text-sm font-medium text-brand-navy hover:opacity-80">
                             {t('dashboard.viewAll', 'Ver todos')}
                         </Link>
                     )}
@@ -55,9 +55,9 @@ export default function RecentLooks() {
                     <div className="relative">
                         <div
                             ref={scroller}
-                            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                            className="flex gap-3 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                         >
-                            {looks.map((look) => (
+                            {looks.map((look, index) => (
                                 <Link
                                     key={look.id}
                                     to="/gallery"
@@ -65,7 +65,7 @@ export default function RecentLooks() {
                                 >
                                     <img
                                         src={look.imageUrl}
-                                        alt={t('dashboard.recentLooks', 'Looks recentes')}
+                                        alt={t('gallery.savedLookNumber', { number: index + 1 })}
                                         className="w-full h-full object-cover hover:opacity-90"
                                         loading="lazy"
                                         style={{ imageOrientation: 'from-image' }}
@@ -79,7 +79,7 @@ export default function RecentLooks() {
                                     type="button"
                                     onClick={() => scrollByDir(-1)}
                                     aria-label={t('common.previous', 'Anterior')}
-                                    className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"
+                                    className="absolute left-1 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-control-border bg-white-pure/90 shadow-sm hover:bg-white-pure focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy lg:grid"
                                 >
                                     <ChevronLeft fontSize="small" />
                                 </button>
@@ -87,7 +87,7 @@ export default function RecentLooks() {
                                     type="button"
                                     onClick={() => scrollByDir(1)}
                                     aria-label={t('common.next', 'Próximo')}
-                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"
+                                    className="absolute right-1 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-control-border bg-white-pure/90 shadow-sm hover:bg-white-pure focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy lg:grid"
                                 >
                                     <ChevronRight fontSize="small" />
                                 </button>

@@ -38,6 +38,11 @@ conteúdo de interface. O guia consolida a estratégia da marca Fleek Authority,
 tokens, tipografia, componentes, responsividade, acessibilidade e critérios de
 revisão do produto.
 
+O John Styles é **mobile first**: toda funcionalidade e interface deve ser
+projetada, implementada e validada primeiro em 360 px, preservando o fluxo a
+partir de 320 px. Desktop é uma evolução progressiva do mesmo conteúdo e da
+mesma funcionalidade, não uma experiência principal separada.
+
 ## Getting started
 
 ### Pré-requisitos

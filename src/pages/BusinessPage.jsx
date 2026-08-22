@@ -95,7 +95,7 @@ export default function BusinessPage() {
                 </div>
             </header>
 
-            <main>
+            <main id="main-content" tabIndex={-1}>
                 <section className="business-hero">
                     <div className="business-shell business-hero-grid">
                         <div className="business-hero-copy">

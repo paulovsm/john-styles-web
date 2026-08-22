@@ -126,7 +126,11 @@ export default function AdminBlogPage() {
         }
     }, [authFetch]);
 
-    useEffect(() => { loadWorkspace({ migrate: true }); }, [loadWorkspace]);
+    useEffect(() => {
+        // Initial CMS synchronization is an external data fetch; loading state belongs to that request lifecycle.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadWorkspace({ migrate: true });
+    }, [loadWorkspace]);
 
     const loadAdminUsers = useCallback(async () => {
         setUsersLoading(true);
@@ -141,7 +145,11 @@ export default function AdminBlogPage() {
     }, [authFetch]);
 
     useEffect(() => {
-        if (activeView === 'users') loadAdminUsers();
+        if (activeView === 'users') {
+            // Entering the users view starts its external data fetch and associated loading state.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            loadAdminUsers();
+        }
     }, [activeView, loadAdminUsers]);
 
     const filteredPosts = useMemo(() => {
@@ -524,7 +532,7 @@ export default function AdminBlogPage() {
     }
 
     return (
-        <main className="admin-cms">
+        <main id="main-content" tabIndex={-1} className="admin-cms">
             <aside className="admin-sidebar">
                 <div className="admin-brand"><span>FA</span><div><strong>Fleek Authority</strong><small>Blog CMS{IS_LOCAL_CMS ? ' · Local' : ''}</small></div></div>
                 <nav aria-label="Gestão do blog">{NAV_ITEMS.map((item) => <button type="button" className={activeView === item.id ? 'is-active' : ''} onClick={() => item.id === 'editor' ? startNew() : setActiveView(item.id)} key={item.id}><strong>{item.label}</strong><small>{item.description}</small>{item.id === 'comments' && overview.pendingComments > 0 && <span>{overview.pendingComments}</span>}</button>)}</nav>

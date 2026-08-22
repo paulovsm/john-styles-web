@@ -25,7 +25,7 @@ export default function UsageCounter({ limitType, refreshKey = 0, className = ''
 
     const low = usage.remaining <= 1;
     return (
-        <p className={`text-xs ${low ? 'text-status-warning' : 'text-grey-medium'} ${className}`}>
+        <p className={`text-xs ${low ? 'text-status-warning-content' : 'text-grey-medium'} ${className}`}>
             {t('usage.remaining', '{{remaining}} de {{limit}} restantes hoje', {
                 remaining: usage.remaining,
                 limit: usage.limit,

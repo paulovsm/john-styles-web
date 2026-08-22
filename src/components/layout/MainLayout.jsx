@@ -4,9 +4,9 @@ import Footer from './Footer';
 
 export default function MainLayout({ children }) {
     return (
-        <div className="min-h-screen flex flex-col bg-white-off">
+        <div className="app-shell min-h-screen flex flex-col bg-white-off">
             <Header />
-            <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main id="main-content" tabIndex={-1} className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {children}
             </main>
             <Footer />

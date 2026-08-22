@@ -3,8 +3,8 @@
 Plain-language list of what's left to do. Estimates are hands-on coding time
 (review and verification add overhead on top).
 
-Last updated after the mobile-experience audit (4 parallel sweeps: layout,
-touch/navigation, forms/flows, performance/accessibility).
+Last updated on 2026-08-22 after the visual, accessibility and mobile-first
+correction pass.
 
 ---
 
@@ -18,6 +18,7 @@ touch/navigation, forms/flows, performance/accessibility).
 | #14 | **Mobile Tier 2** — touch targets, oversized text, thumb ergonomics | low |
 | #15 | **Perf** — fonts + route code-splitting (−65% initial download) | none |
 | #16 | **Perf** — write only changed wardrobe items | ⚠️ medium (data) |
+| current branch | **Visual + Mobile Tier 4** — contrast and form labels, keyboard-safe account menu, contextual alt text, skip link, reduced motion, heading hierarchy, translated accessible labels, touch-readable names and mobile-safe carousels | low |
 
 ---
 
@@ -44,22 +45,6 @@ only; existing photos keep working (just heavier). Best done *before* users uplo
 a lot, since the benefit scales with photo count.
 _Est: ~1–2 h._
 
-### Mobile Tier 4 — accessibility & polish
-Two items worth doing first:
-- **Error text is hard to read** — error messages use a red below the readability
-  standard on white, so people misread or miss them. Same for the "1 of 5 left
-  today" usage warning.
-- **Filter dropdowns have no labels** — a screen-reader user hears three identical
-  "combo box" controls on the wardrobe page with no idea what each one filters.
-  The chat message box and the wardrobe search field are also unlabelled.
-
-The rest is cosmetic: alt text on user photos (several are hardcoded English, e.g.
-"Saved Look" repeated for every gallery image), a skip link, reduced-motion
-support, a missing `h1` on chat, heading levels that jump, hardcoded English
-screen-reader labels ("Close", "Open main menu"), and the account dropdown missing
-Escape-to-close / focus restore.
-_Est: ~2–3 h total._
-
 ---
 
 ## Mobile audit — remaining findings
@@ -68,11 +53,6 @@ Everything below was identified in the four-part mobile audit but consciously no
 implemented in Tiers 1–3. Grouped so a future pass can pick a batch.
 
 ### Touch & navigation
-- **Carousel arrows sit on top of the photos** — on a phone the left/right edge of
-  the first and last item is an arrow, not the item, so taps scroll instead of
-  opening. Should be desktop-only (swipe is native on touch).
-- **Horizontal carousels can trigger the browser's back-swipe** on iOS — needs
-  `overscroll-behavior-x: contain`.
 - **Nested scroll trap in try-on** — the item picker is a 256px scroll region
   inside a long scrolling page; drags move the wrong thing.
 - **"Add item" sits top-right** of an endlessly long wardrobe — a bottom-right
@@ -80,8 +60,6 @@ implemented in Tiers 1–3. Grouped so a future pass can pick a batch.
   instead of the hamburger (6 destinations, currently 2 taps each).
 - **Modal is a floating card, not a sheet** — 80px of dead space at the bottom
   where the thumb is, and on iOS the page behind still scrolls.
-- **Truncated names are unrecoverable on touch** — item/outfit names rely on
-  `title` tooltips, which do not exist on phones.
 
 ### Forms & flows
 - **No mobile keyboard hints** on the wardrobe fields — brand/colour/style get
@@ -92,8 +70,7 @@ implemented in Tiers 1–3. Grouped so a future pass can pick a batch.
   share sheet.
 - **Try-on steps are unnumbered** — three undifferentiated cards with no progress.
 - **Onboarding ergonomics** — Skip sits next to Continue and is easy to hit by
-  accident; selection chips are below the touch minimum; the card wastes width on
-  small screens.
+  accident; the card still wastes width on small screens.
 - **Save button disabled with no explanation** in add-item (two hidden conditions).
 
 ### Performance & cost (follow-ups to #15 / #16)
@@ -120,11 +97,6 @@ Show *why* the "Look of the day" was chosen — e.g. *"For today: 21°C, meeting
 already exists; this is mostly about showing the reason clearly.
 _Est: ~15–20 min._ *(For real users in production, Google must approve the calendar
 connection — a separate admin step.)*
-
-### Fix the e-commerce links
-Review and correct the links pointing to the Fleek store (landing + insights).
-Scope depends on whether we just fix URLs or deep-link to specific products.
-_Est: ~30 min–1 h._
 
 ---
 

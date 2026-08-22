@@ -32,10 +32,10 @@ export default function WardrobeCarousel() {
                         <div className="bg-brand-navy/10 p-2 rounded-full mr-3">
                             <Checkroom className="text-brand-navy" />
                         </div>
-                        <Card.Title className="whitespace-nowrap">{t('wardrobe.title', 'Meu Guarda-roupa')}</Card.Title>
+                        <Card.Title as="h2" className="whitespace-nowrap">{t('wardrobe.title', 'Meu Guarda-roupa')}</Card.Title>
                     </div>
                     {allItems.length > 0 && (
-                        <Link to="/wardrobe" className="text-sm font-medium text-brand-navy hover:opacity-80">
+                        <Link to="/wardrobe" className="inline-flex min-h-11 items-center text-sm font-medium text-brand-navy hover:opacity-80">
                             {t('dashboard.viewAll', 'Ver todos')}
                         </Link>
                     )}
@@ -49,7 +49,7 @@ export default function WardrobeCarousel() {
                     <div className="relative">
                         <div
                             ref={scroller}
-                            className="flex gap-4 overflow-x-auto snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                            className="flex gap-4 overflow-x-auto overscroll-x-contain snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                         >
                             {allItems.map((item) => (
                                 <Link key={item.id} to="/wardrobe" className="snap-start shrink-0 w-40">
@@ -62,7 +62,7 @@ export default function WardrobeCarousel() {
                                             style={{ imageOrientation: 'from-image' }}
                                         />
                                     </div>
-                                    <p className="mt-2 text-sm font-medium text-brand-navy truncate" title={item.name}>{item.name}</p>
+                                    <p className="mt-2 break-words text-sm font-medium text-brand-navy lg:truncate" title={item.name}>{item.name}</p>
                                     <p className="text-xs text-grey-medium">{typeLabel(item)}</p>
                                 </Link>
                             ))}
@@ -73,7 +73,7 @@ export default function WardrobeCarousel() {
                                     type="button"
                                     onClick={() => scrollByDir(-1)}
                                     aria-label={t('common.previous', 'Anterior')}
-                                    className="absolute left-1 top-[38%] -translate-y-1/2 h-9 w-9 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"
+                                    className="absolute left-1 top-[38%] hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-control-border bg-white-pure/90 shadow-sm hover:bg-white-pure focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy lg:grid"
                                 >
                                     <ChevronLeft fontSize="small" />
                                 </button>
@@ -81,7 +81,7 @@ export default function WardrobeCarousel() {
                                     type="button"
                                     onClick={() => scrollByDir(1)}
                                     aria-label={t('common.next', 'Próximo')}
-                                    className="absolute right-1 top-[38%] -translate-y-1/2 h-9 w-9 grid place-items-center rounded-full bg-white-pure/90 border border-grey-light shadow-sm hover:bg-white-pure"
+                                    className="absolute right-1 top-[38%] hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-control-border bg-white-pure/90 shadow-sm hover:bg-white-pure focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy lg:grid"
                                 >
                                     <ChevronRight fontSize="small" />
                                 </button>

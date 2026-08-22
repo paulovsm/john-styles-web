@@ -79,7 +79,7 @@ export default function GalleryPage() {
             ) : items.length === 0 ? (
                 <div className="text-center py-12 bg-white-pure rounded-lg border border-grey-light">
                     <Collections className="h-16 w-16 mx-auto mb-4 text-grey-light" />
-                    <h3 className="text-lg font-medium text-brand-navy mb-2">{t('gallery.emptyTitle', 'Sua galeria está vazia')}</h3>
+                    <h2 className="text-lg font-medium text-brand-navy mb-2">{t('gallery.emptyTitle', 'Sua galeria está vazia')}</h2>
                     <p className="text-grey-medium">{t('gallery.emptyDescription', 'Gere looks no Provador Virtual e salve-os aqui.')}</p>
                 </div>
             ) : (
@@ -89,13 +89,15 @@ export default function GalleryPage() {
                             <div className="relative aspect-[3/4] bg-grey-light">
                                 <img
                                     src={item.imageUrl}
-                                    alt="Saved Look"
+                                    alt={item.createdAt
+                                        ? t('gallery.savedLookAlt', { date: formatDate(item.createdAt) })
+                                        : t('gallery.savedLook', 'Look salvo')}
                                     className="w-full h-full object-cover"
                                     loading="lazy"
                                 />
                                 <button
                                     onClick={() => setPendingDelete(item)}
-                                    className="absolute top-2 right-2 p-2 bg-white-pure/80 rounded-full text-grey-dark hover:text-status-error hover:bg-white-pure transition-colors shadow-sm"
+                                    className="absolute top-2 right-2 grid h-11 w-11 place-items-center bg-white-pure/90 rounded-full text-grey-dark hover:text-status-error-content hover:bg-white-pure transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                     aria-label={t('common.delete', 'Excluir')}
                                     title={t('common.delete', 'Excluir')}
                                 >
@@ -108,7 +110,7 @@ export default function GalleryPage() {
                                     <span>{formatDate(item.createdAt)}</span>
                                 </div>
                                 {item.prompt && (
-                                    <div className="mt-2 text-sm text-grey-dark line-clamp-2" title={item.prompt}>
+                                    <div className="mt-2 text-sm text-grey-dark lg:line-clamp-2" title={item.prompt}>
                                         <span className="font-medium text-brand-navy mr-1"><Style className="h-3 w-3 inline mr-1" />Prompt:</span>
                                         {item.prompt}
                                     </div>

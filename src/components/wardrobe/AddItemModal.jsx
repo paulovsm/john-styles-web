@@ -34,6 +34,8 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     useEffect(() => {
         if (isOpen) {
             if (item) {
+                // Modal form state must be reset from the newly opened item; this is prop-to-draft synchronization.
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setFormData({
                     name: item.name || '',
                     description: item.description || '',
@@ -180,7 +182,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); setFile(null); setPreview(''); }}
                                     aria-label={t('common.remove', 'Remover')}
-                                    className="absolute top-0 right-0 -mt-2 -mr-2 grid place-items-center h-10 w-10 bg-white-pure rounded-full shadow-md text-grey-medium hover:text-status-error active:text-status-error z-10"
+                                    className="absolute top-0 right-0 -mt-2 -mr-2 grid place-items-center h-11 w-11 bg-white-pure rounded-full shadow-md text-grey-medium hover:text-status-error-content active:text-status-error-content z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                 >
                                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -252,7 +254,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 )}
 
                 {analyzeError && (
-                    <div role="alert" className="px-3 py-2 rounded-md bg-status-error/10 border border-status-error text-status-error text-sm">
+                    <div role="alert" className="px-3 py-2 rounded-md bg-status-error/10 border border-status-error text-status-error-content text-sm">
                         {analyzeError}
                     </div>
                 )}
@@ -274,7 +276,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                         value={formData.description}
                         onChange={handleChange}
                         placeholder={t('wardrobe.addModal.descriptionPlaceholder') || 'Enter a brief description'}
-                        className="block w-full min-h-[80px] rounded-md border border-grey-light bg-white-pure px-3 py-2 text-grey-dark shadow-sm placeholder:text-grey-medium focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
+                        className="theme-control block w-full min-h-[80px] rounded-md border border-control-border bg-white-pure px-3 py-2 text-grey-dark shadow-sm placeholder:text-grey-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:border-brand-navy sm:text-sm"
                     />
                 </div>
 
@@ -285,7 +287,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
-                        className="wardrobe-filter-select block w-full rounded-md border border-grey-light bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
+                        className="wardrobe-filter-select block w-full min-h-11 rounded-md border border-control-border bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:border-brand-navy sm:text-sm"
                     >
                         <option value="tops">{t('wardrobe.filters.categories.tops')}</option>
                         <option value="bottoms">{t('wardrobe.filters.categories.bottoms')}</option>
@@ -303,7 +305,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                             name="subcategory"
                             value={formData.subcategory}
                             onChange={handleChange}
-                            className="wardrobe-filter-select block w-full rounded-md border border-grey-light bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm"
+                            className="wardrobe-filter-select block w-full min-h-11 rounded-md border border-control-border bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:border-brand-navy sm:text-sm"
                         >
                             <option value="">{t('wardrobe.addModal.subcategoryUnset')}</option>
                             {TOP_SUBCATEGORIES.map((sub) => (
@@ -339,7 +341,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 />
 
                 {saveError && (
-                    <div role="alert" className="px-3 py-2 rounded-md bg-status-error/10 border border-status-error text-status-error text-sm">
+                    <div role="alert" className="px-3 py-2 rounded-md bg-status-error/10 border border-status-error text-status-error-content text-sm">
                         {saveError}
                     </div>
                 )}

@@ -23,10 +23,15 @@
     --c-content: 0 0 0;         /* black ink (text) */
     --c-muted: 78 78 78;        /* #4e4e4e muted text */
     --c-border: 231 231 228;    /* #e7e7e4 borders / subtle fills */
+    --c-control-border: 148 148 148; /* #949494, 3:1 against white */
     --c-ink: 0 0 0;             /* pure black (primary buttons, headers) */
     --c-accent: 0 0 0;          /* monochrome: accent folds into ink */
     --c-accent-strong: 0 0 0;
     --c-subtle: 244 244 242;    /* #f4f4f2 inset panels (stat tiles) — off the white card */
+    --c-status-success-content: 4 120 87;
+    --c-status-error-content: 185 28 28;
+    --c-status-warning-content: 146 64 14;
+    --c-status-info-content: 29 78 216;
   }
 
   /* Dark theme is kept (app-only) but also monochrome — mirrors the landing's
@@ -37,10 +42,15 @@
     --c-content: 255 255 255;   /* white */
     --c-muted: 171 171 171;     /* #ababab */
     --c-border: 37 37 37;       /* #252525 */
+    --c-control-border: 102 102 102; /* #666, 3:1 against #171717 */
     --c-ink: 255 255 255;       /* flips to white (primary on dark) */
     --c-accent: 255 255 255;
     --c-accent-strong: 255 255 255;
     --c-subtle: 0 0 0;          /* black tiles inset on the #171717 card */
+    --c-status-success-content: 16 185 129;
+    --c-status-error-content: 248 113 113;
+    --c-status-warning-content: 251 191 36;
+    --c-status-info-content: 96 165 250;
   }
 
   /* Safety net against mobile horizontal-scroll bugs: if any child element
@@ -87,21 +97,43 @@
     outline-offset: 2px;
   }
 
+  /* Motion is progressive enhancement. When the operating system requests
+     less motion, keep state changes immediate and remove looping effects
+     without hiding any content or control. */
+  @media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   /* Native <select> popups are painted by the OS, so they ignore the theme
      tokens: on Windows the dark-theme text color landed on a white native
      background and the labels became unreadable. color-scheme tells the browser
      which scheme to paint the native chrome in, and the tokens keep the closed
      control consistent with the surrounding surfaces in both themes. */
+  .theme-control,
+  .theme-control option,
   .wardrobe-filter-select,
   .wardrobe-filter-select option {
     background-color: rgb(var(--c-surface));
     color: rgb(var(--c-content));
   }
 
+  .theme-control,
   .wardrobe-filter-select {
     color-scheme: light;
   }
 
+  .dark .theme-control,
   .dark .wardrobe-filter-select {
     color-scheme: dark;
   }

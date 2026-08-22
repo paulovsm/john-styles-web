@@ -18,7 +18,7 @@ export default function WardrobeGrid({ onAddItem, onItemClick }) {
                 <div className="mx-auto h-12 w-12 text-grey-medium">
                     <Add className="h-full w-full" />
                 </div>
-                <h3 className="mt-2 text-sm font-medium text-brand-navy">{t('wardrobe.noItems')}</h3>
+                <h2 className="mt-2 text-sm font-medium text-brand-navy">{t('wardrobe.noItems')}</h2>
                 <p className="mt-1 text-sm text-grey-medium">{t('wardrobe.noItemsDescription')}</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
                     <Button onClick={onAddItem}>

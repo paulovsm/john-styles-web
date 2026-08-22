@@ -60,6 +60,8 @@ export default function TryOnPage() {
     // Preload the user's saved model photo so they don't re-upload each session.
     React.useEffect(() => {
         if (profile?.modelPhotoUrl && !userPhotoPreview) {
+            // The profile photo arrives asynchronously and seeds the user's editable local preview once.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setUserPhotoPreview(profile.modelPhotoUrl);
         }
     }, [profile?.modelPhotoUrl]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -69,7 +71,11 @@ export default function TryOnPage() {
     React.useEffect(() => {
         if (!preselectIds?.length || items.length === 0) return;
         const resolved = preselectIds.map((id) => items.find((i) => i.id === id)).filter(Boolean);
-        if (resolved.length) setSelectedItems(resolved);
+        if (resolved.length) {
+            // Route state intentionally initializes an editable selection after wardrobe data resolves.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setSelectedItems(resolved);
+        }
         // Run once when we arrive with a preselection.
     }, [preselectIds]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -311,7 +317,7 @@ export default function TryOnPage() {
                     {/* Step 1: Upload User Photo */}
                     <Card>
                         <Card.Body>
-                            <Card.Title className="mb-4">{t('tryOn.uploadPhoto')}</Card.Title>
+                            <Card.Title as="h2" className="mb-4">{t('tryOn.uploadPhoto')}</Card.Title>
                             <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-grey-light border-dashed rounded-md relative">
                                 {userPhotoPreview ? (
                                     <div className="relative">
@@ -324,7 +330,7 @@ export default function TryOnPage() {
                                         <button
                                             onClick={() => { setUserPhotoPreview(''); updateProfile({ modelPhotoUrl: null }); }}
                                             aria-label={t('common.remove', 'Remover')}
-                                            className="absolute top-0 right-0 -mt-2 -mr-2 bg-white-pure rounded-full p-1 shadow-md text-grey-medium hover:text-status-error"
+                                            className="absolute top-0 right-0 -mt-2 -mr-2 grid h-11 w-11 place-items-center bg-white-pure rounded-full shadow-md text-grey-medium hover:text-status-error-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                         >
                                             <span className="sr-only">{t('common.remove', 'Remover')}</span>
                                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -353,7 +359,7 @@ export default function TryOnPage() {
                     {/* Step 2: Select Items */}
                     <Card>
                         <Card.Body>
-                            <Card.Title className="mb-4">{t('tryOn.selectItem')}</Card.Title>
+                            <Card.Title as="h2" className="mb-4">{t('tryOn.selectItem')}</Card.Title>
                             {items.length === 0 ? (
                                 <p className="text-sm text-grey-medium">{t('tryOn.noItemsWardrobe')}</p>
                             ) : (
@@ -370,7 +376,7 @@ export default function TryOnPage() {
                                                     }`}
                                             >
                                                 <img src={item.image} alt={item.name} loading="lazy" className="w-full h-24 object-cover" />
-                                                <p className="text-xs p-1 truncate text-center">{item.name}</p>
+                                                <p className="break-words p-1 text-center text-xs lg:truncate">{item.name}</p>
                                                 {isSelected && (
                                                     <div className="absolute top-1 right-1 bg-brand-navy text-white-pure rounded-full p-0.5">
                                                         <Check style={{ fontSize: 12 }} />
@@ -406,14 +412,14 @@ export default function TryOnPage() {
                                     <div className="flex flex-wrap gap-2">
                                         {outfits.map((outfit) => (
                                             <span key={outfit.id} className="inline-flex items-center rounded-full text-xs font-medium bg-brand-gold/15 text-brand-gold-dark">
-                                                <button type="button" onClick={() => applyOutfit(outfit)} className="max-w-[160px] truncate py-1.5 pl-3 pr-1" title={outfit.name}>
+                                                <button type="button" onClick={() => applyOutfit(outfit)} className="min-h-11 max-w-[160px] break-words rounded-md py-1.5 pl-3 pr-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy lg:truncate" title={outfit.name}>
                                                     {outfit.name}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDeleteOutfit(outfit)}
                                                     aria-label={t('common.delete', 'Excluir')}
-                                                    className="grid place-items-center h-9 w-9 pr-1 shrink-0 hover:text-status-error active:text-status-error"
+                                                    className="grid place-items-center h-11 w-11 shrink-0 hover:text-status-error-content active:text-status-error-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                                 >
                                                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                                 </button>
@@ -429,7 +435,7 @@ export default function TryOnPage() {
                     <Card>
                         <Card.Body>
                             <div className="flex items-center justify-between mb-4">
-                                <Card.Title className="mb-0">{t('tryOn.advancedMode')}</Card.Title>
+                                <Card.Title as="h2" className="mb-0">{t('tryOn.advancedMode')}</Card.Title>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -449,7 +455,7 @@ export default function TryOnPage() {
                                         value={customPrompt}
                                         onChange={(e) => setCustomPrompt(e.target.value)}
                                         placeholder={t('tryOn.customPromptPlaceholder')}
-                                        className="w-full px-3 py-2 border border-grey-light rounded-md shadow-sm focus:outline-none focus:ring-brand-navy focus:border-brand-navy sm:text-sm min-h-[100px]"
+                                        className="theme-control w-full px-3 py-2 border border-control-border rounded-md shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:border-brand-navy sm:text-sm min-h-[100px]"
                                     />
                                     <p className="text-xs text-grey-medium">
                                         {t('tryOn.customPromptHelp')}
@@ -462,8 +468,8 @@ export default function TryOnPage() {
                     {/* Error/Success Message Display */}
                     {(errorMessage || successMessage) && (
                         <div className={`px-4 py-3 rounded-md mb-4 ${errorMessage
-                            ? 'bg-status-error/10 border border-status-error text-status-error'
-                            : 'bg-status-success/10 border border-status-success text-status-success'
+                            ? 'bg-status-error/10 border border-status-error text-status-error-content'
+                            : 'bg-status-success/10 border border-status-success text-status-success-content'
                             }`}>
                             <p className="text-sm font-medium">{errorMessage || successMessage}</p>
                             {retryAfter && (
