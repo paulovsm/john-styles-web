@@ -3,6 +3,7 @@ import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import Input from '../common/Input';
 import Select from '../common/Select';
 import { useTranslation } from 'react-i18next';
+import { WARDROBE_CATEGORIES } from '../../utils/garmentTaxonomy';
 
 export default function WardrobeFilters() {
     const { filters, setFilters } = useWardrobeContext();
@@ -27,11 +28,11 @@ export default function WardrobeFilters() {
 
                 <Select name="category" value={filters.category} onChange={handleChange} aria-label={t('wardrobe.filters.allCategories')}>
                         <option value="all">{t('wardrobe.filters.allCategories')}</option>
-                        <option value="tops">{t('wardrobe.filters.categories.tops')}</option>
-                        <option value="bottoms">{t('wardrobe.filters.categories.bottoms')}</option>
-                        <option value="shoes">{t('wardrobe.filters.categories.shoes')}</option>
-                        <option value="accessories">{t('wardrobe.filters.categories.accessories')}</option>
-                        <option value="outerwear">{t('wardrobe.filters.categories.outerwear')}</option>
+                        {WARDROBE_CATEGORIES.map((category) => (
+                            <option key={category} value={category}>
+                                {t(`wardrobe.filters.categories.${category}`)}
+                            </option>
+                        ))}
                 </Select>
 
                 <Select name="style" value={filters.style} onChange={handleChange} aria-label={t('wardrobe.filters.allStyles')}>

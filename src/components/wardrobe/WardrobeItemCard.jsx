@@ -3,18 +3,15 @@ import Card from '../common/Card';
 import { Delete } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { colorToHex } from '../../utils/colorMap';
-import { mapSubcategory } from '../../utils/categoryMapper';
+import { resolveGarmentType } from '../../utils/garmentTaxonomy';
 
 export default function WardrobeItemCard({ item, onDelete, onClick }) {
     const { t } = useTranslation();
 
-    // Show the specific garment type (Camisa / Polo / Camiseta …) rather than the
-    // coarse bucket. For tops, prefer the sub-type (inferred from the name when
-    // unset); otherwise fall back to the translated category.
-    const sub = item.category === 'tops' ? (item.subcategory || mapSubcategory(item.name)) : null;
-    const typeLabel = sub
-        ? t(`wardrobe.filters.subcategories.${sub}`)
-        : t(`wardrobe.filters.categories.${item.category}`, item.category);
+    const type = resolveGarmentType(item);
+    const typeLabel = type
+        ? t(`wardrobe.types.${type}`)
+        : t('wardrobe.types.unclassified');
 
     return (
         <Card hoverable onClick={() => onClick && onClick(item)} className="relative group">

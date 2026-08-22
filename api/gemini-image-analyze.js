@@ -4,6 +4,28 @@ import { requireAuth, handleAuthError } from "./_auth.js";
 import { parseImage, handleValidationError } from "./_validate.js";
 import { consumeUsage, UsageLimitError } from "./_usage.js";
 import { MODELS } from "./_models.js";
+import {
+    GARMENT_TYPES,
+    deriveCategory,
+    normalizeGarmentType,
+} from "../src/utils/garmentTaxonomy.js";
+
+const ALLOWED_TYPES = Object.entries(GARMENT_TYPES)
+    .map(([type, definition]) => `"${type}" (${definition.category})`)
+    .join(', ');
+
+export function normalizeAnalysisResult(data) {
+    const rest = { ...(data || {}) };
+    delete rest.category;
+    delete rest.subcategory;
+    const type = normalizeGarmentType(data?.type);
+
+    return {
+        ...rest,
+        type,
+        category: deriveCategory(type),
+    };
+}
 
 export default async function handler(req, res) {
     if (applyCors(req, res)) return;
@@ -30,8 +52,7 @@ export default async function handler(req, res) {
 
         const analysisPrompt = `Analyze this image of a clothing item. Return ONLY a valid JSON object (no markdown formatting, no backticks) with the following fields:
         - name: A short, descriptive name for the item in ${language} (e.g., "Blue Denim Jacket" or "Jaqueta Jeans Azul").
-        - category: One of "tops", "bottoms", "shoes", "accessories", "outerwear" (ALWAYS in English, do not translate this value).
-        - subcategory: ONLY when category is "tops", classify the top as one of "shirt" (a collared button-up / dress shirt / camisa), "polo" (polo shirt), or "tshirt" (t-shirt / casual top / blusa). For any other category, use null. (ALWAYS in English, do not translate this value).
+        - type: Exactly one canonical type from this allowlist: ${ALLOWED_TYPES}. Return null when the image does not show one clear item or the type cannot be determined. ALWAYS use the English key; never translate it.
         - color: The primary color of the item in ${language}.
         - style: The style of the item in ${language} (e.g., "Casual", "Formal", "Sporty").
         - brand: The brand name if visible, otherwise null.
@@ -52,7 +73,7 @@ export default async function handler(req, res) {
         let text = response.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
         text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-        const analysisData = JSON.parse(text);
+        const analysisData = normalizeAnalysisResult(JSON.parse(text));
         return res.status(200).json(analysisData);
     } catch (error) {
         if (handleAuthError(res, error)) return;

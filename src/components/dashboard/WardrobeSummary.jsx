@@ -3,27 +3,22 @@ import Card from '../common/Card';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { Checkroom } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { mapSubcategory } from '../../utils/categoryMapper';
+import { GARMENT_TYPES_BY_CATEGORY, WARDROBE_CATEGORIES, resolveGarmentType } from '../../utils/garmentTaxonomy';
 import InsightsCard from './InsightsCard';
 
 export default function WardrobeSummary() {
-    const { items } = useWardrobeContext();
+    const { allItems = [] } = useWardrobeContext();
     const { t } = useTranslation();
 
-    // Resolve a top's sub-type: explicit field first, then infer from its name
-    // (so a legacy "Polo preta" counts as a polo, not a camiseta), then default
-    // to camiseta (blusa -> camiseta).
-    const isTop = (i, sub) => i.category === 'tops'
-        && (i.subcategory || mapSubcategory(i.name) || 'tshirt') === sub;
+    const counts = allItems.reduce((result, item) => {
+        const type = resolveGarmentType(item);
+        if (type) result[type] = (result[type] || 0) + 1;
+        return result;
+    }, {});
 
-    const stats = {
-        total: items.length,
-        shirts: items.filter(i => isTop(i, 'shirt')).length,
-        polos: items.filter(i => isTop(i, 'polo')).length,
-        tshirts: items.filter(i => isTop(i, 'tshirt')).length,
-        bottoms: items.filter(i => i.category === 'bottoms').length,
-        shoes: items.filter(i => i.category === 'shoes').length,
-    };
+    const ownedTypes = WARDROBE_CATEGORIES
+        .flatMap((category) => GARMENT_TYPES_BY_CATEGORY[category])
+        .filter((type) => counts[type] > 0);
 
     return (
         <Card className="h-full">
@@ -35,30 +30,18 @@ export default function WardrobeSummary() {
                     <Card.Title as="h2" className="whitespace-nowrap">{t('dashboard.wardrobeSummary')}</Card.Title>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
-                        <span className="block text-2xl font-bold text-brand-navy">{stats.total}</span>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
+                    <div className="min-w-32 rounded-md border border-grey-light bg-white-sunken p-4 text-center">
+                        <span className="block text-3xl font-bold text-brand-navy">{allItems.length}</span>
                         <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.totalItems')}</span>
                     </div>
-                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
-                        <span className="block text-2xl font-bold text-brand-navy">{stats.shirts}</span>
-                        <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.shirts', { count: stats.shirts })}</span>
-                    </div>
-                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
-                        <span className="block text-2xl font-bold text-brand-navy">{stats.polos}</span>
-                        <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.polos', { count: stats.polos })}</span>
-                    </div>
-                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
-                        <span className="block text-2xl font-bold text-brand-navy">{stats.tshirts}</span>
-                        <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.tshirts', { count: stats.tshirts })}</span>
-                    </div>
-                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
-                        <span className="block text-2xl font-bold text-brand-navy">{stats.bottoms}</span>
-                        <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.bottoms', { count: stats.bottoms })}</span>
-                    </div>
-                    <div className="bg-white-sunken border border-grey-light p-3 rounded-md text-center">
-                        <span className="block text-2xl font-bold text-brand-navy">{stats.shoes}</span>
-                        <span className="text-xs text-grey-medium uppercase tracking-wide">{t('dashboard.shoes', { count: stats.shoes })}</span>
+                    <div className="flex flex-1 flex-wrap content-center gap-2" aria-label={t('dashboard.ownedGarmentTypes')}>
+                        {ownedTypes.map((type) => (
+                            <span key={type} className="inline-flex min-h-8 items-center gap-2 rounded-full border border-grey-light bg-white-sunken px-3 py-1 text-sm text-grey-dark">
+                                <span>{t(`wardrobe.types.${type}`)}</span>
+                                <strong className="text-brand-navy">{counts[type]}</strong>
+                            </span>
+                        ))}
                     </div>
                 </div>
 

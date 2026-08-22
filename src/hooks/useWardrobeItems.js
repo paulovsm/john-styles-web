@@ -28,7 +28,18 @@ export function useWardrobeItems() {
     }, [setItems]);
 
     const updateItem = useCallback((id, updates) => {
-        setItems(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item));
+        setItems(prev => prev.map(item => {
+            if (item.id !== id) return item;
+
+            const nextItem = { ...item, ...updates };
+            // Editing a legacy item into taxonomy V1 must also remove the old
+            // field locally; otherwise the object spread above keeps it alive
+            // and the next full Firestore write persists both schemas.
+            if (nextItem.taxonomyVersion === 1 && nextItem.type) {
+                delete nextItem.subcategory;
+            }
+            return nextItem;
+        }));
     }, [setItems]);
 
     return { items, setItems, addItem, removeItem, updateItem };

@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useUserProfileContext } from '../contexts/UserProfileContext';
 import { useToast } from '../contexts/ToastContext';
 import { compressImage, toCompressedDataUrl } from '../utils/imageUtils';
+import { garmentsConflict } from '../utils/garmentTaxonomy';
 
 
 
@@ -118,9 +119,9 @@ export default function TryOnPage() {
                 // Deselect if already selected
                 return prevItems.filter(i => i.id !== item.id);
             } else {
-                // Check if an item of the same category is already selected
-                const otherItems = prevItems.filter(i => i.category !== item.category);
-                // Add new item, replacing any existing item of the same category
+                // Replace anything that occupies one of the same outfit slots.
+                // Composite sets may conflict with more than one broad category.
+                const otherItems = prevItems.filter(i => !garmentsConflict(i, item));
                 return [...otherItems, item];
             }
         });

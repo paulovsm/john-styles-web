@@ -24,14 +24,18 @@ correction pass.
 
 ## Next up
 
-### Garment types (Taxonomy) — approved, then overtaken
+### Garment types (Taxonomy) — implemented on feature branch
 Teach the app the *specific* piece (shirt / polo / t-shirt / pants / sneakers…)
 with one clean field instead of the broad tops/bottoms/shoes buckets. The wardrobe
 summary then shows one big **total** plus tags for **only the types you own**, so a
 small closet stops looking empty. Numbers always match reality.
 
+Detailed research, proposed V1 taxonomy and implementation plan:
+[`docs/garment-taxonomy-plan.md`](docs/garment-taxonomy-plan.md).
+
 Decisions already made: keep a single leaf `type` field and derive `category` from
-it; persist the derived category so outfit/insights/filters keep working unchanged.
+it; persist the derived category and model suits/sets as composite garments whose
+occupied outfit slots prevent incompatible combinations.
 The garment labels on cards today are an interim fix that this replaces.
 _Est: ~1–1.5 h._
 

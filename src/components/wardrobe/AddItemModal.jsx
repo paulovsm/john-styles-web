@@ -7,8 +7,15 @@ import { geminiService } from '../../services/api/geminiService';
 import { firestoreService } from '../../services/storage/firestoreService';
 import { AutoAwesome, CameraAlt, CloudUpload, LightbulbOutlined } from '@mui/icons-material';
 import { compressImage } from '../../utils/imageUtils';
-import { mapCategory, mapSubcategory, TOP_SUBCATEGORIES } from '../../utils/categoryMapper';
 import UsageCounter from '../common/UsageCounter';
+import {
+    GARMENT_TYPES_BY_CATEGORY,
+    TAXONOMY_VERSION,
+    WARDROBE_CATEGORIES,
+    deriveCategory,
+    normalizeGarmentType,
+    resolveGarmentType,
+} from '../../utils/garmentTaxonomy';
 
 import { useTranslation } from 'react-i18next';
 
@@ -24,8 +31,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        category: 'tops',
-        subcategory: '',
+        type: '',
         color: '',
         style: '',
         brand: ''
@@ -39,8 +45,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setFormData({
                     name: item.name || '',
                     description: item.description || '',
-                    category: item.category || 'tops',
-                    subcategory: item.subcategory || '',
+                    type: resolveGarmentType(item) || '',
                     color: item.colors ? item.colors[0] : '',
                     style: item.styles ? item.styles[0] : '',
                     brand: item.brand || ''
@@ -51,8 +56,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setFormData({
                     name: '',
                     description: '',
-                    category: 'tops',
-                    subcategory: '',
+                    type: '',
                     color: '',
                     style: '',
                     brand: ''
@@ -95,16 +99,12 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         try {
             const analysis = await geminiService.analyzeImage(file, i18n.language);
 
-            const mappedCategory = mapCategory(analysis.category);
+            const analyzedType = normalizeGarmentType(analysis.type);
             setFormData(prev => ({
                 ...prev,
                 name: analysis.name || prev.name,
                 description: analysis.description || prev.description,
-                category: mappedCategory,
-                // Sub-type only applies to tops; the AI already gives us a hint.
-                subcategory: mappedCategory === 'tops'
-                    ? (mapSubcategory(analysis.subcategory) || mapSubcategory(analysis.name) || prev.subcategory)
-                    : '',
+                type: analyzedType || prev.type,
                 color: analysis.color || prev.color,
                 style: analysis.style || prev.style,
                 brand: analysis.brand || prev.brand
@@ -126,8 +126,6 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         setFormData(prev => ({
             ...prev,
             [name]: value,
-            // Sub-type is meaningless outside 'tops' — drop it on category change.
-            ...(name === 'category' && value !== 'tops' ? { subcategory: '' } : {}),
         }));
     };
 
@@ -137,6 +135,13 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         setSaving(true);
 
         try {
+            const type = normalizeGarmentType(formData.type);
+            const category = deriveCategory(type);
+            if (!type || !category) {
+                setSaveError(t('wardrobe.errors.typeRequired'));
+                return;
+            }
+
             const id = item?.id || Date.now().toString();
             let imageUrl = preview;
 
@@ -151,7 +156,9 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 ...formData,
                 id,
                 image: imageUrl,
-                subcategory: formData.category === 'tops' ? (formData.subcategory || null) : null,
+                type,
+                category,
+                taxonomyVersion: TAXONOMY_VERSION,
                 colors: formData.color ? [formData.color] : [],
                 styles: formData.style ? [formData.style] : []
             });
@@ -281,39 +288,25 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 </div>
 
                 <div>
-                    <label htmlFor="item-category" className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.category')}</label>
+                    <label htmlFor="item-type" className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.garmentType')}</label>
                     <select
-                        id="item-category"
-                        name="category"
-                        value={formData.category}
+                        id="item-type"
+                        name="type"
+                        value={formData.type}
                         onChange={handleChange}
+                        required
                         className="wardrobe-filter-select block w-full min-h-11 rounded-md border border-control-border bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:border-brand-navy sm:text-sm"
                     >
-                        <option value="tops">{t('wardrobe.filters.categories.tops')}</option>
-                        <option value="bottoms">{t('wardrobe.filters.categories.bottoms')}</option>
-                        <option value="shoes">{t('wardrobe.filters.categories.shoes')}</option>
-                        <option value="accessories">{t('wardrobe.filters.categories.accessories')}</option>
-                        <option value="outerwear">{t('wardrobe.filters.categories.outerwear')}</option>
+                        <option value="">{t('wardrobe.addModal.garmentTypePlaceholder')}</option>
+                        {WARDROBE_CATEGORIES.map((category) => (
+                            <optgroup key={category} label={t(`wardrobe.filters.categories.${category}`)}>
+                                {GARMENT_TYPES_BY_CATEGORY[category].map((type) => (
+                                    <option key={type} value={type}>{t(`wardrobe.types.${type}`)}</option>
+                                ))}
+                            </optgroup>
+                        ))}
                     </select>
                 </div>
-
-                {formData.category === 'tops' && (
-                    <div>
-                        <label htmlFor="item-subcategory" className="block text-sm font-medium text-grey-dark mb-1">{t('wardrobe.addModal.subcategory')}</label>
-                        <select
-                            id="item-subcategory"
-                            name="subcategory"
-                            value={formData.subcategory}
-                            onChange={handleChange}
-                            className="wardrobe-filter-select block w-full min-h-11 rounded-md border border-control-border bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:border-brand-navy sm:text-sm"
-                        >
-                            <option value="">{t('wardrobe.addModal.subcategoryUnset')}</option>
-                            {TOP_SUBCATEGORIES.map((sub) => (
-                                <option key={sub} value={sub}>{t(`wardrobe.filters.subcategories.${sub}`)}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
 
                 <div className="grid grid-cols-2 gap-4">
                     <Input
