@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { useUserProfileContext } from '../../contexts/UserProfileContext';
 import { computeWardrobeInsights, shoppingSearchUrl } from '../../utils/wardrobeInsights';
+import { DEFAULT_STYLE_PREFERENCE, shoppingAudienceTerm } from '../../utils/garmentTaxonomy';
 
 /**
  * Wardrobe insights, rendered as a SUB-SECTION inside the "Resumo do
@@ -18,6 +19,16 @@ export default function InsightsCard() {
     const insights = useMemo(
         () => computeWardrobeInsights(allItems, profile),
         [allItems, profile]
+    );
+
+    // Phrase the shopping query for the user's styling register instead of
+    // assuming menswear. An unset preference yields a neutral search.
+    const audienceTerm = shoppingAudienceTerm(
+        profile?.stylePreference || DEFAULT_STYLE_PREFERENCE,
+        {
+            menswear: t('insights.shopAudience.menswear', 'masculino'),
+            womenswear: t('insights.shopAudience.womenswear', 'feminino'),
+        },
     );
 
     if (insights.counts.total === 0) return null; // nothing to analyze yet
@@ -51,7 +62,8 @@ export default function InsightsCard() {
                         {insights.suggestions.map((s) => {
                             const noun = t(`insights.shopNoun.${s.category}`);
                             const color = s.color ? ` ${s.color}` : '';
-                            const query = `${noun}${color} masculino`.trim();
+                            const query = [`${noun}${color}`.trim(), audienceTerm]
+                                .filter(Boolean).join(' ');
                             return (
                                 <li key={s.category} className="flex items-center justify-between gap-3">
                                     <span className="text-sm text-grey-dark">

@@ -121,9 +121,18 @@
       "dismiss": "Cerrar tutorial",
       "reopen": "Cómo agregar",
       "steps": {
-        "photo": { "title": "Fotografía una prenda", "description": "Muestra la prenda completa, con buena luz y poco fondo. Toma una foto ahora o carga una existente." },
-        "analyze": { "title": "Deja que la IA ayude", "description": "Usa Analizar con IA para completar nombre, categoría, color y estilo como punto de partida." },
-        "review": { "title": "Revisa y guarda", "description": "Confirma la información antes de guardar. Mejores registros producen mejores sugerencias de John." }
+        "photo": {
+          "title": "Fotografía una prenda",
+          "description": "Muestra la prenda completa, con buena luz y poco fondo. Toma una foto ahora o carga una existente."
+        },
+        "analyze": {
+          "title": "Deja que la IA ayude",
+          "description": "Usa Analizar con IA para completar nombre, categoría, color y estilo como punto de partida."
+        },
+        "review": {
+          "title": "Revisa y guarda",
+          "description": "Confirma la información antes de guardar. Mejores registros producen mejores sugerencias de John."
+        }
       },
       "tip": "Consejo: usa una sola prenda completa por foto y evita perchas, pliegues u otras prendas que la cubran.",
       "cta": "Agregar una prenda"
@@ -171,6 +180,8 @@
       "polo": "Polo",
       "shirt": "Camisa",
       "tank_top": "Camiseta sin mangas",
+      "blouse": "Blusa",
+      "bodysuit": "Body",
       "other_top": "Otra prenda superior",
       "jeans": "Vaqueros",
       "chinos": "Chinos",
@@ -179,12 +190,16 @@
       "cargo_pants": "Pantalón cargo",
       "joggers": "Joggers",
       "shorts": "Pantalón corto",
+      "skirt": "Falda",
+      "leggings": "Leggings",
       "other_bottom": "Otra prenda inferior",
       "sneakers": "Zapatillas",
       "dress_shoes": "Zapato de vestir",
       "loafers": "Mocasines",
       "boots": "Botas",
       "sandals": "Sandalias o chanclas",
+      "heels": "Tacones",
+      "flats": "Bailarinas",
       "other_shoes": "Otro calzado",
       "blazer": "Blazer",
       "jacket": "Chaqueta",
@@ -197,6 +212,8 @@
       "suit": "Traje",
       "tuxedo": "Esmoquin",
       "matching_set": "Conjunto combinado",
+      "dress": "Vestido",
+      "jumpsuit": "Enterizo",
       "other_set": "Otro conjunto",
       "belt": "Cinturón",
       "tie": "Corbata",
@@ -234,7 +251,8 @@
       "brand": "Marca",
       "brandPlaceholder": "Opcional",
       "cancel": "Cancelar",
-      "save": "Guardar Artículo"
+      "save": "Guardar Artículo",
+      "showAllTypes": "Ver todos los tipos"
     },
     "errors": {
       "limitReached": "Límite diario de análisis alcanzado (5/5). Por favor, inténtalo de nuevo mañana.",
@@ -374,6 +392,10 @@
       "review": {
         "title": "¿Todo listo?",
         "subtitle": "Revisa y ajusta antes de guardar."
+      },
+      "stylePreference": {
+        "title": "¿Qué prendas debe considerar John para ti?",
+        "subtitle": "Esto define qué tipos de ropa aparecen en tu guardarropa y cómo John crea tus looks."
       }
     },
     "archetypes": {
@@ -437,6 +459,11 @@
       "bigPrints": "Estampados grandes",
       "largeLogos": "Logos grandes",
       "formalwear": "Muy formal"
+    },
+    "stylePreference": {
+      "menswear": "Moda masculina",
+      "womenswear": "Moda femenina",
+      "both": "Ambas"
     }
   },
   "notFound": {
@@ -485,6 +512,10 @@
       "shoes": "zapato",
       "outerwear": "chaqueta",
       "accessories": "accesorio"
+    },
+    "shopAudience": {
+      "menswear": "hombre",
+      "womenswear": "mujer"
     }
   }
 }

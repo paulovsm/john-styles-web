@@ -15,6 +15,8 @@ const TYPE_DEFINITIONS = {
         ['polo', ['polo shirt', 'camisa polo', 'polo']],
         ['shirt', ['dress shirt', 'button-up shirt', 'button down shirt', 'camisa social', 'camisa', 'oxford shirt', 'flannel shirt']],
         ['tank_top', ['tank top', 'sleeveless shirt', 'regata', 'camiseta sin mangas']],
+        ['blouse', ['blouse', 'silk blouse', 'blusa', 'camisa feminina', 'blusa de seda']],
+        ['bodysuit', ['bodysuit', 'body suit', 'body']],
         ['other_top', []],
     ],
     bottoms: [
@@ -25,6 +27,8 @@ const TYPE_DEFINITIONS = {
         ['cargo_pants', ['cargo pants', 'calca cargo', 'pantalon cargo', 'cargos']],
         ['joggers', ['sweatpants', 'track pants', 'calca jogger', 'calca de moletom', 'joggers']],
         ['shorts', ['bermuda', 'shorts', 'short']],
+        ['skirt', ['pencil skirt', 'midi skirt', 'maxi skirt', 'saia lapis', 'saia midi', 'saia', 'falda', 'skirt']],
+        ['leggings', ['yoga pants', 'calca legging', 'legging', 'leggings', 'mallas']],
         ['other_bottom', []],
     ],
     shoes: [
@@ -33,6 +37,8 @@ const TYPE_DEFINITIONS = {
         ['loafers', ['loafer', 'loafers', 'mocassim', 'mocasin', 'driver shoes']],
         ['boots', ['chelsea boots', 'combat boots', 'coturno', 'bota', 'botas', 'boots']],
         ['sandals', ['flip flops', 'flip-flops', 'slides', 'chinelo', 'sandalia', 'sandals']],
+        ['heels', ['high heels', 'stiletto', 'salto alto', 'scarpin', 'tacones', 'heels', 'heel']],
+        ['flats', ['ballet flats', 'sapatilha', 'bailarina', 'flats']],
         ['other_shoes', []],
     ],
     outerwear: [
@@ -49,6 +55,8 @@ const TYPE_DEFINITIONS = {
         ['suit', ['business suit', 'two piece suit', 'three piece suit', 'terno', 'traje'], ['bottoms', 'outerwear']],
         ['tuxedo', ['dinner suit', 'black tie suit', 'smoking', 'esmoquin'], ['bottoms', 'outerwear']],
         ['matching_set', ['co ord set', 'co-ord set', 'coordinated set', 'matching set', 'conjunto coordenado', 'conjunto combinado'], ['tops', 'bottoms']],
+        ['dress', ['shirt dress', 'midi dress', 'maxi dress', 'cocktail dress', 'vestido longo', 'vestido', 'dress'], ['tops', 'bottoms']],
+        ['jumpsuit', ['jumpsuit', 'romper', 'macaquinho', 'macacao', 'enterizo'], ['tops', 'bottoms']],
         ['other_set', ['clothing set', 'outfit set', 'conjunto', 'set de ropa'], ['tops', 'bottoms']],
     ],
     accessories: [
@@ -59,7 +67,7 @@ const TYPE_DEFINITIONS = {
         ['headwear', ['baseball cap', 'beanie', 'chapeu', 'bone', 'sombrero', 'gorra', 'gorro', 'hat', 'cap']],
         ['eyewear', ['sunglasses', 'eyeglasses', 'oculos', 'gafas', 'glasses']],
         ['scarf', ['cachecol', 'lenco', 'bufanda', 'panuelo', 'scarf']],
-        ['jewelry', ['cufflinks', 'bracelet', 'necklace', 'ring', 'abotoadura', 'pulseira', 'colar', 'anel', 'joya', 'joia', 'jewelry']],
+        ['jewelry', ['cufflinks', 'bracelet', 'necklace', 'ring', 'earrings', 'brinco', 'brincos', 'aretes', 'abotoadura', 'pulseira', 'colar', 'anel', 'joya', 'joia', 'jewelry']],
         ['other_accessory', []],
     ],
 };
@@ -177,4 +185,55 @@ export function resolveGarmentType(item) {
     if (inferredFromName) return inferredFromName;
 
     return fallbackTypeForCategory(item.category);
+}
+
+/**
+ * Style registers a user can be dressed in. This is a STYLING preference, not a
+ * gender identity: it decides which garment types are offered and how the
+ * shopping search is phrased.
+ */
+export const STYLE_PREFERENCES = Object.freeze(['menswear', 'womenswear', 'both']);
+// Deliberately NEUTRAL: when the preference is unknown we must not fall back to
+// menswear — that is the old hardcoded bias relocated. A neutral shopping query
+// and the full type list are never wrong, only slightly broader.
+export const DEFAULT_STYLE_PREFERENCE = 'both';
+
+// Only types that genuinely belong to one register are listed; everything else
+// is worn across both and stays available to everyone.
+const AUDIENCE_BY_TYPE = Object.freeze({
+    blouse: 'womenswear',
+    bodysuit: 'womenswear',
+    skirt: 'womenswear',
+    leggings: 'womenswear',
+    heels: 'womenswear',
+    flats: 'womenswear',
+    dress: 'womenswear',
+    jumpsuit: 'womenswear',
+    tie: 'menswear',
+    tuxedo: 'menswear',
+});
+
+/** 'menswear' | 'womenswear' | 'all' */
+export function audienceForType(type) {
+    const canonical = normalizeGarmentType(type);
+    return (canonical && AUDIENCE_BY_TYPE[canonical]) || 'all';
+}
+
+/**
+ * Types to offer for a style preference. 'both' (or anything unknown) returns
+ * everything, so a preference is never a hard restriction.
+ */
+export function typesForPreference(preference) {
+    if (preference !== 'menswear' && preference !== 'womenswear') return GARMENT_TYPE_KEYS;
+    return GARMENT_TYPE_KEYS.filter((type) => {
+        const audience = audienceForType(type);
+        return audience === 'all' || audience === preference;
+    });
+}
+
+/** The term appended to a shopping query; empty for 'both'. */
+export function shoppingAudienceTerm(preference, labels) {
+    if (preference === 'menswear') return labels?.menswear ?? '';
+    if (preference === 'womenswear') return labels?.womenswear ?? '';
+    return '';
 }

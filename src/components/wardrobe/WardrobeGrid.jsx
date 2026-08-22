@@ -5,10 +5,15 @@ import ConfirmDialog from '../common/ConfirmDialog';
 import { Add, AutoAwesome } from '@mui/icons-material';
 import Button from '../common/Button';
 import { useTranslation } from 'react-i18next';
+import { useUserProfileContext } from '../../contexts/UserProfileContext';
+import { samplesForPreference } from '../../data/demoWardrobe';
 
 export default function WardrobeGrid({ onAddItem, onItemClick }) {
     const { items, removeItem, addSampleItems } = useWardrobeContext();
     const { t } = useTranslation();
+    const { profile } = useUserProfileContext();
+    // Only offer the sample closet when samples exist for this styling register.
+    const hasSamples = samplesForPreference(profile?.stylePreference).length > 0;
     // Deleting a garment is destructive and irreversible — always confirm.
     const [pendingDelete, setPendingDelete] = useState(null);
 
@@ -25,14 +30,18 @@ export default function WardrobeGrid({ onAddItem, onItemClick }) {
                         <Add className="mr-2 h-5 w-5" />
                         {t('wardrobe.addItem')}
                     </Button>
-                    <Button variant="outline" onClick={addSampleItems}>
-                        <AutoAwesome className="mr-2 h-5 w-5" />
-                        {t('wardrobe.exploreSamples', 'Explorar com peças de exemplo')}
-                    </Button>
+                    {hasSamples && (
+                        <Button variant="outline" onClick={addSampleItems}>
+                            <AutoAwesome className="mr-2 h-5 w-5" />
+                            {t('wardrobe.exploreSamples', 'Explorar com peças de exemplo')}
+                        </Button>
+                    )}
                 </div>
-                <p className="mt-3 text-xs text-grey-medium">
-                    {t('wardrobe.exploreSamplesHint', 'Peças de exemplo para testar o app — você pode removê-las quando quiser.')}
-                </p>
+                {hasSamples && (
+                    <p className="mt-3 text-xs text-grey-medium">
+                        {t('wardrobe.exploreSamplesHint', 'Peças de exemplo para testar o app — você pode removê-las quando quiser.')}
+                    </p>
+                )}
             </div>
         );
     }
