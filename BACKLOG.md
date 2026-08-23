@@ -3,50 +3,34 @@
 Plain-language list of what's left to do. Estimates are hands-on coding time
 (review and verification add overhead on top).
 
-Last updated on 2026-08-22 after the visual, accessibility and mobile-first
-correction pass.
+Last updated on 2026-08-22 after merging the design guide, visual/mobile audit
+and garment taxonomy, and starting the thumbnail optimization.
 
 ---
 
 ## Shipped / in review
 
-| PR | What | Risk |
+| PR / branch | What | Status |
 |---|---|---|
 | #11 | Design system aligned to the landing page + landing hero + dashboard revamp | merged |
 | #12 | Account avatar dropdown + mobile fixes | merged |
-| #13 | **Mobile Tier 1** — unreadable chat, accidental deletes, blocked mobile login, iOS zoom, keyboard access | low |
-| #14 | **Mobile Tier 2** — touch targets, oversized text, thumb ergonomics | low |
-| #15 | **Perf** — fonts + route code-splitting (−65% initial download) | none |
-| #16 | **Perf** — write only changed wardrobe items | ⚠️ medium (data) |
-| current branch | **Visual + Mobile Tier 4** — contrast and form labels, keyboard-safe account menu, contextual alt text, skip link, reduced motion, heading hierarchy, translated accessible labels, touch-readable names and mobile-safe carousels | low |
+| #13 | **Mobile Tier 1** — unreadable chat, accidental deletes, blocked mobile login, iOS zoom, keyboard access | merged |
+| #14 | **Mobile Tier 2** — touch targets, oversized text, thumb ergonomics | merged |
+| #15 | **Perf** — fonts + route code-splitting (−65% initial download) | merged |
+| #16 | **Perf** — write only changed wardrobe items | merged |
+| #18 | Fleek Authority design guide and development rules | merged |
+| #19 | **Visual + Mobile Tier 4** — contrast, labels, keyboard access, skip link, reduced motion and mobile-safe carousels | merged |
+| #20 | Canonical garment taxonomy — 6 categories and 40 types, including composite suits and sets | merged |
+| `feat/wardrobe-thumbnails` | 320px WebP thumbnails, legacy fallback, early file validation and paired Storage cleanup | in development |
 
 ---
 
 ## Next up
 
-### Garment types (Taxonomy) — implemented on feature branch
-Teach the app the *specific* piece (shirt / polo / t-shirt / pants / sneakers…)
-with one clean field instead of the broad tops/bottoms/shoes buckets. The wardrobe
-summary then shows one big **total** plus tags for **only the types you own**, so a
-small closet stops looking empty. Numbers always match reality.
-
-Detailed research, proposed V1 taxonomy and implementation plan:
-[`docs/garment-taxonomy-plan.md`](docs/garment-taxonomy-plan.md).
-
-Decisions already made: keep a single leaf `type` field and derive `category` from
-it; persist the derived category and model suits/sets as composite garments whose
-occupied outfit slots prevent incompatible combinations.
-The garment labels on cards today are an interim fix that this replaces.
-_Est: ~1–1.5 h._
-
-### Image thumbnails
-Photos are stored at full size (1500px) but displayed small (~160px), so phones
-download roughly **9× more data than needed** per thumbnail. Generate a small copy
-at upload and use it in grids/carousels.
-
-**No migration needed** — few photos exist so far, so this applies to new uploads
-only; existing photos keep working (just heavier). Best done *before* users upload
-a lot, since the benefit scales with photo count.
+### Upload progress
+Saving a garment on a slow connection shows only a small spinner — no percentage,
+cancel or timeout, so a 20-second upload looks frozen. Add resumable uploads with
+clear progress and recovery states.
 _Est: ~1–2 h._
 
 ---
@@ -68,8 +52,6 @@ implemented in Tiers 1–3. Grouped so a future pass can pick a batch.
 ### Forms & flows
 - **No mobile keyboard hints** on the wardrobe fields — brand/colour/style get
   autocorrect and wrong capitalisation; search has no search keyboard.
-- **No file validation** — an unsupported or very large photo (e.g. HEIC from an
-  iPhone) fails late with a generic error instead of being caught on selection.
 - **Try-on has no camera option** (unlike add-item), so the user hunts through the
   share sheet.
 - **Try-on steps are unnumbered** — three undifferentiated cards with no progress.
@@ -105,11 +87,6 @@ connection — a separate admin step.)*
 ---
 
 ## Medium (1–4 hours)
-
-### Upload progress
-Saving a garment on a slow connection shows only a small spinner — no percentage,
-no cancel, no timeout, so a 20-second upload looks frozen. Needs resumable uploads.
-_Est: ~1–2 h._
 
 ### Landing page translations
 The landing page is Portuguese-only while the app already supports English and

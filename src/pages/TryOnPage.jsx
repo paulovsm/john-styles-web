@@ -14,7 +14,7 @@ import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserProfileContext } from '../contexts/UserProfileContext';
 import { useToast } from '../contexts/ToastContext';
-import { compressImage, toCompressedDataUrl } from '../utils/imageUtils';
+import { compressImage, getWardrobeThumbnailUrl, toCompressedDataUrl } from '../utils/imageUtils';
 import { garmentsConflict } from '../utils/garmentTaxonomy';
 
 
@@ -376,7 +376,7 @@ export default function TryOnPage() {
                                                 className={`block w-full text-left cursor-pointer border-2 rounded-md overflow-hidden relative ${isSelected ? 'border-brand-navy ring-2 ring-brand-navy ring-opacity-50' : 'border-transparent'
                                                     }`}
                                             >
-                                                <img src={item.image} alt={item.name} loading="lazy" className="w-full h-24 object-cover" />
+                                                <img src={getWardrobeThumbnailUrl(item)} alt={item.name} loading="lazy" className="w-full h-24 object-cover" />
                                                 <p className="break-words p-1 text-center text-xs lg:truncate">{item.name}</p>
                                                 {isSelected && (
                                                     <div className="absolute top-1 right-1 bg-brand-navy text-white-pure rounded-full p-0.5">

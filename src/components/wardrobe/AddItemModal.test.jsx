@@ -1,8 +1,17 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import AddItemModal from './AddItemModal';
+
+const storageMocks = vi.hoisted(() => ({
+    uploadImage: vi.fn(),
+    uploadThumbnail: vi.fn(),
+}));
+const imageMocks = vi.hoisted(() => ({
+    compressImage: vi.fn((file) => Promise.resolve(file)),
+    createWardrobeThumbnail: vi.fn(() => Promise.resolve(new File(['thumb'], 'thumb.webp', { type: 'image/webp' }))),
+}));
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -16,11 +25,20 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 vi.mock('../../services/api/geminiService', () => ({ geminiService: { analyzeImage: vi.fn() } }));
-vi.mock('../../services/storage/firestoreService', () => ({ firestoreService: { uploadImage: vi.fn() } }));
-vi.mock('../../utils/imageUtils', () => ({ compressImage: vi.fn() }));
+vi.mock('../../services/storage/firestoreService', () => ({ firestoreService: storageMocks }));
+vi.mock('../../utils/imageUtils', async (importOriginal) => ({
+    ...(await importOriginal()),
+    ...imageMocks,
+}));
 vi.mock('../common/UsageCounter', () => ({ default: () => null }));
 
 describe('AddItemModal photo sources', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        imageMocks.compressImage.mockImplementation((file) => Promise.resolve(file));
+        imageMocks.createWardrobeThumbnail.mockResolvedValue(new File(['thumb'], 'thumb.webp', { type: 'image/webp' }));
+    });
+
     it('offers camera capture and file upload separately', () => {
         render(<AddItemModal isOpen onClose={() => {}} onSave={() => {}} />);
 
@@ -28,9 +46,46 @@ describe('AddItemModal photo sources', () => {
         const uploadInput = screen.getByLabelText('Enviar arquivo');
         expect(cameraInput).toHaveAttribute('type', 'file');
         expect(cameraInput).toHaveAttribute('capture', 'environment');
-        expect(cameraInput).toHaveAttribute('accept', 'image/*');
+        expect(cameraInput.getAttribute('accept')).toContain('image/webp');
         expect(uploadInput).toHaveAttribute('type', 'file');
         expect(uploadInput).not.toHaveAttribute('capture');
+    });
+
+    it('rejects unsupported photos before processing or uploading', async () => {
+        render(<AddItemModal isOpen onClose={() => {}} onSave={() => {}} />);
+
+        fireEvent.change(screen.getByLabelText('Enviar arquivo'), {
+            target: { files: [new File(['heic'], 'photo.heic', { type: 'image/heic' })] },
+        });
+
+        expect(screen.getByRole('alert')).toHaveTextContent('wardrobe.errors.unsupportedImageType');
+        expect(imageMocks.compressImage).not.toHaveBeenCalled();
+        expect(storageMocks.uploadImage).not.toHaveBeenCalled();
+    });
+
+    it('uploads and persists the original plus its thumbnail', async () => {
+        const user = userEvent.setup();
+        const onSave = vi.fn();
+        storageMocks.uploadImage.mockResolvedValue('https://example.com/original.jpg');
+        storageMocks.uploadThumbnail.mockResolvedValue('https://example.com/thumb.webp');
+        render(<AddItemModal isOpen onClose={() => {}} onSave={onSave} />);
+
+        await user.upload(
+            screen.getByLabelText('Enviar arquivo'),
+            new File(['jpeg'], 'photo.jpg', { type: 'image/jpeg' }),
+        );
+        await screen.findByRole('img', { name: 'wardrobe.addModal.previewAlt' });
+        await user.type(screen.getByRole('textbox', { name: 'wardrobe.addModal.name' }), 'Terno azul');
+        await user.selectOptions(screen.getByRole('combobox', { name: 'wardrobe.addModal.garmentType' }), 'suit');
+        await user.click(screen.getByRole('button', { name: 'wardrobe.addModal.save' }));
+
+        await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+        expect(storageMocks.uploadImage).toHaveBeenCalledTimes(1);
+        expect(storageMocks.uploadThumbnail).toHaveBeenCalledTimes(1);
+        expect(onSave.mock.calls[0][0]).toEqual(expect.objectContaining({
+            image: 'https://example.com/original.jpg',
+            thumbnailUrl: 'https://example.com/thumb.webp',
+        }));
     });
 
     it('keeps description and garment type controls readable in dark mode', () => {

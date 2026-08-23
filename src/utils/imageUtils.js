@@ -28,6 +28,37 @@ const blobToDataUrl = (blob) =>
         reader.readAsDataURL(blob);
     });
 
+export const MAX_WARDROBE_IMAGE_BYTES = 8 * 1024 * 1024;
+export const SUPPORTED_WARDROBE_IMAGE_TYPES = Object.freeze([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+]);
+
+const SUPPORTED_WARDROBE_IMAGE_EXTENSIONS = Object.freeze(['jpg', 'jpeg', 'png', 'webp']);
+
+/**
+ * Validates the formats promised by the wardrobe upload UI before any costly
+ * decoding, AI call or network request.
+ *
+ * @returns {'unsupported_type'|'too_large'|null}
+ */
+export function validateWardrobeImageFile(file) {
+    if (!file) return 'unsupported_type';
+
+    const mimeType = String(file.type || '').toLowerCase();
+    const extension = String(file.name || '').split('.').pop()?.toLowerCase();
+    const supported = SUPPORTED_WARDROBE_IMAGE_TYPES.includes(mimeType)
+        || (!mimeType && SUPPORTED_WARDROBE_IMAGE_EXTENSIONS.includes(extension));
+
+    if (!supported) return 'unsupported_type';
+    if (file.size > MAX_WARDROBE_IMAGE_BYTES) return 'too_large';
+    return null;
+}
+
+/** Small-card image source with transparent fallback for legacy wardrobe data. */
+export const getWardrobeThumbnailUrl = (item) => item?.thumbnailUrl || item?.image || '';
+
 /**
  * Fetches an image (data: or http(s) URL) and returns a RE-COMPRESSED data URL.
  * Used to shrink the try-on payload so several images fit under the serverless
@@ -64,19 +95,23 @@ const fitDimensions = (width, height, maxDimension) => {
         : { width: Math.round((width * maxDimension) / height), height: maxDimension };
 };
 
-const canvasToJpegFile = (canvas, name, quality) =>
+const canvasToFile = (canvas, name, mimeType, quality) =>
     new Promise((resolve, reject) => {
         canvas.toBlob(
             (blob) => {
                 if (!blob) { reject(new Error('Canvas is empty')); return; }
-                resolve(new File([blob], name, { type: 'image/jpeg', lastModified: Date.now() }));
+                if (mimeType === 'image/webp' && blob.type !== 'image/webp') {
+                    reject(new Error('WebP encoding is not supported by this browser'));
+                    return;
+                }
+                resolve(new File([blob], name, { type: blob.type || mimeType, lastModified: Date.now() }));
             },
-            'image/jpeg',
+            mimeType,
             quality
         );
     });
 
-export const compressImage = async (file, maxDimension = 1500, quality = 0.7) => {
+const resizeImage = async (file, maxDimension, quality, mimeType, outputName) => {
     // Decode with EXIF orientation applied. Phone photos carry an orientation
     // flag in EXIF; the canvas re-encode below strips that metadata, so unless
     // we bake the rotation into the pixels here the image ends up sideways
@@ -91,7 +126,7 @@ export const compressImage = async (file, maxDimension = 1500, quality = 0.7) =>
             canvas.height = height;
             canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
             bitmap.close?.();
-            return await canvasToJpegFile(canvas, file.name, quality);
+            return await canvasToFile(canvas, outputName, mimeType, quality);
         } catch {
             // fall through to the legacy path
         }
@@ -110,7 +145,7 @@ export const compressImage = async (file, maxDimension = 1500, quality = 0.7) =>
                 canvas.height = height;
                 canvas.getContext('2d').drawImage(img, 0, 0, width, height);
                 try {
-                    resolve(await canvasToJpegFile(canvas, file.name, quality));
+                    resolve(await canvasToFile(canvas, outputName, mimeType, quality));
                 } catch (err) {
                     reject(err);
                 }
@@ -119,4 +154,12 @@ export const compressImage = async (file, maxDimension = 1500, quality = 0.7) =>
         };
         reader.onerror = (error) => reject(error);
     });
+};
+
+export const compressImage = (file, maxDimension = 1500, quality = 0.7) =>
+    resizeImage(file, maxDimension, quality, 'image/jpeg', file.name);
+
+export const createWardrobeThumbnail = (file, maxDimension = 320, quality = 0.76) => {
+    const baseName = String(file.name || 'wardrobe-item').replace(/\.[^.]+$/, '');
+    return resizeImage(file, maxDimension, quality, 'image/webp', `${baseName}-thumb.webp`);
 };

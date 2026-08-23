@@ -4,6 +4,7 @@ import { Delete } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { colorToHex } from '../../utils/colorMap';
 import { resolveGarmentType } from '../../utils/garmentTaxonomy';
+import { getWardrobeThumbnailUrl } from '../../utils/imageUtils';
 
 export default function WardrobeItemCard({ item, onDelete, onClick }) {
     const { t } = useTranslation();
@@ -15,7 +16,7 @@ export default function WardrobeItemCard({ item, onDelete, onClick }) {
 
     return (
         <Card hoverable onClick={() => onClick && onClick(item)} className="relative group">
-            <Card.Image src={item.image} alt={item.name} className="h-48" />
+            <Card.Image src={getWardrobeThumbnailUrl(item)} alt={item.name} className="h-48" />
             {item.demo && (
                 <span className="absolute top-2 left-2 text-[10px] font-medium px-2 py-0.5 rounded-full bg-brand-gold/90 text-white-pure shadow-sm">
                     {t('wardrobe.sampleBadge', 'Exemplo')}

@@ -6,7 +6,11 @@ import Loading from '../common/Loading';
 import { geminiService } from '../../services/api/geminiService';
 import { firestoreService } from '../../services/storage/firestoreService';
 import { AutoAwesome, CameraAlt, CloudUpload, LightbulbOutlined } from '@mui/icons-material';
-import { compressImage } from '../../utils/imageUtils';
+import {
+    compressImage,
+    createWardrobeThumbnail,
+    validateWardrobeImageFile,
+} from '../../utils/imageUtils';
 import UsageCounter from '../common/UsageCounter';
 import {
     GARMENT_TYPES_BY_CATEGORY,
@@ -22,7 +26,9 @@ import { useTranslation } from 'react-i18next';
 export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const { t, i18n } = useTranslation();
     const [file, setFile] = useState(null);
+    const [thumbnailFile, setThumbnailFile] = useState(null);
     const [preview, setPreview] = useState('');
+    const [photoError, setPhotoError] = useState('');
     const [processingPhoto, setProcessingPhoto] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
     const [analyzeError, setAnalyzeError] = useState('');
@@ -52,6 +58,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 });
                 setPreview(item.image || '');
                 setFile(null);
+                setThumbnailFile(null);
             } else {
                 setFormData({
                     name: '',
@@ -63,7 +70,9 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 });
                 setPreview('');
                 setFile(null);
+                setThumbnailFile(null);
             }
+            setPhotoError('');
         }
     }, [isOpen, item]);
 
@@ -71,21 +80,29 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         const selectedFile = e.target.files[0];
         e.target.value = '';
         if (!selectedFile) return;
+        const validationError = validateWardrobeImageFile(selectedFile);
+        if (validationError) {
+            setPhotoError(t(`wardrobe.errors.${validationError === 'too_large' ? 'imageTooLarge' : 'unsupportedImageType'}`));
+            return;
+        }
+
+        setPhotoError('');
         // Compressing a 12MP phone photo takes 0.5–2s on the main thread; without
         // a flag the dropzone looks unchanged and the user re-taps the camera.
         setProcessingPhoto(true);
         try {
             const compressedFile = await compressImage(selectedFile);
+            const generatedThumbnail = await createWardrobeThumbnail(compressedFile);
             setFile(compressedFile);
+            setThumbnailFile(generatedThumbnail);
             const reader = new FileReader();
             reader.onloadend = () => setPreview(reader.result);
             reader.readAsDataURL(compressedFile);
         } catch (error) {
             console.error("Error compressing image:", error);
-            setFile(selectedFile);
-            const reader = new FileReader();
-            reader.onloadend = () => setPreview(reader.result);
-            reader.readAsDataURL(selectedFile);
+            setFile(null);
+            setThumbnailFile(null);
+            setPhotoError(t('wardrobe.errors.imageProcessingFailed'));
         } finally {
             setProcessingPhoto(false);
         }
@@ -144,18 +161,23 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
 
             const id = item?.id || Date.now().toString();
             let imageUrl = preview;
+            let thumbnailUrl = item?.thumbnailUrl || '';
 
             // If a new image was selected (we still hold the File), upload it to
             // Storage and persist only the URL — never the base64 blob, which
             // would bloat the Firestore doc / localStorage.
             if (file) {
-                imageUrl = await firestoreService.uploadImage(file, id);
+                [imageUrl, thumbnailUrl] = await Promise.all([
+                    firestoreService.uploadImage(file, id),
+                    firestoreService.uploadThumbnail(thumbnailFile, id),
+                ]);
             }
 
             onSave({
                 ...formData,
                 id,
                 image: imageUrl,
+                ...(thumbnailUrl ? { thumbnailUrl } : {}),
                 type,
                 category,
                 taxonomyVersion: TAXONOMY_VERSION,
@@ -187,7 +209,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                 <img src={preview} alt={t('wardrobe.addModal.previewAlt', 'Prévia da peça selecionada')} className="mx-auto h-48 object-cover rounded-md" style={{ imageOrientation: 'from-image' }} />
                                 <button
                                     type="button"
-                                    onClick={(e) => { e.stopPropagation(); setFile(null); setPreview(''); }}
+                                    onClick={(e) => { e.stopPropagation(); setFile(null); setThumbnailFile(null); setPreview(''); setPhotoError(''); }}
                                     aria-label={t('common.remove', 'Remover')}
                                     className="absolute top-0 right-0 -mt-2 -mr-2 grid place-items-center h-11 w-11 bg-white-pure rounded-full shadow-md text-grey-medium hover:text-status-error-content active:text-status-error-content z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                 >
@@ -212,7 +234,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                             name="camera-capture"
                                             type="file"
                                             className="sr-only"
-                                            accept="image/*"
+                                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                                             capture="environment"
                                             onChange={handleFileChange}
                                         />
@@ -225,7 +247,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                             name="file-upload"
                                             type="file"
                                             className="sr-only"
-                                            accept="image/*"
+                                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                                             onChange={handleFileChange}
                                         />
                                     </label>
@@ -233,6 +255,9 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                             </div>
                         )}
                     </div>
+                    {photoError && (
+                        <p role="alert" className="mt-2 text-sm text-status-error-content">{photoError}</p>
+                    )}
                     {!preview && (
                         <div className="mt-2 flex items-start gap-2 rounded-md bg-brand-gold/10 px-3 py-2 text-xs text-grey-dark">
                             <LightbulbOutlined className="mt-0.5 shrink-0 text-brand-gold-dark" fontSize="small" />
@@ -343,7 +368,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     <Button type="button" variant="text" onClick={onClose} disabled={saving}>
                         {t('wardrobe.addModal.cancel')}
                     </Button>
-                    <Button type="submit" variant="primary" disabled={!formData.name || !preview || saving}>
+                    <Button type="submit" variant="primary" disabled={!formData.name || !preview || processingPhoto || saving}>
                         {saving ? <Loading type="spinner" size={16} className="mr-2" /> : null}
                         {t('wardrobe.addModal.save')}
                     </Button>

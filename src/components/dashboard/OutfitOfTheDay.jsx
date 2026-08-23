@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { pickOutfitOfTheDay } from '../../utils/outfitOfTheDay';
 import { getOccupiedCategories } from '../../utils/garmentTaxonomy';
+import { getWardrobeThumbnailUrl } from '../../utils/imageUtils';
 import { preferStylesForFormality } from '../../hooks/useDailyContext';
 import { calendarService } from '../../services/api/calendarService';
 import { useHorizontalCarousel } from '../../hooks/useHorizontalCarousel';
@@ -97,7 +98,7 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                                 {outfit.map((item) => (
                                     <div key={item.id} className="snap-start shrink-0 w-[46%] sm:w-48 text-center">
                                         <div className="aspect-[3/4] rounded-md overflow-hidden bg-grey-light">
-                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" style={{ imageOrientation: 'from-image' }} />
+                                            <img src={getWardrobeThumbnailUrl(item)} alt={item.name} className="w-full h-full object-cover" style={{ imageOrientation: 'from-image' }} />
                                         </div>
                                         <p className="mt-1 break-words text-xs text-grey-dark lg:truncate" title={item.name}>{item.name}</p>
                                     </div>

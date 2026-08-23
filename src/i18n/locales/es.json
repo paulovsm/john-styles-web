@@ -240,7 +240,10 @@
       "limitReached": "Límite diario de análisis alcanzado (5/5). Por favor, inténtalo de nuevo mañana.",
       "analysisFailed": "Error al analizar la imagen. Inténtalo de nuevo.",
       "saveFailed": "Error al guardar el artículo. Inténtalo de nuevo.",
-      "typeRequired": "Selecciona el tipo de prenda antes de guardar."
+      "typeRequired": "Selecciona el tipo de prenda antes de guardar.",
+      "unsupportedImageType": "Formato no compatible. Usa una imagen JPG, PNG o WebP.",
+      "imageTooLarge": "La imagen supera los 8 MB. Elige un archivo más pequeño.",
+      "imageProcessingFailed": "No pudimos procesar esta imagen. Prueba con otro archivo JPG, PNG o WebP."
     },
     "exploreSamples": "Explorar con prendas de ejemplo",
     "exploreSamplesHint": "Prendas de ejemplo para probar la app — puedes quitarlas cuando quieras.",
