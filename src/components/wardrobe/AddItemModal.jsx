@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Modal from '../common/Modal';
 import Input from '../common/Input';
 import Button from '../common/Button';
@@ -13,21 +13,42 @@ import {
     TAXONOMY_VERSION,
     WARDROBE_CATEGORIES,
     deriveCategory,
+    DEFAULT_STYLE_PREFERENCE,
+    typesForPreference,
+    GARMENT_TYPE_KEYS,
     normalizeGarmentType,
     resolveGarmentType,
 } from '../../utils/garmentTaxonomy';
 
 import { useTranslation } from 'react-i18next';
+import { useUserProfileContext } from '../../contexts/UserProfileContext';
 
 export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const { t, i18n } = useTranslation();
+    // Optional on purpose: the modal must still render if it is mounted outside
+    // the profile provider. Without a profile we fall back to the neutral register.
+    const profile = useUserProfileContext()?.profile;
+
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState('');
     const [processingPhoto, setProcessingPhoto] = useState(false);
+    const [showAllTypes, setShowAllTypes] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
     const [analyzeError, setAnalyzeError] = useState('');
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
+
+    // Offer the garment types that match the user's styling register, so a
+    // menswear user isn't scrolling past dresses. Never a hard restriction:
+    // "ver todos" reveals everything, and a type already saved on the item
+    // stays selectable even when hidden.
+    const preference = profile?.stylePreference || DEFAULT_STYLE_PREFERENCE;
+    const allowedTypes = useMemo(() => {
+        if (showAllTypes) return null;
+        const allowed = typesForPreference(preference);
+        // 'both' already covers everything — treat as unfiltered.
+        return allowed.length === GARMENT_TYPE_KEYS.length ? null : new Set(allowed);
+    }, [preference, showAllTypes]);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -298,14 +319,28 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                         className="wardrobe-filter-select block w-full min-h-11 rounded-md border border-control-border bg-white-pure px-3 py-2 text-grey-dark shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:border-brand-navy sm:text-sm"
                     >
                         <option value="">{t('wardrobe.addModal.garmentTypePlaceholder')}</option>
-                        {WARDROBE_CATEGORIES.map((category) => (
-                            <optgroup key={category} label={t(`wardrobe.filters.categories.${category}`)}>
-                                {GARMENT_TYPES_BY_CATEGORY[category].map((type) => (
-                                    <option key={type} value={type}>{t(`wardrobe.types.${type}`)}</option>
-                                ))}
-                            </optgroup>
-                        ))}
+                        {WARDROBE_CATEGORIES.map((category) => {
+                            const types = GARMENT_TYPES_BY_CATEGORY[category]
+                                .filter((type) => !allowedTypes || allowedTypes.has(type) || type === formData.type);
+                            if (types.length === 0) return null;
+                            return (
+                                <optgroup key={category} label={t(`wardrobe.filters.categories.${category}`)}>
+                                    {types.map((type) => (
+                                        <option key={type} value={type}>{t(`wardrobe.types.${type}`)}</option>
+                                    ))}
+                                </optgroup>
+                            );
+                        })}
                     </select>
+                    {allowedTypes && (
+                        <button
+                            type="button"
+                            onClick={() => setShowAllTypes(true)}
+                            className="mt-1 text-xs text-grey-medium underline hover:text-brand-navy"
+                        >
+                            {t('wardrobe.addModal.showAllTypes', 'Ver todos os tipos')}
+                        </button>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

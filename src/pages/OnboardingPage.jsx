@@ -7,6 +7,7 @@ import { colorToHex } from '../utils/colorMap';
 import Loading from '../components/common/Loading';
 import { Close } from '@mui/icons-material';
 import { ARCHETYPES, inferArchetypes } from '../utils/archetypes';
+import { STYLE_PREFERENCES, DEFAULT_STYLE_PREFERENCE } from '../utils/garmentTaxonomy';
 import { STORAGE_KEYS } from '../services/storage/localStorageService';
 
 // Option catalogs. `value` is the canonical (PT) token stored on the profile so
@@ -32,7 +33,10 @@ const DISLIKES = [
     { id: 'formalwear', value: 'roupas muito formais' },
 ];
 
-const STEPS = ['archetypes', 'colors', 'occasions', 'body', 'dislikes', 'review'];
+// stylePreference comes first: it decides which garment types the rest of the
+// app offers. It is the STYLING REGISTER (which clothes), deliberately separate
+// from `archetypes`, which is the AESTHETIC (classic, streetwear, ...).
+const STEPS = ['stylePreference', 'archetypes', 'colors', 'occasions', 'body', 'dislikes', 'review'];
 
 // Normalize values (possibly from the AI in a different case, e.g. "azul") to
 // the wizard's canonical option values so chips highlight/match correctly.
@@ -60,6 +64,7 @@ function initSelection(profile) {
         preferredItems: profile.preferredItems || [],
         favoriteBrands: profile.favoriteBrands || [],
         styleGoals: profile.styleGoals || '',
+        stylePreference: profile.stylePreference || '',
     };
 }
 
@@ -123,6 +128,7 @@ export default function OnboardingPage() {
             styleGoals: sel.styleGoals,
             preferredItems: derivedItems,
             styleArchetypes: sel.archetypes,
+            stylePreference: sel.stylePreference || DEFAULT_STYLE_PREFERENCE,
             onboardingCompleted: true,
         });
         try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
@@ -230,6 +236,20 @@ export default function OnboardingPage() {
                                     <button key={o.id} type="button" onClick={() => toggle('occasions', o.value)}
                                         className={`min-h-11 p-3 rounded-xl border-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy ${active ? 'border-brand-gold bg-brand-gold/10 text-brand-navy' : 'border-control-border text-grey-dark hover:border-grey-medium'}`}>
                                         {t(`onboarding.occasionOptions.${o.id}`)}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {stepId === 'stylePreference' && (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            {STYLE_PREFERENCES.map((pref) => {
+                                const active = sel.stylePreference === pref;
+                                return (
+                                    <button key={pref} type="button" onClick={() => setField('stylePreference', pref)}
+                                        className={`min-h-11 p-3 rounded-xl border-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy ${active ? 'border-brand-gold bg-brand-gold/10 text-brand-navy' : 'border-control-border text-grey-dark hover:border-grey-medium'}`}>
+                                        {t(`onboarding.stylePreference.${pref}`)}
                                     </button>
                                 );
                             })}
