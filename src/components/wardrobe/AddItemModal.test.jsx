@@ -15,6 +15,10 @@ vi.mock('react-i18next', () => ({
         i18n: { language: 'pt' },
     }),
 }));
+// Stubbed for its import graph, not its value: the real module reaches
+// firebaseConfig, which calls getAuth() at import time and throws without
+// Firebase env vars (CI has none).
+vi.mock('../../contexts/UserProfileContext', () => ({ useUserProfileContext: () => ({ profile: {} }) }));
 vi.mock('../../services/api/geminiService', () => ({ geminiService: { analyzeImage: vi.fn() } }));
 vi.mock('../../services/storage/firestoreService', () => ({ firestoreService: { uploadImage: vi.fn() } }));
 vi.mock('../../utils/imageUtils', () => ({ compressImage: vi.fn() }));
