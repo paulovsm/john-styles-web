@@ -128,6 +128,7 @@ export default function OnboardingPage() {
             styleGoals: sel.styleGoals,
             preferredItems: derivedItems,
             styleArchetypes: sel.archetypes,
+            stylePreference: sel.stylePreference || DEFAULT_STYLE_PREFERENCE,
             onboardingCompleted: true,
         });
         try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
