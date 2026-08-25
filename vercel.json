@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/__/auth/(.*)",
+            "destination": "https://john-styles-web-78cc0.firebaseapp.com/__/auth/$1"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/$1"
         },
