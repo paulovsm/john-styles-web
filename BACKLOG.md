@@ -3,8 +3,8 @@
 Plain-language list of what's left to do. Estimates are hands-on coding time
 (review and verification add overhead on top).
 
-Last updated on 2026-08-22 after merging the design guide, visual/mobile audit
-and garment taxonomy, and starting the thumbnail optimization.
+Last updated on 2026-08-28 after the womenswear support pass and preparation of
+the wardrobe thumbnail optimization for review.
 
 ---
 
@@ -21,7 +21,32 @@ and garment taxonomy, and starting the thumbnail optimization.
 | #18 | Fleek Authority design guide and development rules | merged |
 | #19 | **Visual + Mobile Tier 4** — contrast, labels, keyboard access, skip link, reduced motion and mobile-safe carousels | merged |
 | #20 | Canonical garment taxonomy — 6 categories and 40 types, including composite suits and sets | merged |
-| `feat/wardrobe-thumbnails` | 320px WebP thumbnails, legacy fallback, early file validation and paired Storage cleanup | in development |
+| #21 | **Womenswear support** — new garment types (dress, skirt, jumpsuit, etc.), onboarding "styling register" choice, shopping-query wording no longer assumes menswear | low |
+| `feat/wardrobe-thumbnails` | 320px WebP thumbnails, legacy fallback, early file validation and paired Storage cleanup | in review |
+
+---
+
+## Womenswear — remaining gaps
+
+PR #21 makes it *possible* to add women's clothing and get styling advice. What it
+does **not** do yet:
+
+- **No sample-closet photos for women.** The "try with example items" shortcut
+  only offers pre-checked photos (a human confirmed each one matches its
+  garment). There's no vetted set for women's items yet, so the shortcut is
+  simply hidden for those users rather than shipped with unchecked photos.
+  Needs someone to source and eyeball ~8-10 photos.
+  _Est: ~30–45 min once photos are sourced._
+- **The partner store doesn't carry womenswear (confirmed 2026-08-24).** The
+  chat assistant already handles this honestly — if a woman asks to shop, it
+  says the store doesn't carry it yet instead of showing men's items. Open
+  product decision, not a bug: keep offering "womenswear"/"both" during
+  onboarding as-is (the app still gives styling advice on clothes the user
+  already owns), or hold that option back until the store actually stocks
+  women's items. No code change either way until that's decided.
+- **Try-on quality on women's garments is unverified** — dresses, skirts and
+  jumpsuits haven't been tried through the try-on feature yet. Needs a manual
+  pass with real photos once the workflow above is live.
 
 ---
 
@@ -145,3 +170,10 @@ _Est: multi-day; product decision first._
 - **Separate mobile-only UI** (instead of responsive) — considered and set aside:
   it means building and maintaining two parallel interfaces. Revisit only for a
   specific high-friction screen (e.g. the camera-first wardrobe flow).
+
+## n8n / assistant — left untouched, worth knowing about
+- **Chat history is sent twice.** The app sends the recent conversation in every
+  request (`chatHistory`), and the n8n workflow also has its own memory nodes
+  that keep history on the n8n side. Not wrong, just redundant — costs a bit
+  more per request than it needs to. Left alone because fixing it means picking
+  which side owns history, which is a product/cost call, not a bug fix.

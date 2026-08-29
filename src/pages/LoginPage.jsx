@@ -25,8 +25,9 @@ export default function LoginPage() {
             setError('');
             setLoading(true);
             await providerMethod();
-            // On mobile this is a redirect: the browser navigates away and the
-            // session is picked up by getRedirectResult/onAuthStateChanged.
+            // In an in-app webview this is a redirect: the browser navigates
+            // away and the session is picked up by getRedirectResult /
+            // onAuthStateChanged instead.
             navigate('/dashboard');
         } catch (err) {
             console.error(err);

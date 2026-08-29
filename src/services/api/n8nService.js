@@ -13,6 +13,9 @@ export const n8nService = {
                 method: 'POST',
                 body: JSON.stringify({
                     message,
+                    // Tell the agent which language to answer in; inferring it from the
+                    // message text is unreliable and the sub-agents default to Portuguese.
+                    language: i18n.language,
                     userProfile: context.userProfile,
                     wardrobeItems: context.wardrobeItems,
                     chatHistory: context.chatHistory,

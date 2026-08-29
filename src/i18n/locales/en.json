@@ -121,9 +121,18 @@
       "dismiss": "Close tutorial",
       "reopen": "How to add",
       "steps": {
-        "photo": { "title": "Photograph one piece", "description": "Show the whole piece in good light with little background. Take a photo now or upload an existing one." },
-        "analyze": { "title": "Let AI help", "description": "Use Analyze with AI to prefill the name, category, color and style as a starting point." },
-        "review": { "title": "Review and save", "description": "Confirm the information before saving. Better records lead to better suggestions from John." }
+        "photo": {
+          "title": "Photograph one piece",
+          "description": "Show the whole piece in good light with little background. Take a photo now or upload an existing one."
+        },
+        "analyze": {
+          "title": "Let AI help",
+          "description": "Use Analyze with AI to prefill the name, category, color and style as a starting point."
+        },
+        "review": {
+          "title": "Review and save",
+          "description": "Confirm the information before saving. Better records lead to better suggestions from John."
+        }
       },
       "tip": "Tip: use one complete piece per photo and avoid hangers, folds or other clothes covering it.",
       "cta": "Add one piece"
@@ -171,6 +180,8 @@
       "polo": "Polo",
       "shirt": "Shirt",
       "tank_top": "Tank top",
+      "blouse": "Blouse",
+      "bodysuit": "Bodysuit",
       "other_top": "Other top",
       "jeans": "Jeans",
       "chinos": "Chinos",
@@ -179,12 +190,16 @@
       "cargo_pants": "Cargo pants",
       "joggers": "Joggers",
       "shorts": "Shorts",
+      "skirt": "Skirt",
+      "leggings": "Leggings",
       "other_bottom": "Other bottom",
       "sneakers": "Sneakers",
       "dress_shoes": "Dress shoes",
       "loafers": "Loafers",
       "boots": "Boots",
       "sandals": "Sandals or slides",
+      "heels": "Heels",
+      "flats": "Flats",
       "other_shoes": "Other shoes",
       "blazer": "Blazer",
       "jacket": "Jacket",
@@ -197,6 +212,8 @@
       "suit": "Suit",
       "tuxedo": "Tuxedo",
       "matching_set": "Matching set",
+      "dress": "Dress",
+      "jumpsuit": "Jumpsuit",
       "other_set": "Other set",
       "belt": "Belt",
       "tie": "Tie",
@@ -234,7 +251,8 @@
       "brand": "Brand",
       "brandPlaceholder": "Optional",
       "cancel": "Cancel",
-      "save": "Save Item"
+      "save": "Save Item",
+      "showAllTypes": "Show all types"
     },
     "errors": {
       "limitReached": "Daily analysis limit reached (5/5). Please try again tomorrow.",
@@ -377,6 +395,10 @@
       "review": {
         "title": "All set?",
         "subtitle": "Review and tweak before saving."
+      },
+      "stylePreference": {
+        "title": "Which pieces should John consider for you?",
+        "subtitle": "This sets which garment types appear in your wardrobe and how John builds your looks."
       }
     },
     "archetypes": {
@@ -440,6 +462,11 @@
       "bigPrints": "Big prints",
       "largeLogos": "Large logos",
       "formalwear": "Too formal"
+    },
+    "stylePreference": {
+      "menswear": "Menswear",
+      "womenswear": "Womenswear",
+      "both": "Both"
     }
   },
   "notFound": {
@@ -488,6 +515,10 @@
       "shoes": "shoes",
       "outerwear": "jacket",
       "accessories": "accessory"
+    },
+    "shopAudience": {
+      "menswear": "men's",
+      "womenswear": "women's"
     }
   }
 }

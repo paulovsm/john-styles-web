@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     try {
         const { uid } = await requireAuth(req);
 
-        const { message, userProfile, wardrobeItems, chatHistory } = req.body || {};
+        const { message, language, userProfile, wardrobeItems, chatHistory } = req.body || {};
         validateText(message, 'message');
 
         await consumeUsage(uid, 'chat');
@@ -49,6 +49,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 userId: uid,
                 message,
+                language: typeof language === 'string' && language.trim() ? language.trim().slice(0, 10) : 'pt',
                 userProfile,
                 wardrobeItems: wardrobeWithoutImages,
                 chatHistory,

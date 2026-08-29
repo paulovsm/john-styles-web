@@ -80,6 +80,36 @@ Client-side (`VITE_` — vão no bundle; chaves Firebase web não são segredo):
    do bucket o `fetch` é bloqueado e a UI mostra "Falha de conexão ao gerar o look".
 4. Se usar a agenda, adicione `https://<seu-domínio>/api/calendar-callback` aos redirect URIs do OAuth Client.
 
+## Login social e o Safari do iPhone
+
+O login usa **popup** (`signInWithPopup`) em todos os navegadores; o fluxo de **redirect**
+só entra em webviews de apps (Instagram, Facebook, LinkedIn), onde o `window.open` é
+bloqueado — e como fallback automático se o popup falhar.
+
+O motivo é o ITP do Safari: ele particiona o storage de `<projeto>.firebaseapp.com`
+quando o app é servido em outro domínio. O estado que o `signInWithRedirect` deixa
+gravado some na volta do provedor, o `getRedirectResult` não acha nada, a sessão nunca
+começa e o usuário volta para a tela de login em loop. No Safari do Mac isso não
+aparecia porque lá o app já usava popup.
+
+Para o redirect também funcionar no iOS (necessário nas webviews de apps), o handler de
+auth precisa ser servido **no mesmo domínio** do app. O proxy já está em
+[`vercel.json`](vercel.json) (`/__/auth/(.*)` → `https://<projeto>.firebaseapp.com/__/auth/$1`);
+falta a parte de console, que não dá para versionar:
+
+1. `VITE_FIREBASE_AUTH_DOMAIN=fleekauthority.com` nas env vars de produção (é build-time:
+   exige novo build/deploy).
+2. Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client: adicionar
+   `https://fleekauthority.com/__/auth/handler` aos **Authorized redirect URIs**.
+3. Mesma troca de redirect URI no app do Facebook e no Services ID da Apple, se esses
+   provedores estiverem ativos.
+4. Firebase Console → Authentication → Settings → Authorized domains: `fleekauthority.com`
+   presente.
+
+Sem os passos 2 e 3, trocar o `authDomain` derruba o login — faça os dois na mesma janela.
+Bônus: a tela de consentimento do Google passa a mostrar o domínio próprio em vez de
+`john-styles-web-78cc0.firebaseapp.com`.
+
 ## Blog e CMS
 
 - Blog público: `/blog` e `/blog/:slug`.
