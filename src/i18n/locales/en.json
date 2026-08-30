@@ -258,7 +258,10 @@
       "limitReached": "Daily analysis limit reached (5/5). Please try again tomorrow.",
       "analysisFailed": "Failed to analyze the image. Please try again.",
       "saveFailed": "Failed to save the item. Please try again.",
-      "typeRequired": "Select the garment type before saving."
+      "typeRequired": "Select the garment type before saving.",
+      "unsupportedImageType": "Unsupported format. Use a JPG, PNG or WebP image.",
+      "imageTooLarge": "The image is larger than 8 MB. Choose a smaller file.",
+      "imageProcessingFailed": "We could not process this image. Try another JPG, PNG or WebP file."
     },
     "exploreSamples": "Explore with sample pieces",
     "exploreSamplesHint": "Sample pieces to try the app — remove them anytime.",

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import { resolveGarmentType } from '../../utils/garmentTaxonomy';
 import { useHorizontalCarousel } from '../../hooks/useHorizontalCarousel';
+import { getWardrobeThumbnailUrl } from '../../utils/imageUtils';
 
 /**
  * Full-width strip of the user's wardrobe photos on the dashboard. Horizontal
@@ -53,7 +54,7 @@ export default function WardrobeCarousel() {
                                 <Link key={item.id} to="/wardrobe" className="snap-start shrink-0 w-40">
                                     <div className="aspect-[3/4] rounded-card overflow-hidden bg-grey-light border border-grey-light">
                                         <img
-                                            src={item.image}
+                                            src={getWardrobeThumbnailUrl(item)}
                                             alt={item.name}
                                             className="w-full h-full object-cover"
                                             loading="lazy"

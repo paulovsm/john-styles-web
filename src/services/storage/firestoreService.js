@@ -323,6 +323,29 @@ class FirestoreService {
     }
 
     /**
+     * Upload the small WebP variant used by wardrobe grids and carousels.
+     * @param {Blob|File} thumbnailBlob - 320px WebP thumbnail
+     * @param {string} itemId - Item ID
+     * @param {string} userId - User ID
+     * @returns {Promise<string>} Download URL of uploaded thumbnail
+     */
+    async uploadThumbnail(thumbnailBlob, itemId, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) {
+                throw new Error('Cannot upload thumbnail: user not authenticated');
+            }
+
+            const storageRef = ref(storage, `users/${uid}/wardrobe/${itemId}-thumb.webp`);
+            await uploadBytes(storageRef, thumbnailBlob, { contentType: 'image/webp' });
+            return await getDownloadURL(storageRef);
+        } catch (error) {
+            console.error('Error uploading thumbnail to Storage:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Delete an image from Firebase Storage
      * @param {string} itemId - Item ID
      * @param {string} userId - User ID
@@ -336,8 +359,15 @@ class FirestoreService {
                 return false;
             }
 
-            const storageRef = ref(storage, `users/${uid}/wardrobe/${itemId}.jpg`);
-            await deleteObject(storageRef);
+            const storageRefs = [
+                ref(storage, `users/${uid}/wardrobe/${itemId}.jpg`),
+                ref(storage, `users/${uid}/wardrobe/${itemId}-thumb.webp`),
+            ];
+            const results = await Promise.allSettled(storageRefs.map((storageRef) => deleteObject(storageRef)));
+            const unexpectedFailure = results.find((result) =>
+                result.status === 'rejected' && result.reason?.code !== 'storage/object-not-found');
+
+            if (unexpectedFailure) throw unexpectedFailure.reason;
 
             return true;
         } catch (error) {

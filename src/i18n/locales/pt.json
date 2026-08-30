@@ -258,7 +258,10 @@
       "limitReached": "Limite diário de análise atingido (5/5). Por favor, tente novamente amanhã.",
       "analysisFailed": "Falha ao analisar a imagem. Tente novamente.",
       "saveFailed": "Falha ao salvar o item. Tente novamente.",
-      "typeRequired": "Selecione o tipo da peça antes de salvar."
+      "typeRequired": "Selecione o tipo da peça antes de salvar.",
+      "unsupportedImageType": "Formato não aceito. Use uma imagem JPG, PNG ou WebP.",
+      "imageTooLarge": "A imagem ultrapassa 8 MB. Escolha um arquivo menor.",
+      "imageProcessingFailed": "Não foi possível processar esta imagem. Tente outro arquivo JPG, PNG ou WebP."
     },
     "exploreSamples": "Explorar com peças de exemplo",
     "exploreSamplesHint": "Peças de exemplo para testar o app — você pode removê-las quando quiser.",

@@ -1,10 +1,26 @@
-import { describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
+
+const storageMocks = vi.hoisted(() => ({
+    ref: vi.fn((_storage, path) => ({ path })),
+    uploadBytes: vi.fn(),
+    getDownloadURL: vi.fn((storageRef) => Promise.resolve(`https://storage.test/${storageRef.path}`)),
+    deleteObject: vi.fn(),
+}));
 
 // The module pulls in the Firebase SDK at import time; the unit under test is
 // pure, so stub the app/config module rather than booting Firebase.
-vi.mock('../auth/firebaseConfig', () => ({ db: {}, storage: {}, auth: {} }));
+vi.mock('../auth/firebaseConfig', () => ({ db: {}, storage: {}, auth: { currentUser: null } }));
+vi.mock('firebase/storage', () => storageMocks);
 
-import { isUnchanged } from './firestoreService';
+import { firestoreService, isUnchanged } from './firestoreService';
+
+beforeEach(() => {
+    vi.clearAllMocks();
+    storageMocks.ref.mockImplementation((_storage, path) => ({ path }));
+    storageMocks.uploadBytes.mockResolvedValue(undefined);
+    storageMocks.getDownloadURL.mockImplementation((storageRef) => Promise.resolve(`https://storage.test/${storageRef.path}`));
+    storageMocks.deleteObject.mockResolvedValue(undefined);
+});
 
 /**
  * isUnchanged() decides whether a wardrobe write can be skipped during sync.
@@ -48,5 +64,32 @@ describe('isUnchanged', () => {
     it('never throws — an unusable input means "write it"', () => {
         expect(isUnchanged(item, 'not-an-object')).toBe(false);
         expect(isUnchanged(Object.create(null), undefined)).toBe(false);
+    });
+});
+
+describe('wardrobe image storage', () => {
+    it('uploads thumbnails to a separate WebP object', async () => {
+        const thumbnail = new Blob(['thumb'], { type: 'image/webp' });
+
+        const url = await firestoreService.uploadThumbnail(thumbnail, 'item-1', 'user-1');
+
+        expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1-thumb.webp');
+        expect(storageMocks.uploadBytes).toHaveBeenCalledWith(
+            { path: 'users/user-1/wardrobe/item-1-thumb.webp' },
+            thumbnail,
+            { contentType: 'image/webp' },
+        );
+        expect(url).toBe('https://storage.test/users/user-1/wardrobe/item-1-thumb.webp');
+    });
+
+    it('deletes both the original and thumbnail and tolerates a missing legacy thumbnail', async () => {
+        storageMocks.deleteObject
+            .mockResolvedValueOnce(undefined)
+            .mockRejectedValueOnce({ code: 'storage/object-not-found' });
+
+        await expect(firestoreService.deleteImage('item-1', 'user-1')).resolves.toBe(true);
+        expect(storageMocks.deleteObject).toHaveBeenCalledTimes(2);
+        expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1.jpg');
+        expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1-thumb.webp');
     });
 });
