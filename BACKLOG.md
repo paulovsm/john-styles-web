@@ -3,8 +3,9 @@
 Plain-language list of what's left to do. Estimates are hands-on coding time
 (review and verification add overhead on top).
 
-Last updated on 2026-08-28 after the womenswear support pass and preparation of
-the wardrobe thumbnail optimization for review.
+Last updated on 2026-09-06 after establishing Fleek Authority as the place for
+style transformation, John Styles as its expert solution, and mobile-first as
+the approval order for copy, imagery and interface.
 
 ---
 
@@ -21,8 +22,10 @@ the wardrobe thumbnail optimization for review.
 | #18 | Fleek Authority design guide and development rules | merged |
 | #19 | **Visual + Mobile Tier 4** — contrast, labels, keyboard access, skip link, reduced motion and mobile-safe carousels | merged |
 | #20 | Canonical garment taxonomy — 6 categories and 40 types, including composite suits and sets | merged |
-| #21 | **Womenswear support** — new garment types (dress, skirt, jumpsuit, etc.), onboarding "styling register" choice, shopping-query wording no longer assumes menswear | low |
-| `feat/wardrobe-thumbnails` | 320px WebP thumbnails, legacy fallback, early file validation and paired Storage cleanup | in review |
+| #21 | **Womenswear support** — new garment types (dress, skirt, jumpsuit, etc.), onboarding "styling register" choice, shopping-query wording no longer assumes menswear | merged |
+| #22 | Fix Google login on Safari for iPhone | merged |
+| #23 | 320px WebP thumbnails, legacy fallback, early file validation and paired Storage cleanup | merged |
+| `feat/universal-stylist-experience` | Full universal stylist pilot under `/teste-novo-app`; Fleek-led narrative, John as expert solution, high-impact monochrome hero and mobile-first CTA system | implemented locally; review pending |
 
 ---
 
@@ -38,15 +41,26 @@ does **not** do yet:
   Needs someone to source and eyeball ~8-10 photos.
   _Est: ~30–45 min once photos are sourced._
 - **The partner store doesn't carry womenswear (confirmed 2026-08-24).** The
-  chat assistant already handles this honestly — if a woman asks to shop, it
-  says the store doesn't carry it yet instead of showing men's items. Open
-  product decision, not a bug: keep offering "womenswear"/"both" during
-  onboarding as-is (the app still gives styling advice on clothes the user
-  already owns), or hold that option back until the store actually stocks
-  women's items. No code change either way until that's decided.
+  universal pilot keeps Store and Subscription visible, but labels them as
+  concepts in development and discloses the limited current offer. Do not turn
+  this into a comprehensive-shopping promise until catalog and operations exist.
 - **Try-on quality on women's garments is unverified** — dresses, skirts and
   jumpsuits haven't been tried through the try-on feature yet. Needs a manual
   pass with real photos once the workflow above is live.
+
+## Universal pilot — remaining external/manual work
+
+- Approve and license a canonical John portrait, including 1:1 and editorial
+  crops. `JohnStyles.jpg` remains a clearly labeled digital representation in
+  the pilot until that decision is made.
+- Update the n8n workflow to consume the new `experience` field and select the
+  universal system message. The app payload is versioned; the remote workflow
+  still needs deployment and conversational QA.
+- Source and verify a women's sample closet before enabling the sample shortcut
+  for `womenswear` profiles.
+- Validate try-on with real women's garments and varied body types.
+- Decide when the pilot can be indexed and whether it replaces the root
+  experience; it remains `noindex, nofollow` until then.
 
 ---
 
@@ -164,8 +178,10 @@ _Est: multi-day; product decision first._
 - **History vs Gallery consolidation** — dropped: they are genuinely distinct
   (History = chat log, Gallery = saved try-on looks; "Recent looks" is a preview
   of the Gallery, which is a normal pattern).
-- **More landing testimonials**, **AI-persona clarity** (the human photo labelled
-  "John Styles") — dropped by request.
+- **More landing testimonials** — dropped by request.
+- **AI-persona clarity** — the earlier decision to defer this was superseded on
+  2026-09-01. The universal pilot now identifies John as a digital stylist
+  powered by AI and preserves the user's final agency.
 - **Store link "open in new tab"** — dropped: keep the same-tab experience.
 - **Separate mobile-only UI** (instead of responsive) — considered and set aside:
   it means building and maintaining two parallel interfaces. Revisit only for a

@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Google, Facebook, Apple, DarkMode, LightMode } from '@mui/icons-material';
 import { useTheme } from '../contexts/ThemeContext';
 import IconButton from '../components/common/IconButton';
+import JohnSignature from '../components/common/JohnSignature';
+import { useExperience } from '../experience/ExperienceContext';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 
 export default function LoginPage() {
     const { loginWithGoogle, loginWithFacebook, loginWithApple, currentUser } = useAuth();
@@ -13,6 +16,13 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { theme, toggleTheme } = useTheme();
+    const experience = useExperience();
+
+    useDocumentMeta({
+        title: experience.isUniversal ? t('experienceV2.auth.metaTitle') : t('app.name'),
+        description: experience.isUniversal ? t('experienceV2.auth.description') : t('app.tagline'),
+        canonical: experience.isUniversal ? '/teste-novo-app/login' : '/login',
+    });
 
     React.useEffect(() => {
         if (currentUser) {
@@ -60,13 +70,21 @@ export default function LoginPage() {
             >
                 {theme === 'dark' ? <LightMode /> : <DarkMode />}
             </IconButton>
-            <div className="max-w-md w-full space-y-8 bg-white-pure p-6 sm:p-10 rounded-xl shadow-lg border border-grey-light">
+            <div className={`max-w-md w-full space-y-8 bg-white-pure p-6 sm:p-10 border border-grey-light ${experience.isUniversal ? 'rounded-lg' : 'rounded-xl shadow-lg'}`}>
                 <div className="text-center">
+                    {experience.isUniversal && (
+                        <span className="inline-flex rounded-full border border-control-border px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-brand-gold-dark">
+                            {t('experienceV2.previewBadge')}
+                        </span>
+                    )}
+                    {experience.isUniversal && (
+                        <JohnSignature className="mt-6 justify-center text-left" />
+                    )}
                     <h1 className="mt-6 text-2xl sm:text-3xl font-serif font-bold text-brand-navy">
-                        {t('app.name')}
+                        {experience.isUniversal ? t('experienceV2.auth.title') : t('app.name')}
                     </h1>
                     <p className="mt-2 text-sm text-grey-medium">
-                        {t('app.tagline')}
+                        {experience.isUniversal ? t('experienceV2.auth.description') : t('app.tagline')}
                     </p>
                 </div>
 
@@ -86,7 +104,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithGoogle)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold rounded-full text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors"
+                        className={`group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors ${experience.isUniversal ? 'rounded' : 'rounded-full'}`}
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Google className="h-5 w-5 text-grey-medium group-hover:text-brand-navy" />
@@ -97,7 +115,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithFacebook)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold rounded-full text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors"
+                        className={`group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors ${experience.isUniversal ? 'rounded' : 'rounded-full'}`}
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             <Facebook className="h-5 w-5 text-blue-600" />
@@ -108,7 +126,7 @@ export default function LoginPage() {
                     <button
                         onClick={() => handleLogin(loginWithApple)}
                         disabled={loading}
-                        className="group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold rounded-full text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors"
+                        className={`group relative w-full flex justify-center items-center min-h-[48px] py-3 px-4 border border-control-border text-sm font-semibold text-grey-dark bg-white-pure hover:bg-grey-light active:bg-grey-light disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-navy transition-colors ${experience.isUniversal ? 'rounded' : 'rounded-full'}`}
                     >
                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                             {/* Theme-aware: a hard-coded black mark is invisible on the dark surface. */}

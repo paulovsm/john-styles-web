@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     }
     try {
         const { uid } = await requireAuth(req);
-        const url = buildAuthUrl(signState(uid));
+        const url = buildAuthUrl(signState(uid, req.body?.returnPath));
         return res.status(200).json({ url });
     } catch (error) {
         if (handleAuthError(res, error)) return;

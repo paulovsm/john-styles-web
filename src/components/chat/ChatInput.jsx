@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Send } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useExperience } from '../../experience/ExperienceContext';
 
 export default function ChatInput({ onSend, disabled }) {
     const [message, setMessage] = useState('');
     const { t } = useTranslation();
+    const experience = useExperience();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -21,7 +23,7 @@ export default function ChatInput({ onSend, disabled }) {
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder={t('chat.placeholder')}
+                    placeholder={experience.isUniversal ? t('experienceV2.chat.placeholder') : t('chat.placeholder')}
                     disabled={disabled}
                     aria-label={t('chat.inputLabel', 'Mensagem para o John Styles')}
                     enterKeyHint="send"

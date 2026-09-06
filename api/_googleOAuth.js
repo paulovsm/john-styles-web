@@ -23,8 +23,15 @@ export function oauthConfigured() {
 }
 
 // --- state signing (so the public callback can trust the uid) ---
-export function signState(uid) {
-    const payload = `${uid}.${Date.now()}`;
+function safeReturnPath(returnPath) {
+    return returnPath === '/teste-novo-app/dashboard'
+        ? returnPath
+        : '/dashboard';
+}
+
+export function signState(uid, returnPath = '/dashboard') {
+    const encodedReturnPath = Buffer.from(safeReturnPath(returnPath)).toString('base64url');
+    const payload = `${uid}.${Date.now()}.${encodedReturnPath}`;
     const sig = crypto
         .createHmac('sha256', process.env.OAUTH_STATE_SECRET || 'dev-secret')
         .update(payload)
@@ -42,10 +49,13 @@ export function verifyState(state) {
         .update(payload)
         .digest('base64url');
     if (sig !== expected) return null;
-    const [uid, ts] = payload.split('.');
+    const [uid, ts, encodedReturnPath] = payload.split('.');
     // Reject states older than 15 minutes.
     if (!uid || Date.now() - Number(ts) > 15 * 60 * 1000) return null;
-    return uid;
+    const returnPath = encodedReturnPath
+        ? Buffer.from(encodedReturnPath, 'base64url').toString('utf8')
+        : '/dashboard';
+    return { uid, returnPath: safeReturnPath(returnPath) };
 }
 
 export function buildAuthUrl(state) {

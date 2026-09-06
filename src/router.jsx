@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage';
 import Loading from './components/common/Loading';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
+import { getCurrentExperience } from './experience/experience';
 
 // Only the landing page is bundled eagerly — it is the first paint for anonymous
 // visitors. Every other route is fetched on demand, so a visitor no longer
@@ -24,6 +25,10 @@ const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const AdminBlogPage = lazy(() => import('./pages/AdminBlogPage'));
+const UniversalLandingPage = lazy(() => import('./pages/UniversalLandingPage'));
+const UniversalSubscriptionPage = lazy(() => import('./pages/UniversalSubscriptionPage'));
+
+const experience = getCurrentExperience();
 
 function RouteFallback() {
     return (
@@ -39,7 +44,9 @@ const withSuspense = (element) => <Suspense fallback={<RouteFallback />}>{elemen
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <LandingPage />,
+        element: experience.isUniversal
+            ? withSuspense(<UniversalLandingPage />)
+            : <LandingPage />,
     },
     {
         path: '/login',
@@ -55,7 +62,9 @@ const router = createBrowserRouter([
     },
     {
         path: '/assinatura',
-        element: withSuspense(<SubscriptionPage />),
+        element: experience.isUniversal
+            ? withSuspense(<UniversalSubscriptionPage />)
+            : withSuspense(<SubscriptionPage />),
     },
     {
         path: '/blog',
@@ -133,6 +142,8 @@ const router = createBrowserRouter([
         path: '*',
         element: withSuspense(<NotFoundPage />),
     },
-]);
+], {
+    basename: experience.basename,
+});
 
 export default router;

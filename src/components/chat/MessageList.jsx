@@ -3,10 +3,12 @@ import MessageItem from './MessageItem';
 import Loading from '../common/Loading';
 import Avatar from '../common/Avatar';
 import { useTranslation } from 'react-i18next';
+import { useExperience } from '../../experience/ExperienceContext';
 
 export default function MessageList({ messages, isTyping, userAvatar }) {
     const messagesEndRef = useRef(null);
     const { t } = useTranslation();
+    const experience = useExperience();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -22,7 +24,14 @@ export default function MessageList({ messages, isTyping, userAvatar }) {
                 <div className="flex items-start space-x-3">
                     <Avatar size="md" src="/JohnStyles.jpg" alt="John Styles" className="bg-brand-gold text-brand-navy" />
                     <div className="flex-1 bg-white-off rounded-lg p-4">
-                        <p className="text-grey-dark">{t('chat.greeting')}</p>
+                        {experience.isUniversal && (
+                            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-brand-gold-dark">
+                                {t('experienceV2.john.role')}
+                            </p>
+                        )}
+                        <p className="text-grey-dark">
+                            {experience.isUniversal ? t('experienceV2.chat.greeting') : t('chat.greeting')}
+                        </p>
                     </div>
                 </div>
             )}

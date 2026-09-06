@@ -6,6 +6,7 @@ import OnboardingPage from './OnboardingPage';
 import { DEFAULT_STYLE_PREFERENCE } from '../utils/garmentTaxonomy';
 
 const updateProfile = vi.fn();
+const experienceState = vi.hoisted(() => ({ isUniversal: false }));
 
 vi.mock('react-i18next', () => ({
     // Second arg is a fallback string on some calls and an interpolation object
@@ -20,6 +21,9 @@ vi.mock('../contexts/UserProfileContext', () => ({
     useUserProfileContext: () => ({ profile: {}, updateProfile }),
 }));
 vi.mock('../services/api/geminiService', () => ({ geminiService: { analyzeProfile: vi.fn() } }));
+vi.mock('../experience/ExperienceContext', () => ({
+    useExperience: () => experienceState,
+}));
 
 /** Walks the wizard to the last step and submits. */
 async function completeWizard(user) {
@@ -34,6 +38,7 @@ describe('OnboardingPage styling register', () => {
     beforeEach(() => {
         updateProfile.mockClear();
         localStorage.clear();
+        experienceState.isUniversal = false;
     });
 
     it('persists the picked styling register to the profile', async () => {
@@ -57,5 +62,18 @@ describe('OnboardingPage styling register', () => {
         expect(updateProfile).toHaveBeenCalledWith(
             expect.objectContaining({ stylePreference: DEFAULT_STYLE_PREFERENCE }),
         );
+    });
+
+    it('offers expanded occasions only in the universal experience', async () => {
+        experienceState.isUniversal = true;
+        const user = userEvent.setup();
+        render(<OnboardingPage />);
+
+        for (let i = 0; i < 3; i += 1) {
+            await user.click(screen.getByRole('button', { name: 'Continuar' }));
+        }
+
+        expect(screen.getByRole('button', { name: 'onboarding.occasionOptions.travel' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'onboarding.occasionOptions.formalEvent' })).toBeInTheDocument();
     });
 });

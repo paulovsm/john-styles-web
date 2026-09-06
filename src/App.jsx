@@ -8,23 +8,26 @@ import { WardrobeProvider } from './contexts/WardrobeContext';
 import { ConversationProvider } from './contexts/ConversationContext';
 import router from './router';
 import SkipLink from './components/common/SkipLink';
+import { ExperienceProvider } from './experience/ExperienceContext';
 
 function App() {
   return (
-    <ThemeProvider>
-      <SkipLink />
-      <ToastProvider>
-        <AuthProvider>
-          <UserProfileProvider>
-            <WardrobeProvider>
-              <ConversationProvider>
-                <RouterProvider router={router} />
-              </ConversationProvider>
-            </WardrobeProvider>
-          </UserProfileProvider>
-        </AuthProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <ExperienceProvider>
+      <ThemeProvider>
+        <SkipLink />
+        <ToastProvider>
+          <AuthProvider>
+            <UserProfileProvider>
+              <WardrobeProvider>
+                <ConversationProvider>
+                  <RouterProvider router={router} />
+                </ConversationProvider>
+              </WardrobeProvider>
+            </UserProfileProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ExperienceProvider>
   );
 }
 

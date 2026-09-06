@@ -7,6 +7,7 @@ import LanguageSelector from '../common/LanguageSelector';
 import IconButton from '../common/IconButton';
 import { useSyncStatus } from '../../hooks/useSyncStatus';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useExperience } from '../../experience/ExperienceContext';
 
 export default function Header() {
     const { currentUser, logout } = useAuth();
@@ -15,6 +16,7 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { isSyncing, syncNow } = useSyncStatus();
     const { theme, toggleTheme } = useTheme();
+    const experience = useExperience();
     const [accountOpen, setAccountOpen] = useState(false);
     const accountRef = useRef(null);
     const accountTriggerRef = useRef(null);
@@ -98,6 +100,11 @@ export default function Header() {
                             <Link to="/" className="flex min-h-11 items-center text-2xl font-serif font-bold text-brand-navy" aria-label={t('common.homeLabel', 'Fleek Authority — início')}>
                                 <img src="/FA_Icon_White.avif" alt="" className="h-8 w-8 mr-2 invert dark:invert-0" />
                                 John Styles
+                                {experience.isUniversal && (
+                                    <span className="ml-2 hidden rounded-full border border-control-border px-2 py-1 text-[9px] font-extrabold uppercase tracking-widest text-brand-gold-dark sm:inline-flex">
+                                        {t('experienceV2.previewBadge')}
+                                    </span>
+                                )}
                             </Link>
                         </div>
                         <div className="hidden lg:ml-6 lg:flex lg:space-x-1 xl:space-x-3">

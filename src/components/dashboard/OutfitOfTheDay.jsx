@@ -11,11 +11,13 @@ import { getWardrobeThumbnailUrl } from '../../utils/imageUtils';
 import { preferStylesForFormality } from '../../hooks/useDailyContext';
 import { calendarService } from '../../services/api/calendarService';
 import { useHorizontalCarousel } from '../../hooks/useHorizontalCarousel';
+import { useExperience } from '../../experience/ExperienceContext';
 
 export default function OutfitOfTheDay({ weather, dailyContext }) {
     const { allItems } = useWardrobeContext();
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const experience = useExperience();
 
     const cold = weather?.status === 'ready' && weather.cold;
     const calendarConnected = dailyContext?.connected;
@@ -48,7 +50,11 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                         <div className="bg-brand-gold/15 p-2 rounded-full mr-3">
                             <AutoAwesome className="text-brand-gold-dark" />
                         </div>
-                        <Card.Title as="h2" className="truncate">{t('dashboard.outfitOfDay', 'Look do dia')}</Card.Title>
+                        <Card.Title as="h2" className="truncate">
+                            {experience.isUniversal
+                                ? t('experienceV2.dashboard.recommendationTitle')
+                                : t('dashboard.outfitOfDay', 'Look do dia')}
+                        </Card.Title>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
                         {weather?.status === 'ready' && (
@@ -120,6 +126,16 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                             <p className="mt-3 text-xs text-brand-gold-dark">
                                 {t('dashboard.weatherColdTip', 'Está frio — incluímos uma peça de agasalho no look.')}
                             </p>
+                        )}
+                        {experience.isUniversal && (
+                            <div className="mt-4 border-l-[3px] border-brand-gold bg-brand-gold/10 px-3 py-3">
+                                <strong className="block text-xs font-bold text-brand-navy">
+                                    {t('experienceV2.dashboard.whyTitle')}
+                                </strong>
+                                <p className="mt-1 text-xs leading-5 text-grey-medium">
+                                    {t('experienceV2.dashboard.whyDescription')}
+                                </p>
+                            </div>
                         )}
                     </>
                 )}

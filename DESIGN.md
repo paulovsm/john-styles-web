@@ -4,9 +4,9 @@
 >
 > **Status:** fonte de verdade para novos desenvolvimentos de interface
 >
-> **Versão:** 1.1
+> **Versão:** 1.5
 >
-> **Última atualização:** 22 de agosto de 2026
+> **Última atualização:** 6 de setembro de 2026
 
 ## 1. Como usar este documento
 
@@ -63,8 +63,9 @@ decisões de produto, conteúdo, layout, interação, implementação e testes.
 
 ### Propósito
 
-Transformar a maneira como homens profissionais se apresentam ao mundo,
-impulsionando sua confiança e sua jornada de crescimento com estilo.
+Transformar a maneira como mulheres e homens se apresentam ao mundo,
+ampliando confiança, autenticidade e liberdade de escolha em todos os contextos
+da vida.
 
 ### Crença central
 
@@ -72,15 +73,43 @@ impulsionando sua confiança e sua jornada de crescimento com estilo.
 
 ### Promessa digital
 
-John Styles transforma decisões de vestuário em uma experiência clara,
-inteligente e personalizada. Tecnologia deve reduzir esforço e ampliar
-confiança; não deve aparecer como complexidade.
+A Fleek Authority é o lugar em que a pessoa transforma o próprio estilo por
+meio de curadoria, ferramentas e soluções conectadas. John Styles é o expert
+digital que a Fleek traz para resolver um problema concreto: decidir o que
+vestir a partir do contexto e do guarda-roupa real. Tecnologia deve reduzir
+esforço e ampliar confiança; não deve aparecer como complexidade nem como o
+assunto principal da experiência.
+
+### Arquitetura de protagonismo
+
+A experiência organiza quatro papéis que não devem ser confundidos:
+
+1. **Fleek Authority é a marca, o destino e o método.** Sustenta a visão, a
+   curadoria, a loja, as ferramentas e a credibilidade da experiência.
+2. **John Styles é a solução especializada da Fleek.** Como Chief Stylist
+   Officer e stylist digital, é a presença visível que escuta, interpreta o
+   contexto, recomenda e explica, sem substituir a marca inteira.
+3. **A pessoa usuária é a autora.** Define intenção, limites e decisão final;
+   nunca aparece como personagem passiva de uma transformação imposta.
+4. **A inteligência artificial é o motor declarado.** Amplia escala e contexto,
+   mas não substitui a autonomia da pessoa nem deve fingir ser humana.
+
+Em pontos de decisão — entrada, onboarding, recomendação, chat e revisão do
+look — John deve ser reconhecível por nome, função e voz. Em comunicação
+institucional e comercial, a Fleek abre a narrativa e John concretiza como a
+promessa é entregue. A pessoa usuária permanece como protagonista do resultado.
 
 ### Público principal
 
-Homens de 25 a 50 anos, profissionais, líderes ou empreendedores, que valorizam
-praticidade, confiança, tecnologia e diferenciação. Querem transmitir
-autoridade com naturalidade e não desejam perder tempo decidindo o que vestir.
+Mulheres e homens adultos que valorizam praticidade, confiança, tecnologia e
+expressão pessoal. Querem tomar decisões de estilo com mais clareza no trabalho,
+no cotidiano, em viagens, encontros, celebrações e outras ocasiões relevantes,
+sem perder tempo nem seguir regras que ignoram sua identidade.
+
+A experiência original em `/` permanece como expressão legada focada em estilo
+profissional. A visão universal é validada primeiro em `/teste-novo-app`; novos
+padrões compartilhados devem seguir a visão universal sem alterar a landing
+legada incidentalmente.
 
 ### Arquétipo
 
@@ -101,9 +130,12 @@ dois autoriza linguagem esotérica, exagerada, agressiva ou humilhante.
 
 ### Território verbal
 
-Priorize: estilo, autoridade, confiança, transformação, impacto, estratégia,
-movimento, presença, sofisticação, performance, carreira, posicionamento,
-conveniência, inteligência, design e atitude.
+Priorize: estilo, look, plano, ocasião, agenda, repertório, dress code,
+autoridade, confiança, impacto, presença, sofisticação, conveniência,
+inteligência e atitude.
+
+Evite usar “direção” como promessa principal ou repetir termos abstratos como
+transformação, jornada e melhor versão sem demonstrar uma entrega concreta.
 
 ---
 
@@ -154,7 +186,9 @@ intenção de reutilização.
 ### 4.1 Direção estética
 
 Minimalista, urbana, editorial e premium. A base é “tinta e papel”: alto
-contraste, tipografia forte, superfícies limpas e fotografia com presença.
+contraste, tipografia forte, superfícies planas e fotografia com presença. A
+interface alterna faixas brancas e quase pretas; hierarquia nasce de escala,
+espaço, linha fina e mudança de polaridade — nunca de decoração.
 
 O produto não deve parecer:
 
@@ -182,6 +216,19 @@ Use os tokens; não copie valores hexadecimais para JSX ou CSS novo.
 estratégia de marca. Tons quentes adicionais aparecem em páginas editoriais,
 mas não devem entrar no produto sem antes se tornarem tokens semânticos.
 
+#### Extensão semântica do piloto universal
+
+Em `html[data-experience='universal']`, o sistema permanece monocromático:
+canvas branco `#FFFFFF`, painel profundo `#0C0C0C`, conteúdo carbono `#1A211E`,
+apoio `#606562`, superfície névoa `#EEF1F0` e linhas `#E0E0E0` / `#CCCFCD`.
+Preto ou branco, conforme o contraste, são as únicas cores de ação.
+
+O vermelho `#CC2E39` pode aparecer como **pontuação rara**, no máximo uma vez
+por viewport: uma linha curta, um estado editorial ou um detalhe da assinatura
+de John. Não é cor de botão, link recorrente, card, seção ou navegação. Papel
+quente, vinho, verde-oliva, gradientes e dourado não fazem parte da interface
+universal aprovada.
+
 #### Cores de estado
 
 | Estado | Token Tailwind | Valor atual | Regra |
@@ -197,6 +244,8 @@ rótulo. Valide contraste sobre a superfície real antes de entregar.
 #### Regras de cor
 
 - Use preto, branco e cinzas como linguagem dominante.
+- No piloto universal, mantenha canvas, superfícies, navegação e CTAs em preto,
+  branco e cinzas; o vermelho é apenas pontuação rara.
 - Reserve cores de estado para significado funcional.
 - Não introduza gradientes de marca, dourado decorativo ou neon.
 - Evite grandes áreas de cinza médio; prefira contraste claro entre fundo e
@@ -252,6 +301,7 @@ Use a escala base de 4 px já configurada no Tailwind:
 | `8` | 32 px | Separação de blocos |
 | `12` | 48 px | Seções compactas |
 | `16` | 64 px | Seções principais |
+| `20` | 80 px | Ritmo editorial entre seções |
 
 Evite valores arbitrários. Quando um valor novo for necessário em mais de um
 lugar, transforme-o em token antes de replicá-lo.
@@ -262,7 +312,8 @@ lugar, transforme-o em token antes de replicá-lo.
   breakpoints `min-width`.
 - Defina a ordem semântica do DOM para mobile. Não use CSS apenas para inverter
   visualmente uma ordem que ficaria incoerente para teclado ou leitor de tela.
-- Conteúdo editorial pode usar container de até **1140 px**.
+- Conteúdo editorial pode usar container de até **1280 px**; composições split
+  e imagens full-bleed podem chegar a **1440 px**.
 - Texto corrido deve ficar entre **600 e 780 px** para preservar leitura.
 - Use uma coluna no mobile e expanda progressivamente.
 - Mantenha padding lateral mínimo de 16 px no mobile e 24–32 px em telas
@@ -277,15 +328,17 @@ lugar, transforme-o em token antes de replicá-lo.
 
 ### 4.6 Forma, borda e elevação
 
-- Cards padrão: raio `9px`, borda `#E7E7E4` e sombra
-  `0 18px 48px rgba(0, 0, 0, 0.06)`.
-- Botões principais: formato pill (`999px`) quando a ação é curta.
-- Inputs: raio moderado, atualmente `6–10px`; mantenha o mesmo raio dentro de
-  um fluxo.
-- Cards editoriais e imagens podem usar 18–20 px quando a composição exigir
-  maior presença visual.
-- Evite empilhar borda, sombra forte e fundo contrastante no mesmo elemento.
-- Elevação comunica hierarquia ou interação, não decoração.
+- Unidade visual base: `4px`.
+- Botões, inputs e controles de navegação: raio `4px`.
+- Cards e imagens contidas: raio `8px`.
+- Badges e filtros: pill (`999px`), somente quando o formato comunica categoria
+  ou estado — não como linguagem padrão de botões.
+- Imagem em hero split é full-bleed e sem raio.
+- Cards usam espaço, superfície neutra ou borda hairline; não usam sombra.
+- Não existe eixo de elevação decorativo no piloto universal. Modais podem usar
+  overlay para foco, mas o conteúdo continua plano.
+- Não empilhe borda, fundo contrastante e outro efeito de separação no mesmo
+  elemento.
 
 ### 4.7 Iconografia
 
@@ -303,18 +356,32 @@ A fotografia deve transmitir presença, ambição e autenticidade.
 
 Prefira:
 
-- homens profissionais em contextos urbanos reais;
+- mulheres e homens com protagonismo equivalente em contextos urbanos reais;
+- trabalho, cotidiano, viagens, encontros, celebrações e lazer;
 - postura segura, expressão natural e styling intencional;
 - composição editorial com contraste e espaço negativo;
 - diversidade compatível com o público real;
 - peças bem enquadradas, iluminadas e fáceis de reconhecer;
 - imagens otimizadas (`AVIF` ou `WebP`) e com dimensões adequadas ao uso.
 
+Para imagens de hero:
+
+- componha e aprove primeiro o recorte vertical entre `4:5` e `9:11` em 360 px;
+- mantenha rosto, expressão e elementos essenciais do look no centro seguro de
+  70% da imagem;
+- use enquadramento próximo, contraste claro entre sujeito e fundo e gesto com
+  presença para produzir impacto imediato em telas pequenas;
+- valide depois os recortes de 768, 1024 e 1440 px sem trocar a história da
+  imagem ou cortar o protagonismo de uma das pessoas;
+- em conexões móveis, o arquivo entregue deve ser otimizado e não pode depender
+  do original de alta resolução para parecer nítido.
+
 Evite:
 
 - banco de imagem corporativo genérico;
 - estética de catálogo barata ou fundo visualmente poluído;
 - poses artificiais de “executivo de sucesso”;
+- estereótipos de gênero, corpos idealizados ou papéis passivos;
 - filtros pesados que alterem a cor das roupas;
 - usar imagem apenas para preencher espaço;
 - entregar miniaturas a partir do arquivo original em tamanho integral.
@@ -493,7 +560,31 @@ clareza operacional.
 Direta, inteligente e provocativa, com sofisticação e um toque controlado de
 sarcasmo. Deve sempre preservar respeito e utilidade.
 
-### 8.2 Voz de John Styles
+A Fleek fala como o lugar em que o estilo se transforma: apresenta o benefício,
+organiza o ecossistema e convida a pessoa a agir. John entra na narrativa como
+o expert que torna essa promessa prática. A marca não deve reduzir toda a sua
+comunicação a apresentar John, e John não deve ser tratado como sinônimo da
+Fleek Authority.
+
+### 8.2 Construção da mensagem
+
+Use frases naturais e completas, com uma ideia principal por título. Evite
+sequências artificiais de slogans curtos como “Frase de impacto. Nova frase de
+impacto.”, antíteses fragmentadas e pontos finais usados apenas para criar
+dramaticidade. Ritmo pode vir de sintaxe, contraste de ideias e escolha de
+palavras, sem transformar toda seção em campanha publicitária.
+
+Hierarquia preferencial:
+
+1. **Benefício para a pessoa:** o que muda na decisão ou no repertório dela.
+2. **Papel da Fleek:** o ambiente, a curadoria e as soluções que viabilizam a
+   transformação.
+3. **Papel de John:** o expert digital que interpreta contexto e resolve a
+   escolha de estilo.
+4. **Agência e confiança:** a recomendação é explicável e a decisão continua
+   com a pessoa.
+
+### 8.3 Voz de John Styles
 
 John é o **Chief Stylist Officer** e a voz digital da marca: confiante, perspicaz
 e eficiente. A referência “Dr. House encontra James Bond” significa presença e
@@ -505,6 +596,8 @@ John deve:
 - explicar brevemente o impacto;
 - antecipar contexto quando os dados permitirem;
 - encerrar com uma ação útil;
+- falar como alguém que já domina o assunto, sem narrar o próprio processo;
+- usar observações afiadas e concretas com parcimônia;
 - adaptar a linguagem ao idioma e ao nível de familiaridade do usuário.
 
 John não deve:
@@ -513,20 +606,49 @@ John não deve:
 - prometer resultados profissionais ou sociais garantidos;
 - usar sarcasmo em erros, cobrança, privacidade ou suporte;
 - transformar toda mensagem em slogan;
+- depender de “direção”, “jornada”, “transformação” ou “melhor versão” para
+  parecer sofisticado;
 - escrever parágrafos longos quando uma decisão curta resolve.
 
-### 8.3 Tom por contexto
+Estrutura preferencial da fala de John:
 
-| Contexto | Tom | Exemplo de direção |
+1. **Leitura:** reconheça o plano ou o problema em uma frase.
+2. **Escolha:** recomende uma combinação ou ação sem hesitação artificial.
+3. **Razão:** explique o principal porquê em linguagem simples.
+4. **Ajuste:** ofereça uma variável útil — formalidade, conforto, clima ou
+   impressão — em vez de uma pergunta genérica.
+
+### 8.4 Assinatura de John na interface
+
+Use o componente compartilhado `JohnSignature` nos momentos em que a presença
+do stylist melhora orientação ou confiança. A assinatura combina retrato, nome
+e cargo, sem simular uma pessoa humana escondendo o uso de IA.
+
+- O primeiro contato deve identificar John como **stylist digital com
+  inteligência artificial**.
+- Recomendações importantes devem incluir uma justificativa curta — o padrão
+  “Por que funciona”.
+- A presença de John deve orientar o próximo passo, não competir com a tarefa
+  principal nem transformar cada tela em publicidade.
+- O retrato oficial precisa de uma fonte canônica, direitos de uso confirmados,
+  enquadramento consistente e variantes adequadas para 1:1 e editorial. Enquanto
+  isso não for aprovado, `JohnStyles.jpg` é uma representação provisória e não
+  deve ser descrita como fotografia de uma pessoa real.
+- Textos e acessibilidade devem preservar a transparência: John é uma persona de
+  produto operada por IA; a pessoa usuária mantém a decisão final.
+
+### 8.5 Tom por contexto
+
+| Contexto | Tom | Exemplo |
 |---|---|---|
-| Marketing | Provocativo e aspiracional | “Seu estilo fala antes de você.” |
+| Marketing | Transformador e concreto | “Transforme seu estilo para tudo o que você vive.” |
 | Recomendação | Confiante e explicativo | “Este blazer aumenta a formalidade sem pesar o look.” |
-| Onboarding | Direto e encorajador | “Conte onde você quer chegar. John cuida do resto.” |
+| Onboarding | Direto e encorajador | “Antes do primeiro look, John precisa conhecer você.” |
 | Ação concluída | Breve e positivo | “Peça adicionada. Seu próximo look ficou mais inteligente.” |
 | Erro | Calmo e acionável | “Não foi possível enviar a foto. Tente uma imagem JPG ou PNG menor.” |
 | Privacidade | Sóbrio e transparente | Explique dado, finalidade, retenção e controle sem humor. |
 
-### 8.4 Microcopy
+### 8.6 Microcopy
 
 - Prefira voz ativa.
 - Use frases curtas.
@@ -535,6 +657,17 @@ John não deve:
 - Não use “Oops”, “algo deu errado” ou “erro desconhecido” sem orientação.
 - Não use pontuação excessiva, emoji decorativo ou urgência artificial.
 - Preserve paridade de sentido entre português, inglês e espanhol.
+
+### 8.7 CTAs em hero mobile
+
+- A ação principal e a secundária formam um conjunto visual coerente, com a
+  mesma altura mínima e diferença de prioridade dada por preenchimento e borda.
+- Em 360 px, use uma coluna e largura total; só passe para linha quando houver
+  espaço real para rótulos completos.
+- Não misture botão preenchido com link solto quando ambos representam decisões
+  equivalentes no mesmo bloco.
+- Textos de confiança ficam abaixo do conjunto, separados por espaço ou uma
+  única linha neutra; o acento vermelho não deve parecer continuação do botão.
 
 ---
 
@@ -751,8 +884,13 @@ planejamento.
 
 - **Brand Strategy FLEEK AUTHORITY — Round #1:** propósito, público, arquétipo,
   personalidade, identidade visual, tom de voz e John Styles.
+- **DESIGN (1).md, referência fornecida em 6 de setembro de 2026:** disciplina
+  monocromática, alternância editorial, escala de 4 px, raios 4/8, bordas
+  hairline e ausência de sombras. Nomes, componentes e identidade da marca de
+  referência não são copiados; os princípios foram reinterpretados para Fleek.
 - `src/assets/styles/global.css`: tokens semânticos e regras globais.
 - `tailwind.config.js`: tipografia, cores, espaçamento, radius, sombra e motion.
 - `src/components/common/`: componentes fundamentais.
 - `BACKLOG.md`: auditorias, decisões e dívidas conhecidas.
-- Landing, Empresas e Assinatura: expressão editorial já implementada.
+- Landing, Empresas, Assinatura e piloto universal: expressão editorial já
+  implementada.

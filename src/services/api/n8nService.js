@@ -1,5 +1,6 @@
 import i18n from '../../i18n/config';
 import { authFetch } from './authFetch';
+import { getCurrentExperience } from '../../experience/experience';
 
 /**
  * Chat service. Talks to our authenticated /api/chat proxy, which forwards to
@@ -13,6 +14,7 @@ export const n8nService = {
                 method: 'POST',
                 body: JSON.stringify({
                     message,
+                    experience: getCurrentExperience().id,
                     // Tell the agent which language to answer in; inferring it from the
                     // message text is unreliable and the sub-agents default to Portuguese.
                     language: i18n.language,

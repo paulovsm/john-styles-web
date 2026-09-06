@@ -9,6 +9,8 @@ import { Close } from '@mui/icons-material';
 import { ARCHETYPES, inferArchetypes } from '../utils/archetypes';
 import { STYLE_PREFERENCES, DEFAULT_STYLE_PREFERENCE } from '../utils/garmentTaxonomy';
 import { STORAGE_KEYS } from '../services/storage/localStorageService';
+import { useExperience } from '../experience/ExperienceContext';
+import JohnSignature from '../components/common/JohnSignature';
 
 // Option catalogs. `value` is the canonical (PT) token stored on the profile so
 // it matches the wardrobe/sample color names; the label is translated via i18n.
@@ -18,10 +20,17 @@ const COLORS = [
     { id: 'brown', value: 'Marrom' }, { id: 'green', value: 'Verde' }, { id: 'red', value: 'Vermelho' },
     { id: 'wine', value: 'Vinho' }, { id: 'pink', value: 'Rosa' }, { id: 'purple', value: 'Roxo' },
 ];
-const OCCASIONS = [
+const BASE_OCCASIONS = [
     { id: 'work', value: 'trabalho' }, { id: 'businessCasual', value: 'casual executivo' },
     { id: 'everyday', value: 'dia a dia' }, { id: 'party', value: 'festa' },
     { id: 'sport', value: 'esporte' }, { id: 'date', value: 'encontro' },
+];
+const UNIVERSAL_OCCASIONS = [
+    ...BASE_OCCASIONS,
+    { id: 'formalEvent', value: 'evento formal' },
+    { id: 'wedding', value: 'casamento ou formatura' },
+    { id: 'travel', value: 'viagem' },
+    { id: 'leisure', value: 'lazer' },
 ];
 const BODY_TYPES = [
     { id: 'athletic', value: 'Atlético' }, { id: 'slim', value: 'Magro' }, { id: 'average', value: 'Médio' },
@@ -54,11 +63,11 @@ const canonOne = (value, options) => {
 // picks it up — an abandoned draft must not pre-fill the next user's answers.
 const DRAFT_KEY = STORAGE_KEYS.ONBOARDING_DRAFT;
 
-function initSelection(profile) {
+function initSelection(profile, occasionOptions = BASE_OCCASIONS) {
     return {
         archetypes: profile.styleArchetypes || [],
         favoriteColors: canon(profile.favoriteColors, COLORS),
-        occasions: canon(profile.occasions, OCCASIONS),
+        occasions: canon(profile.occasions, occasionOptions),
         bodyType: canonOne(profile.bodyType, BODY_TYPES),
         dislikes: canon(profile.dislikes, DISLIKES),
         preferredItems: profile.preferredItems || [],
@@ -70,8 +79,10 @@ function initSelection(profile) {
 
 export default function OnboardingPage() {
     const { t } = useTranslation();
+    const experience = useExperience();
     const { profile, updateProfile } = useUserProfileContext();
     const navigate = useNavigate();
+    const occasionOptions = experience.isUniversal ? UNIVERSAL_OCCASIONS : BASE_OCCASIONS;
 
     // Restore an in-progress draft — iOS silently evicts backgrounded tabs, and
     // without this the user loses every answer if they leave mid-flow.
@@ -85,7 +96,7 @@ export default function OnboardingPage() {
     })();
 
     const [step, setStep] = useState(() => draft?.step ?? 0);
-    const [sel, setSel] = useState(() => ({ ...initSelection(profile), ...(draft?.sel || {}) }));
+    const [sel, setSel] = useState(() => ({ ...initSelection(profile, occasionOptions), ...(draft?.sel || {}) }));
 
     // Persist the draft on every change.
     useEffect(() => {
@@ -147,7 +158,7 @@ export default function OnboardingPage() {
                 archetypes: s.archetypes.length ? s.archetypes : inferred,
                 favoriteColors: data.favoriteColors ? canon(data.favoriteColors, COLORS) : s.favoriteColors,
                 preferredItems: data.preferredItems || s.preferredItems,
-                occasions: data.occasions ? canon(data.occasions, OCCASIONS) : s.occasions,
+                occasions: data.occasions ? canon(data.occasions, occasionOptions) : s.occasions,
                 dislikes: data.dislikes ? canon(data.dislikes, DISLIKES) : s.dislikes,
                 bodyType: data.bodyType ? canonOne(data.bodyType, BODY_TYPES) : s.bodyType,
                 favoriteBrands: data.favoriteBrands || s.favoriteBrands,
@@ -167,10 +178,20 @@ export default function OnboardingPage() {
             <div className="max-w-2xl w-full bg-white-pure p-8 rounded-2xl shadow-lg border border-grey-light">
                 {/* Header + progress */}
                 <div className="mb-6">
+                    {experience.isUniversal && (
+                        <JohnSignature compact className="mb-5" />
+                    )}
                     <div className="flex items-center justify-between mb-2">
-                        <h1 className="text-2xl font-serif font-bold text-brand-navy">{t('onboarding.title')}</h1>
+                        <h1 className="text-2xl font-serif font-bold text-brand-navy">
+                            {experience.isUniversal ? t('experienceV2.onboarding.title') : t('onboarding.title')}
+                        </h1>
                         <span className="text-xs text-grey-medium">{t('onboarding.stepOf', { current: step + 1, total: STEPS.length })}</span>
                     </div>
+                    {experience.isUniversal && (
+                        <p className="mb-4 text-sm leading-6 text-grey-medium">
+                            {t('experienceV2.onboarding.subtitle')}
+                        </p>
+                    )}
                     <div className="h-1.5 bg-grey-light rounded-full overflow-hidden">
                         <div className="h-full bg-brand-gold transition-all duration-300" style={{ width: `${progress}%` }} />
                     </div>
@@ -230,7 +251,7 @@ export default function OnboardingPage() {
 
                     {stepId === 'occasions' && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {OCCASIONS.map((o) => {
+                            {occasionOptions.map((o) => {
                                 const active = sel.occasions.includes(o.value);
                                 return (
                                     <button key={o.id} type="button" onClick={() => toggle('occasions', o.value)}
@@ -292,7 +313,9 @@ export default function OnboardingPage() {
                             <div>
                                 <h3 className="font-medium text-sm text-grey-medium uppercase tracking-wide mb-1">{t('onboarding.styleGoals')}</h3>
                                 <textarea value={sel.styleGoals} onChange={(e) => setField('styleGoals', e.target.value)}
-                                    placeholder={t('onboarding.goalsPlaceholder', 'Ex.: Quero um visual casual e confortável para o trabalho.')}
+                                    placeholder={experience.isUniversal
+                                        ? t('experienceV2.onboarding.goalsPlaceholder')
+                                        : t('onboarding.goalsPlaceholder', 'Ex.: Quero um visual casual e confortável para o trabalho.')}
                                     className="theme-control w-full h-24 p-3 border border-control-border rounded-lg bg-white-pure text-grey-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy resize-none" />
                             </div>
                         </div>
