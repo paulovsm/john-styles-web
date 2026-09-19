@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
+import UniversalLandingPage from './pages/UniversalLandingPage';
 import Loading from './components/common/Loading';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import AdminRoute from './components/common/AdminRoute';
@@ -25,7 +25,6 @@ const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const AdminBlogPage = lazy(() => import('./pages/AdminBlogPage'));
-const UniversalLandingPage = lazy(() => import('./pages/UniversalLandingPage'));
 const UniversalSubscriptionPage = lazy(() => import('./pages/UniversalSubscriptionPage'));
 
 const experience = getCurrentExperience();
@@ -44,9 +43,7 @@ const withSuspense = (element) => <Suspense fallback={<RouteFallback />}>{elemen
 const router = createBrowserRouter([
     {
         path: '/',
-        element: experience.isUniversal
-            ? withSuspense(<UniversalLandingPage />)
-            : <LandingPage />,
+        element: <UniversalLandingPage />,
     },
     {
         path: '/login',
@@ -62,7 +59,7 @@ const router = createBrowserRouter([
     },
     {
         path: '/assinatura',
-        element: experience.isUniversal
+        element: experience.isPreview
             ? withSuspense(<UniversalSubscriptionPage />)
             : withSuspense(<SubscriptionPage />),
     },

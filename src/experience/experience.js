@@ -1,15 +1,21 @@
 export const UNIVERSAL_EXPERIENCE_PREFIX = '/teste-novo-app';
 
 export const EXPERIENCES = Object.freeze({
-    legacy: Object.freeze({
-        id: 'legacy',
+    production: Object.freeze({
+        id: 'universal',
         basename: '/',
-        isUniversal: false,
+        isUniversal: true,
+        isPreview: false,
+        agentExperience: 'legacy',
+        expandedOccasions: false,
     }),
     universal: Object.freeze({
         id: 'universal',
         basename: UNIVERSAL_EXPERIENCE_PREFIX,
         isUniversal: true,
+        isPreview: true,
+        agentExperience: 'universal',
+        expandedOccasions: true,
     }),
 });
 
@@ -19,6 +25,5 @@ export function isUniversalExperiencePath(pathname = '/') {
 }
 
 export function getCurrentExperience(pathname = globalThis.location?.pathname || '/') {
-    return isUniversalExperiencePath(pathname) ? EXPERIENCES.universal : EXPERIENCES.legacy;
+    return isUniversalExperiencePath(pathname) ? EXPERIENCES.universal : EXPERIENCES.production;
 }
-

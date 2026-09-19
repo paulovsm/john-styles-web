@@ -50,6 +50,11 @@ does **not** do yet:
 
 ## Universal pilot — remaining external/manual work
 
+- Promotion approved on 2026-09-19: universal visuals and copy across the public
+  home and internal pages, preserving production behavior. Implementation and
+  rollout checklist: `docs/LANDING_PRODUCTION_ROLLOUT.md`. Production publication
+  and authenticated service verification remain to be confirmed.
+
 - Approve and license a canonical John portrait, including 1:1 and editorial
   crops. `JohnStyles.jpg` remains a clearly labeled digital representation in
   the pilot until that decision is made.

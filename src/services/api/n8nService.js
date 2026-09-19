@@ -14,7 +14,7 @@ export const n8nService = {
                 method: 'POST',
                 body: JSON.stringify({
                     message,
-                    experience: getCurrentExperience().id,
+                    experience: getCurrentExperience().agentExperience,
                     // Tell the agent which language to answer in; inferring it from the
                     // message text is unreliable and the sub-agents default to Portuguese.
                     language: i18n.language,

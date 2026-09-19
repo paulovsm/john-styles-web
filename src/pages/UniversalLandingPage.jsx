@@ -11,6 +11,7 @@ import {
 } from '@mui/icons-material';
 import LanguageSelector from '../components/common/LanguageSelector';
 import useDocumentMeta from '../hooks/useDocumentMeta';
+import { useExperience } from '../experience/ExperienceContext';
 import './UniversalLandingPage.css';
 
 const FLEEK_STORE_URL = 'https://loja.fleekauthority.com';
@@ -23,13 +24,14 @@ const CAPABILITIES = [
 
 export default function UniversalLandingPage() {
     const { t } = useTranslation();
+    const experience = useExperience();
     const [menuOpen, setMenuOpen] = useState(false);
 
     useDocumentMeta({
         title: t('experienceV2.meta.title'),
         description: t('experienceV2.meta.description'),
         image: '/experience-v2/universal-hero-v2.webp',
-        canonical: '/teste-novo-app',
+        canonical: experience.basename,
     });
 
     const closeMenu = () => setMenuOpen(false);
@@ -40,7 +42,7 @@ export default function UniversalLandingPage() {
                     <Link className="universal-brand" to="/" aria-label={t('common.homeLabel')}>
                         <img src="/FA_Icon_White.avif" alt="" />
                         <span>Fleek Authority</span>
-                        <small>{t('experienceV2.previewBadge')}</small>
+                        {experience.isPreview && <small>{t('experienceV2.previewBadge')}</small>}
                     </Link>
 
                     <button
@@ -109,7 +111,7 @@ export default function UniversalLandingPage() {
                                 </a>
                             </div>
                             <p className="universal-trust-line">{t('experienceV2.hero.trustLine')}</p>
-                            <p className="universal-pilot-note">{t('experienceV2.hero.pilotNote')}</p>
+                            {experience.isPreview && <p className="universal-pilot-note">{t('experienceV2.hero.pilotNote')}</p>}
                         </div>
 
                     </div>
@@ -217,6 +219,9 @@ export default function UniversalLandingPage() {
                     </div>
                     <div>
                         <Link to="/privacy">{t('footer.privacy')}</Link>
+                        <Link to="/blog">Blog</Link>
+                        <Link to="/empresas">{t('experienceV2.nav.business')}</Link>
+                        <Link to="/assinatura">{t('experienceV2.solutions.subscription.title')}</Link>
                         <small>© {new Date().getFullYear()} Fleek Authority</small>
                     </div>
                 </div>

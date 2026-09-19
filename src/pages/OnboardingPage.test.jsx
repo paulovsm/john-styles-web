@@ -6,7 +6,7 @@ import OnboardingPage from './OnboardingPage';
 import { DEFAULT_STYLE_PREFERENCE } from '../utils/garmentTaxonomy';
 
 const updateProfile = vi.fn();
-const experienceState = vi.hoisted(() => ({ isUniversal: false }));
+const experienceState = vi.hoisted(() => ({ isUniversal: true, expandedOccasions: false }));
 
 vi.mock('react-i18next', () => ({
     // Second arg is a fallback string on some calls and an interpolation object
@@ -38,7 +38,8 @@ describe('OnboardingPage styling register', () => {
     beforeEach(() => {
         updateProfile.mockClear();
         localStorage.clear();
-        experienceState.isUniversal = false;
+        experienceState.isUniversal = true;
+        experienceState.expandedOccasions = false;
     });
 
     it('persists the picked styling register to the profile', async () => {
@@ -64,8 +65,8 @@ describe('OnboardingPage styling register', () => {
         );
     });
 
-    it('offers expanded occasions only in the universal experience', async () => {
-        experienceState.isUniversal = true;
+    it('offers expanded occasions only in the preview', async () => {
+        experienceState.expandedOccasions = true;
         const user = userEvent.setup();
         render(<OnboardingPage />);
 
@@ -75,5 +76,15 @@ describe('OnboardingPage styling register', () => {
 
         expect(screen.getByRole('button', { name: 'onboarding.occasionOptions.travel' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'onboarding.occasionOptions.formalEvent' })).toBeInTheDocument();
+    });
+
+    it('keeps the production occasion catalog with the new presentation', async () => {
+        const user = userEvent.setup();
+        render(<OnboardingPage />);
+        for (let i = 0; i < 3; i += 1) {
+            await user.click(screen.getByRole('button', { name: 'Continuar' }));
+        }
+        expect(screen.getByRole('button', { name: 'onboarding.occasionOptions.work' })).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'onboarding.occasionOptions.travel' })).not.toBeInTheDocument();
     });
 });

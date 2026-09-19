@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
-
 .subscription-page {
     --subscription-black: #000;
     --subscription-ink: #111;
@@ -871,4 +869,50 @@
     .subscription-page * {
         scroll-behavior: auto !important;
     }
+}
+
+/* Presentation-only promotion; the existing contact form and handlers remain. */
+.subscription-hero-copy h1 {
+    font-size: clamp(36px, 5vw, 64px);
+    letter-spacing: -.045em;
+    line-height: 1.05;
+}
+
+.subscription-hero-copy .text-brand-navy {
+    color: #fff;
+}
+
+.subscription-hero-copy .text-brand-gold-dark {
+    color: #ccc;
+}
+
+.subscription-page {
+    min-width: 0;
+    --subscription-black: #0c0c0c;
+    --subscription-ink: #1a211e;
+    --subscription-line: #e0e0e0;
+}
+
+.subscription-page .subscription-hero-image {
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+.subscription-page .subscription-button,
+.subscription-page .subscription-form button,
+.subscription-page .subscription-form input,
+.subscription-page .subscription-form select,
+.subscription-page .subscription-form textarea {
+    border-radius: 4px;
+}
+
+.subscription-page .subscription-form {
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+.subscription-page .subscription-concept-note {
+    margin-block: 20px;
+    font-size: 14px;
+    line-height: 1.6;
 }

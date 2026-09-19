@@ -18,7 +18,7 @@ export function ExperienceProvider({ children }) {
 
         root.dataset.experience = experience.id;
 
-        if (experience.isUniversal) {
+        if (experience.isPreview) {
             if (!robots) {
                 robots = document.createElement('meta');
                 robots.setAttribute('name', 'robots');
@@ -34,7 +34,7 @@ export function ExperienceProvider({ children }) {
             if (previousRobots) robots?.setAttribute('content', previousRobots);
             else robots?.remove();
         };
-    }, [experience.id, experience.isUniversal]);
+    }, [experience.id, experience.isPreview]);
 
     return (
         <ExperienceContext.Provider value={experience}>
@@ -42,4 +42,3 @@ export function ExperienceProvider({ children }) {
         </ExperienceContext.Provider>
     );
 }
-

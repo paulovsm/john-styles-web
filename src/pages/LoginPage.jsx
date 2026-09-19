@@ -21,7 +21,7 @@ export default function LoginPage() {
     useDocumentMeta({
         title: experience.isUniversal ? t('experienceV2.auth.metaTitle') : t('app.name'),
         description: experience.isUniversal ? t('experienceV2.auth.description') : t('app.tagline'),
-        canonical: experience.isUniversal ? '/teste-novo-app/login' : '/login',
+        canonical: experience.isPreview ? '/teste-novo-app/login' : '/login',
     });
 
     React.useEffect(() => {
@@ -72,7 +72,7 @@ export default function LoginPage() {
             </IconButton>
             <div className={`max-w-md w-full space-y-8 bg-white-pure p-6 sm:p-10 border border-grey-light ${experience.isUniversal ? 'rounded-lg' : 'rounded-xl shadow-lg'}`}>
                 <div className="text-center">
-                    {experience.isUniversal && (
+                    {experience.isPreview && (
                         <span className="inline-flex rounded-full border border-control-border px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-brand-gold-dark">
                             {t('experienceV2.previewBadge')}
                         </span>

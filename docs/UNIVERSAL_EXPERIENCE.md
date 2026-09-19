@@ -2,8 +2,10 @@
 
 ## Decision
 
-The Fleek Authority root experience remains unchanged. The new universal
-stylist experience runs under:
+The approved universal presentation is promoted to the root and internal pages.
+Production functionality is preserved: existing chat mode, onboarding catalog,
+authentication, storage and subscription lead form. The experimental experience
+remains available under:
 
 `https://fleekauthority.com/teste-novo-app`
 
@@ -38,8 +40,9 @@ vestir em cada ocasião.”**
   product because both experiences use the same origin and backend.
 - The browser marks the pilot `noindex, nofollow` until launch approval.
 - `/api` and Firebase auth-handler paths stay at the origin root.
-- The current `/` landing and current unprefixed application routes must not
-  change visually or behaviorally as a side effect of pilot work.
+- Production and pilot use the universal presentation. Only the pilot receives
+  `noindex, nofollow`, expanded onboarding occasions and the experimental agent
+  mode. Public canonical URLs retain their existing unprefixed paths.
 
 ## Experience contract
 

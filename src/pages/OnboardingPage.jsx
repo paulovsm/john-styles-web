@@ -82,7 +82,7 @@ export default function OnboardingPage() {
     const experience = useExperience();
     const { profile, updateProfile } = useUserProfileContext();
     const navigate = useNavigate();
-    const occasionOptions = experience.isUniversal ? UNIVERSAL_OCCASIONS : BASE_OCCASIONS;
+    const occasionOptions = experience.expandedOccasions ? UNIVERSAL_OCCASIONS : BASE_OCCASIONS;
 
     // Restore an in-progress draft — iOS silently evicts backgrounded tabs, and
     // without this the user loses every answer if they leave mid-flow.

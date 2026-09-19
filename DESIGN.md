@@ -106,10 +106,11 @@ expressão pessoal. Querem tomar decisões de estilo com mais clareza no trabalh
 no cotidiano, em viagens, encontros, celebrações e outras ocasiões relevantes,
 sem perder tempo nem seguir regras que ignoram sua identidade.
 
-A experiência original em `/` permanece como expressão legada focada em estilo
-profissional. A visão universal é validada primeiro em `/teste-novo-app`; novos
-padrões compartilhados devem seguir a visão universal sem alterar a landing
-legada incidentalmente.
+A promoção aprovada em 19/09/2026 aplica a identidade universal à home `/` e às
+páginas internas. A mudança é visual e de textos: contratos dos serviços,
+cadastro, dados e funcionalidades de produção devem ser preservados. O prefixo
+`/teste-novo-app` permanece como piloto; aparência não deve controlar flags
+funcionais nem indexação.
 
 ### Arquétipo
 

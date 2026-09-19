@@ -100,7 +100,7 @@ export default function Header() {
                             <Link to="/" className="flex min-h-11 items-center text-2xl font-serif font-bold text-brand-navy" aria-label={t('common.homeLabel', 'Fleek Authority — início')}>
                                 <img src="/FA_Icon_White.avif" alt="" className="h-8 w-8 mr-2 invert dark:invert-0" />
                                 John Styles
-                                {experience.isUniversal && (
+                                {experience.isPreview && (
                                     <span className="ml-2 hidden rounded-full border border-control-border px-2 py-1 text-[9px] font-extrabold uppercase tracking-widest text-brand-gold-dark sm:inline-flex">
                                         {t('experienceV2.previewBadge')}
                                     </span>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import useDocumentMeta from '../hooks/useDocumentMeta';
 import { submitBusinessContact } from '../services/api/businessContactService';
 import './SubscriptionPage.css';
+import JohnSignature from '../components/common/JohnSignature';
 
 const INITIAL_FORM = {
     contactType: 'subscription',
@@ -56,9 +57,9 @@ export default function SubscriptionPage() {
     const [formState, setFormState] = useState({ status: 'idle', message: '' });
 
     useDocumentMeta({
-        title: 'Assinatura Fleek | Renove seu guarda-roupa a cada 3 meses',
-        description: 'Receba uma seleção de roupas a cada três meses e transforme peças que não usa mais em créditos ou descontos. Assinatura por R$ 199 mensais.',
-        image: '/landing/service-subscription-v2.webp',
+        title: 'Assinatura Fleek | Curadoria para acompanhar seu estilo',
+        description: 'Conheça a proposta da Assinatura Fleek e registre seu interesse em uma curadoria para seu guarda-roupa. Formato e disponibilidade em validação.',
+        image: '/experience-v2/universal-occasions.webp',
         canonical: '/assinatura',
     });
 
@@ -104,8 +105,9 @@ export default function SubscriptionPage() {
                 <section className="subscription-hero">
                     <div className="subscription-shell subscription-hero-grid">
                         <div className="subscription-hero-copy">
+                            <JohnSignature compact className="mb-6" />
                             <span className="subscription-kicker">Assinatura Fleek</span>
-                            <h1>Seu estilo evolui. Seu guarda-roupa também.</h1>
+                            <h1>Uma curadoria Fleek para acompanhar a evolução do seu estilo</h1>
                             <p>
                                 A cada três meses, você recebe uma nova seleção de peças para renovar seu estilo com intenção.
                                 O que deixou de fazer sentido pode voltar para a Fleek e se transformar em créditos ou descontos.
@@ -114,6 +116,7 @@ export default function SubscriptionPage() {
                                 <div><strong>R$ 199</strong><span>por mês</span></div>
                                 <p>Seleções trimestrais<br />e renovação contínua</p>
                             </div>
+                            <p className="subscription-concept-note">Proposta em validação: formato, disponibilidade e condições serão confirmados pela equipe. O cadastro de interesse não realiza uma contratação.</p>
                             <div className="subscription-hero-actions">
                                 <a className="subscription-button subscription-button--light" href="#contato">Tenho interesse</a>
                                 <a className="subscription-text-link" href="#como-funciona">Entenda o serviço <span aria-hidden="true">↓</span></a>
@@ -121,8 +124,8 @@ export default function SubscriptionPage() {
                         </div>
                         <div className="subscription-hero-image">
                             <img
-                                src="/landing/service-subscription-v2.webp"
-                                alt="Profissional ajustando uma peça de alfaiataria diante do espelho"
+                                src="/experience-v2/universal-occasions.webp"
+                                alt="Mulher e homem com estilos pessoais em um cenário urbano"
                             />
                         </div>
                     </div>
@@ -130,7 +133,7 @@ export default function SubscriptionPage() {
 
                 <section className="subscription-manifesto">
                     <div className="subscription-shell subscription-manifesto-grid">
-                        <span className="subscription-section-label">Menos acúmulo. Mais intenção.</span>
+                        <span className="subscription-section-label">Escolhas com intenção</span>
                         <div>
                             <h2>Renovar não precisa significar começar tudo de novo.</h2>
                             <p>
@@ -184,7 +187,7 @@ export default function SubscriptionPage() {
                     <div className="subscription-shell subscription-return-grid">
                         <div>
                             <span className="subscription-section-label">O ciclo continua</span>
-                            <h2 id="return-title">Devolva o que não usa. Abra espaço para o que vem a seguir.</h2>
+                            <h2 id="return-title">Abra espaço para novas combinações ao devolver o que não usa</h2>
                             <p>
                                 Você poderá enviar para a Fleek as peças que não precisa ou não quer mais. Depois da avaliação,
                                 as peças elegíveis podem gerar créditos ou descontos na mensalidade.

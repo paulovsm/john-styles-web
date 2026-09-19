@@ -17,9 +17,20 @@ describe('experience routing', () => {
     });
 
     it('returns the correct basename for each experience', () => {
-        expect(getCurrentExperience('/')).toBe(EXPERIENCES.legacy);
+        expect(getCurrentExperience('/')).toBe(EXPERIENCES.production);
         expect(getCurrentExperience('/teste-novo-app/login')).toBe(EXPERIENCES.universal);
         expect(EXPERIENCES.universal.basename).toBe('/teste-novo-app');
     });
-});
 
+    it('promotes presentation without changing production service behavior', () => {
+        for (const path of ['/', '/login', '/dashboard', '/chat', '/onboarding', '/assinatura']) {
+            expect(getCurrentExperience(path)).toMatchObject({
+                id: 'universal', isUniversal: true, isPreview: false,
+                basename: '/', agentExperience: 'legacy', expandedOccasions: false,
+            });
+        }
+        expect(getCurrentExperience('/teste-novo-app/chat')).toMatchObject({
+            isPreview: true, agentExperience: 'universal', expandedOccasions: true,
+        });
+    });
+});
