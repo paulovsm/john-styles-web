@@ -3,21 +3,37 @@ import Avatar from '../common/Avatar';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
-import { AutoAwesome, ArrowForward } from '@mui/icons-material';
+import { AutoAwesome, ArrowForward, Checkroom } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { clampLookDescription } from '../../utils/agentActions';
+import { describesLook } from '../../utils/lookDetection';
 
 export default function MessageItem({ message, userAvatar }) {
     const isUser = message.role === 'user';
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    const openTryOn = (state) => navigate('/try-on', { state });
+
     const runAction = (action) => {
         if (action.type === 'tryOn') {
-            navigate('/try-on', { state: { preselect: action.itemIds } });
+            // Carry the described look too: the pieces John named that are not in
+            // the wardrobe have no id, and without the text they would be lost.
+            openTryOn({
+                preselect: action.itemIds,
+                lookPrompt: action.lookDescription || clampLookDescription(message.content),
+            });
         } else if (action.type === 'navigate') {
             navigate(action.to);
         }
     };
+
+    // The agent does not always emit an <actions> block, and users were copying
+    // John's reply into the advanced prompt by hand. Offer that as one tap —
+    // but only where there is a look to carry, which is about the garments named
+    // and not the length of the reply.
+    const hasTryOnAction = message.actions?.some((a) => a.type === 'tryOn');
+    const offerAdvancedTryOn = !isUser && !hasTryOnAction && describesLook(message.content);
 
     const actionLabel = (action) => {
         if (action.label) return action.label;
@@ -49,9 +65,9 @@ export default function MessageItem({ message, userAvatar }) {
                     }`}>
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
                 </div>
-                {!isUser && message.actions?.length > 0 && (
+                {!isUser && (message.actions?.length > 0 || offerAdvancedTryOn) && (
                     <div className="mt-2 flex flex-wrap gap-2">
-                        {message.actions.map((action, i) => (
+                        {message.actions?.map((action, i) => (
                             <button
                                 key={i}
                                 onClick={() => runAction(action)}
@@ -61,6 +77,15 @@ export default function MessageItem({ message, userAvatar }) {
                                 {actionLabel(action)}
                             </button>
                         ))}
+                        {offerAdvancedTryOn && (
+                            <button
+                                onClick={() => openTryOn({ lookPrompt: clampLookDescription(message.content) })}
+                                className="inline-flex min-h-11 items-center gap-1 rounded-full border border-control-border px-3 py-1.5 text-sm font-medium text-brand-navy transition-colors hover:bg-grey-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2"
+                            >
+                                <Checkroom style={{ fontSize: 14 }} />
+                                {t('chat.actions.tryOnAdvanced', 'Provar no modo avançado')}
+                            </button>
+                        )}
                     </div>
                 )}
                 <div className={`text-xs mt-1 ${isUser ? 'text-white-pure/70' : 'text-grey-medium'}`}>

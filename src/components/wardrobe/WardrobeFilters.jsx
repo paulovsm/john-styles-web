@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ExpandLess, ExpandMore, FilterList } from '@mui/icons-material';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import Input from '../common/Input';
 import Select from '../common/Select';
@@ -8,15 +9,49 @@ import { WARDROBE_CATEGORIES } from '../../utils/garmentTaxonomy';
 export default function WardrobeFilters() {
     const { filters, setFilters } = useWardrobeContext();
     const { t } = useTranslation();
+    // Four controls stacked on a phone pushed the pieces below the fold, so on
+    // small screens they collapse behind a toggle. From md up they are always
+    // open and the toggle is not rendered at all.
+    const [expanded, setExpanded] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({ ...prev, [name]: value }));
     };
 
+    // Surfaced on the collapsed toggle so an active filter is never invisible.
+    const activeCount = [
+        filters.search !== '',
+        filters.category !== 'all',
+        filters.style !== 'all',
+        filters.color !== 'all',
+    ].filter(Boolean).length;
+
     return (
-        <div className="bg-white-pure p-4 rounded-lg shadow-sm border border-grey-light mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white-pure p-3 sm:p-4 rounded-lg shadow-sm border border-grey-light mb-4 sm:mb-6">
+            <button
+                type="button"
+                onClick={() => setExpanded((open) => !open)}
+                aria-expanded={expanded}
+                aria-controls="wardrobe-filters"
+                className="flex min-h-11 w-full items-center justify-between gap-2 text-sm font-semibold text-brand-navy md:hidden"
+            >
+                <span className="inline-flex items-center gap-2">
+                    <FilterList fontSize="small" aria-hidden="true" />
+                    {t('wardrobe.filters.toggle')}
+                    {activeCount > 0 && (
+                        <span className="rounded-full bg-brand-navy px-2 py-0.5 text-xs font-bold text-white-pure">
+                            {activeCount}
+                        </span>
+                    )}
+                </span>
+                {expanded ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+            </button>
+
+            <div
+                id="wardrobe-filters"
+                className={`${expanded ? 'mt-3 grid' : 'hidden'} grid-cols-1 gap-4 md:mt-0 md:grid md:grid-cols-4`}
+            >
                 <Input
                     name="search"
                     placeholder={t('wardrobe.filters.search')}

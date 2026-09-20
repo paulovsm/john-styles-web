@@ -255,7 +255,8 @@
     "connectionError": "Sorry, I'm having trouble connecting right now. Please try again.",
     "actions": {
       "tryOn": "Try this look",
-      "open": "Open"
+      "open": "Open",
+      "tryOnAdvanced": "Try in advanced mode"
     },
     "timeoutError": "I took too long to answer and the connection expired. Try again — a more direct question helps."
   },
@@ -319,7 +320,8 @@
         "grey": "Grey",
         "brown": "Brown",
         "beige": "Beige"
-      }
+      },
+      "toggle": "Filters"
     },
     "types": {
       "unclassified": "Unclassified",
@@ -416,7 +418,8 @@
     "deleteTitle": "Delete item",
     "deleteConfirm": "Are you sure you want to delete this item from your wardrobe?",
     "sampleNotice": "Your wardrobe includes sample pieces so you can try things out.",
-    "removeSamples": "Remove samples"
+    "removeSamples": "Remove samples",
+    "savedButFiltered": "Piece saved. It falls outside the active filters — clear them to see it."
   },
   "tryOn": {
     "title": "Virtual Try-On",
@@ -454,7 +457,8 @@
     "outfitPartial": "Some items from this look are no longer in your wardrobe.",
     "share": "Share",
     "downloaded": "Image downloaded.",
-    "shareError": "Could not share the image."
+    "shareError": "Could not share the image.",
+    "advancedWithoutItems": "With no piece selected, John builds the look from the description above alone."
   },
   "history": {
     "title": "Interaction History",
@@ -671,5 +675,14 @@
       "menswear": "men's",
       "womenswear": "women's"
     }
+  },
+  "imageCrop": {
+    "title": "Adjust the photo",
+    "wardrobeTitle": "Frame the piece",
+    "modelTitle": "Frame your photo",
+    "description": "Drag and zoom to emphasise what matters. You can also keep the whole photo.",
+    "zoom": "Zoom",
+    "confirm": "Crop and use",
+    "useWholePhoto": "Use whole photo"
   }
 }

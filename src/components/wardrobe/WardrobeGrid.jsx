@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useWardrobeContext } from '../../contexts/WardrobeContext';
 import WardrobeItemCard from './WardrobeItemCard';
 import ConfirmDialog from '../common/ConfirmDialog';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserProfileContext } from '../../contexts/UserProfileContext';
 import { samplesForPreference } from '../../data/demoWardrobe';
 
-export default function WardrobeGrid({ onAddItem, onItemClick }) {
+export default function WardrobeGrid({ onAddItem, onItemClick, highlightItemId, onHighlightShown, onHighlightMissed }) {
     const { items, removeItem, addSampleItems } = useWardrobeContext();
     const { t } = useTranslation();
     const profile = useUserProfileContext()?.profile;
@@ -16,6 +16,24 @@ export default function WardrobeGrid({ onAddItem, onItemClick }) {
     const hasSamples = samplesForPreference(profile?.stylePreference).length > 0;
     // Deleting a garment is destructive and irreversible — always confirm.
     const [pendingDelete, setPendingDelete] = useState(null);
+    const highlightRef = useRef(null);
+
+    // A piece saved on a phone lands below the fold, so the modal closing looked
+    // like nothing had happened. Bring it into view and ring it briefly.
+    const isHighlightVisible = !!highlightItemId && items.some((i) => i.id === highlightItemId);
+    useEffect(() => {
+        if (!highlightItemId) return;
+        if (!isHighlightVisible) {
+            // The piece exists but an active filter hides it. Scrolling to
+            // nothing would repeat the very confusion this is meant to fix.
+            onHighlightMissed?.();
+            return;
+        }
+        highlightRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Long enough to notice, short enough not to become permanent chrome.
+        const timer = setTimeout(() => onHighlightShown?.(), 2200);
+        return () => clearTimeout(timer);
+    }, [highlightItemId, isHighlightVisible]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (items.length === 0) {
         return (
@@ -49,14 +67,22 @@ export default function WardrobeGrid({ onAddItem, onItemClick }) {
     return (
         <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
-                {items.map((item) => (
-                    <WardrobeItemCard
-                        key={item.id}
-                        item={item}
-                        onDelete={() => setPendingDelete(item)}
-                        onClick={onItemClick}
-                    />
-                ))}
+                {items.map((item) => {
+                    const isHighlighted = item.id === highlightItemId;
+                    return (
+                        <div
+                            key={item.id}
+                            ref={isHighlighted ? highlightRef : null}
+                            className={`scroll-mt-20 rounded-card transition-shadow ${isHighlighted ? 'ring-2 ring-brand-gold ring-offset-2' : ''}`}
+                        >
+                            <WardrobeItemCard
+                                item={item}
+                                onDelete={() => setPendingDelete(item)}
+                                onClick={onItemClick}
+                            />
+                        </div>
+                    );
+                })}
             </div>
 
             <ConfirmDialog

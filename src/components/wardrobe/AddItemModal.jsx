@@ -9,8 +9,10 @@ import { AutoAwesome, CameraAlt, CloudUpload, LightbulbOutlined } from '@mui/ico
 import {
     compressImage,
     createWardrobeThumbnail,
+    cropImage,
     validateWardrobeImageFile,
 } from '../../utils/imageUtils';
+import ImageCropModal from '../common/ImageCropModal';
 import UsageCounter from '../common/UsageCounter';
 import {
     GARMENT_TYPES_BY_CATEGORY,
@@ -38,6 +40,8 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const [preview, setPreview] = useState('');
     const [photoError, setPhotoError] = useState('');
     const [processingPhoto, setProcessingPhoto] = useState(false);
+    // { file, url } while the user is framing a freshly picked photo.
+    const [cropSource, setCropSource] = useState(null);
     const [showAllTypes, setShowAllTypes] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
     const [analyzeError, setAnalyzeError] = useState('');
@@ -63,6 +67,13 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         style: '',
         brand: ''
     });
+
+    const closeCropper = () => {
+        setCropSource((current) => {
+            if (current) URL.revokeObjectURL(current.url);
+            return null;
+        });
+    };
 
     useEffect(() => {
         if (isOpen) {
@@ -94,10 +105,12 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setThumbnailFile(null);
             }
             setPhotoError('');
+        } else {
+            closeCropper();
         }
     }, [isOpen, item]);
 
-    const handleFileChange = async (e) => {
+    const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         e.target.value = '';
         if (!selectedFile) return;
@@ -108,11 +121,22 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         }
 
         setPhotoError('');
+        // Frame first, compress second: cropping after the resize to 1500px would
+        // throw away resolution in the very area the user chose to emphasise.
+        setCropSource({ file: selectedFile, url: URL.createObjectURL(selectedFile) });
+    };
+
+    const handleCropConfirm = async (area) => {
+        const source = cropSource;
+        closeCropper();
+        if (!source) return;
+
         // Compressing a 12MP phone photo takes 0.5–2s on the main thread; without
         // a flag the dropzone looks unchanged and the user re-taps the camera.
         setProcessingPhoto(true);
         try {
-            const compressedFile = await compressImage(selectedFile);
+            const framed = area ? await cropImage(source.file, area) : source.file;
+            const compressedFile = await compressImage(framed);
             const generatedThumbnail = await createWardrobeThumbnail(compressedFile);
             setFile(compressedFile);
             setThumbnailFile(generatedThumbnail);
@@ -409,6 +433,14 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     </Button>
                 </div>
             </form>
+
+            <ImageCropModal
+                isOpen={!!cropSource}
+                imageSrc={cropSource?.url}
+                onConfirm={handleCropConfirm}
+                onCancel={closeCropper}
+                title={t('imageCrop.wardrobeTitle')}
+            />
         </Modal>
     );
 }

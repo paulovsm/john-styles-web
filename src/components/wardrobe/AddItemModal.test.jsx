@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import AddItemModal from './AddItemModal';
 
 const storageMocks = vi.hoisted(() => ({
@@ -11,7 +11,22 @@ const storageMocks = vi.hoisted(() => ({
 const imageMocks = vi.hoisted(() => ({
     compressImage: vi.fn((file) => Promise.resolve(file)),
     createWardrobeThumbnail: vi.fn(() => Promise.resolve(new File(['thumb'], 'thumb.webp', { type: 'image/webp' }))),
+    cropImage: vi.fn((file) => Promise.resolve(file)),
 }));
+// The area react-easy-crop would report for the user's framing.
+const CROP_AREA = vi.hoisted(() => ({ x: 12, y: 34, width: 200, height: 400 }));
+
+// The real cropper measures its container, which jsdom has no layout for. The
+// stub stands in for the gesture and reports an area, which is what we assert on.
+vi.mock('react-easy-crop', async () => {
+    const { useEffect } = await import('react');
+    return {
+        default: function CropperStub({ onCropComplete }) {
+            useEffect(() => { onCropComplete({}, CROP_AREA); }, [onCropComplete]);
+            return null;
+        },
+    };
+});
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -36,11 +51,26 @@ vi.mock('../../utils/imageUtils', async (importOriginal) => ({
 }));
 vi.mock('../common/UsageCounter', () => ({ default: () => null }));
 
+// jsdom implements neither, and the crop step needs a URL for the picked file.
+beforeAll(() => {
+    URL.createObjectURL = vi.fn(() => 'blob:photo');
+    URL.revokeObjectURL = vi.fn();
+});
+
+/** Picks a file and clears the crop step the way the user would. */
+async function pickPhoto(user, file, { crop = false } = {}) {
+    await user.upload(screen.getByLabelText('Enviar arquivo'), file);
+    await user.click(await screen.findByRole('button', {
+        name: crop ? 'imageCrop.confirm' : 'imageCrop.useWholePhoto',
+    }));
+}
+
 describe('AddItemModal photo sources', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         imageMocks.compressImage.mockImplementation((file) => Promise.resolve(file));
         imageMocks.createWardrobeThumbnail.mockResolvedValue(new File(['thumb'], 'thumb.webp', { type: 'image/webp' }));
+        imageMocks.cropImage.mockImplementation((file) => Promise.resolve(file));
     });
 
     it('offers camera capture and file upload separately', () => {
@@ -65,6 +95,32 @@ describe('AddItemModal photo sources', () => {
         expect(screen.getByRole('alert')).toHaveTextContent('wardrobe.errors.unsupportedImageType');
         expect(imageMocks.compressImage).not.toHaveBeenCalled();
         expect(storageMocks.uploadImage).not.toHaveBeenCalled();
+        expect(screen.queryByRole('button', { name: 'imageCrop.confirm' })).not.toBeInTheDocument();
+    });
+
+    it('crops with the framed area before compressing', async () => {
+        const user = userEvent.setup();
+        const picked = new File(['jpeg'], 'photo.jpg', { type: 'image/jpeg' });
+        render(<AddItemModal isOpen onClose={() => {}} onSave={() => {}} />);
+
+        await pickPhoto(user, picked, { crop: true });
+
+        await waitFor(() => expect(imageMocks.cropImage).toHaveBeenCalledWith(picked, CROP_AREA));
+        // Order matters: cropping after the resize would waste resolution.
+        expect(imageMocks.compressImage).toHaveBeenCalledTimes(1);
+        expect(imageMocks.cropImage.mock.invocationCallOrder[0])
+            .toBeLessThan(imageMocks.compressImage.mock.invocationCallOrder[0]);
+    });
+
+    it('keeps the original framing when the user declines to crop', async () => {
+        const user = userEvent.setup();
+        render(<AddItemModal isOpen onClose={() => {}} onSave={() => {}} />);
+
+        await pickPhoto(user, new File(['jpeg'], 'photo.jpg', { type: 'image/jpeg' }));
+
+        await screen.findByRole('img', { name: 'wardrobe.addModal.previewAlt' });
+        expect(imageMocks.cropImage).not.toHaveBeenCalled();
+        expect(imageMocks.compressImage).toHaveBeenCalledTimes(1);
     });
 
     it('uploads and persists the original plus its thumbnail', async () => {
@@ -74,10 +130,7 @@ describe('AddItemModal photo sources', () => {
         storageMocks.uploadThumbnail.mockResolvedValue('https://example.com/thumb.webp');
         render(<AddItemModal isOpen onClose={() => {}} onSave={onSave} />);
 
-        await user.upload(
-            screen.getByLabelText('Enviar arquivo'),
-            new File(['jpeg'], 'photo.jpg', { type: 'image/jpeg' }),
-        );
+        await pickPhoto(user, new File(['jpeg'], 'photo.jpg', { type: 'image/jpeg' }));
         await screen.findByRole('img', { name: 'wardrobe.addModal.previewAlt' });
         await user.type(screen.getByRole('textbox', { name: 'wardrobe.addModal.name' }), 'Terno azul');
         await user.selectOptions(screen.getByRole('combobox', { name: 'wardrobe.addModal.garmentType' }), 'suit');

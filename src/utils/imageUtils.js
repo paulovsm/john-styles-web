@@ -184,6 +184,45 @@ const resizeImage = async (file, maxDimension, quality, mimeType, outputName) =>
 export const compressImage = (file, maxDimension = 1500, quality = 0.7) =>
     resizeImage(file, maxDimension, quality, 'image/jpeg', file.name);
 
+/**
+ * Cuts `area` out of an image file and returns the crop as a new File.
+ *
+ * `area` is in pixels of the ORIENTED image — the same coordinate space the
+ * cropper UI reports, because both the <img> the user dragged over and the
+ * bitmap below have EXIF rotation already applied. Feeding raw-file coordinates
+ * here would cut the wrong region out of any phone photo carrying that flag.
+ *
+ * Quality is deliberately high: the crop is an intermediate, and `compressImage`
+ * still runs afterwards. Compressing twice at 0.7 would show.
+ *
+ * @param {File} file
+ * @param {{x:number,y:number,width:number,height:number}} area
+ * @returns {Promise<File>} the cropped region, JPEG
+ */
+export const cropImage = async (file, area, quality = 0.92) => {
+    if (!area || area.width <= 0 || area.height <= 0) return file;
+
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    try {
+        // Clamp to the image: the cropper can report a region slightly outside
+        // the bounds, and drawImage would then paint transparent padding.
+        const x = Math.max(0, Math.min(Math.round(area.x), bitmap.width - 1));
+        const y = Math.max(0, Math.min(Math.round(area.y), bitmap.height - 1));
+        const width = Math.max(1, Math.min(Math.round(area.width), bitmap.width - x));
+        const height = Math.max(1, Math.min(Math.round(area.height), bitmap.height - y));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(bitmap, x, y, width, height, 0, 0, width, height);
+
+        const baseName = String(file.name || 'photo').replace(/\.[^.]+$/, '');
+        return await canvasToFile(canvas, `${baseName}-crop.jpg`, 'image/jpeg', quality);
+    } finally {
+        bitmap.close?.();
+    }
+};
+
 export const createWardrobeThumbnail = (file, maxDimension = 320, quality = 0.76) => {
     const baseName = String(file.name || 'wardrobe-item').replace(/\.[^.]+$/, '');
     return resizeImage(file, maxDimension, quality, 'image/webp', `${baseName}-thumb.webp`);
