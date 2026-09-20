@@ -16,6 +16,8 @@ import { useUserProfileContext } from '../contexts/UserProfileContext';
 import { useToast } from '../contexts/ToastContext';
 import { compressImage, getWardrobeThumbnailUrl, toCompressedDataUrl } from '../utils/imageUtils';
 import { garmentsConflict } from '../utils/garmentTaxonomy';
+import { useExperience } from '../experience/ExperienceContext';
+import JohnSignature from '../components/common/JohnSignature';
 
 
 
@@ -26,6 +28,7 @@ export default function TryOnPage() {
     const { profile, updateProfile } = useUserProfileContext();
     const toast = useToast();
     const { t } = useTranslation();
+    const experience = useExperience();
     const [userPhotoPreview, setUserPhotoPreview] = useState('');
     const [savingPhoto, setSavingPhoto] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
@@ -310,7 +313,19 @@ export default function TryOnPage() {
 
     return (
         <MainLayout>
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-navy mb-6">{t('tryOn.title')}</h1>
+            {experience.isUniversal ? (
+                <div className="mb-6 border-l-[3px] border-brand-gold pl-4">
+                    <JohnSignature compact className="mb-4" />
+                    <h1 className="text-xl font-serif font-bold text-brand-navy sm:text-2xl">
+                        {t('experienceV2.tryOn.title')}
+                    </h1>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-grey-medium">
+                        {t('experienceV2.tryOn.description')}
+                    </p>
+                </div>
+            ) : (
+                <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-navy mb-6">{t('tryOn.title')}</h1>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column: Inputs */}

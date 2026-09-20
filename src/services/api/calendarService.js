@@ -1,9 +1,15 @@
 import { authFetch } from './authFetch';
+import { getCurrentExperience } from '../../experience/experience';
 
 export const calendarService = {
     /** Gets the Google consent URL and redirects the browser to it. */
     async connect() {
-        const res = await authFetch('/api/calendar-connect', { method: 'POST' });
+        const { basename } = getCurrentExperience();
+        const returnPath = basename === '/' ? '/dashboard' : `${basename}/dashboard`;
+        const res = await authFetch('/api/calendar-connect', {
+            method: 'POST',
+            body: JSON.stringify({ returnPath }),
+        });
         if (!res.ok) throw new Error('Failed to start calendar connection');
         const { url } = await res.json();
         window.location.href = url;

@@ -34,6 +34,22 @@
     --c-status-info-content: 29 78 216;
   }
 
+  /* Universal stylist pilot. The reference is adapted into Fleek's strict
+     monochrome system: white canvas, black ink, neutral hierarchy and no
+     recurring chromatic accent. */
+  html[data-experience='universal'] {
+    --c-bg: 255 255 255;
+    --c-surface: 255 255 255;
+    --c-content: 26 33 30;
+    --c-muted: 96 101 98;
+    --c-border: 224 224 224;
+    --c-control-border: 148 148 148;
+    --c-ink: 12 12 12;
+    --c-accent: 12 12 12;
+    --c-accent-strong: 12 12 12;
+    --c-subtle: 238 241 240;
+  }
+
   /* Dark theme is kept (app-only) but also monochrome — mirrors the landing's
      black sections (#000 bg, #171717 raised, #252525 borders). */
   .dark {
@@ -51,6 +67,19 @@
     --c-status-error-content: 248 113 113;
     --c-status-warning-content: 251 191 36;
     --c-status-info-content: 96 165 250;
+  }
+
+  html.dark[data-experience='universal'] {
+    --c-bg: 0 0 0;
+    --c-surface: 23 23 23;
+    --c-content: 255 255 255;
+    --c-muted: 171 171 171;
+    --c-border: 37 37 37;
+    --c-control-border: 102 102 102;
+    --c-ink: 255 255 255;
+    --c-accent: 255 255 255;
+    --c-accent-strong: 255 255 255;
+    --c-subtle: 0 0 0;
   }
 
   /* Safety net against mobile horizontal-scroll bugs: if any child element
@@ -137,4 +166,10 @@
   .dark .wardrobe-filter-select {
     color-scheme: dark;
   }
+}
+
+/* The universal pilot is a flat editorial surface. Existing shared components
+   retain their legacy elevation elsewhere, but shadows collapse in this scope. */
+html[data-experience='universal'] :is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-card) {
+  box-shadow: none;
 }

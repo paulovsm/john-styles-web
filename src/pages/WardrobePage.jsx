@@ -8,6 +8,8 @@ import { useWardrobeContext } from '../contexts/WardrobeContext';
 import Button from '../components/common/Button';
 import { Add, HelpOutline } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useExperience } from '../experience/ExperienceContext';
+import JohnSignature from '../components/common/JohnSignature';
 
 export default function WardrobePage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,6 +23,7 @@ export default function WardrobePage() {
     const [editingItem, setEditingItem] = useState(null);
     const { addItem, updateItem, hasDemoItems, removeSampleItems } = useWardrobeContext();
     const { t } = useTranslation();
+    const experience = useExperience();
 
     const handleSaveItem = (item) => {
         if (editingItem) {
@@ -58,8 +61,21 @@ export default function WardrobePage() {
 
     return (
         <MainLayout>
-            <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
-                <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-navy">{t('wardrobe.title')}</h1>
+            {experience.isUniversal && (
+                <div className="mb-6 border-l-[3px] border-brand-gold pl-4">
+                    <JohnSignature compact className="mb-4" />
+                    <h1 className="text-xl font-serif font-bold text-brand-navy sm:text-2xl">
+                        {t('experienceV2.wardrobe.title')}
+                    </h1>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-grey-medium">
+                        {t('experienceV2.wardrobe.description')}
+                    </p>
+                </div>
+            )}
+            <div className={`flex flex-wrap items-center gap-3 mb-6 ${experience.isUniversal ? 'justify-end' : 'justify-between'}`}>
+                {!experience.isUniversal && (
+                    <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-navy">{t('wardrobe.title')}</h1>
+                )}
                 <div className="flex flex-wrap justify-end gap-2">
                     {!showTutorial && (
                         <Button variant="text" className="px-3 sm:px-5" onClick={() => setShowTutorial(true)}>

@@ -7,9 +7,10 @@ import { saveRefreshToken } from './_calendarStore.js';
  * back into the app. No Firebase token here — trust comes from the signed state.
  */
 export default async function handler(req, res) {
-    const appBase = process.env.APP_BASE_URL || 'http://localhost:5173';
+    const appBase = (process.env.APP_BASE_URL || 'http://localhost:5173').replace(/\/$/, '');
+    let returnPath = '/dashboard';
     const back = (status) => {
-        res.writeHead(302, { Location: `${appBase}/dashboard?calendar=${status}` });
+        res.writeHead(302, { Location: `${appBase}${returnPath}?calendar=${status}` });
         res.end();
     };
 
@@ -19,8 +20,9 @@ export default async function handler(req, res) {
         const { code, state, error } = req.query || {};
         if (error) return back('denied');
 
-        const uid = verifyState(state);
-        if (!uid || !code) return back('error');
+        const verified = verifyState(state);
+        if (!verified || !code) return back('error');
+        returnPath = verified.returnPath;
 
         const tokens = await exchangeCode(code);
         if (!tokens.refresh_token) {
@@ -29,7 +31,7 @@ export default async function handler(req, res) {
             return back('noRefresh');
         }
 
-        await saveRefreshToken(uid, tokens.refresh_token);
+        await saveRefreshToken(verified.uid, tokens.refresh_token);
         return back('connected');
     } catch (err) {
         console.error('calendar-callback error:', err);

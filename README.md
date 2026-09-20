@@ -43,6 +43,16 @@ projetada, implementada e validada primeiro em 360 px, preservando o fluxo a
 partir de 320 px. Desktop é uma evolução progressiva do mesmo conteúdo e da
 mesma funcionalidade, não uma experiência principal separada.
 
+### Piloto universal
+
+A nova visão de John Styles como personal stylist para mulheres e homens, em
+ocasiões profissionais e pessoais, está isolada em `/teste-novo-app`. O prefixo
+funciona como `basename` do React Router: landing, login e rotas autenticadas
+permanecem dentro do piloto enquanto `/` continua servindo a experiência atual.
+
+Decisões, contrato de conteúdo, riscos e critérios de validação estão em
+[`docs/UNIVERSAL_EXPERIENCE.md`](docs/UNIVERSAL_EXPERIENCE.md).
+
 ## Getting started
 
 ### Pré-requisitos

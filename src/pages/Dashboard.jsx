@@ -12,6 +12,8 @@ import { useToast } from '../contexts/ToastContext';
 import { useWeather } from '../hooks/useWeather';
 import { useDailyContext } from '../hooks/useDailyContext';
 import { useTranslation } from 'react-i18next';
+import { useExperience } from '../experience/ExperienceContext';
+import JohnSignature from '../components/common/JohnSignature';
 
 export default function Dashboard() {
     const { currentUser } = useAuth();
@@ -21,6 +23,7 @@ export default function Dashboard() {
     const weather = useWeather();
     const dailyContext = useDailyContext();
     const [searchParams, setSearchParams] = useSearchParams();
+    const experience = useExperience();
 
     // Feedback after returning from the Google Calendar OAuth flow.
     useEffect(() => {
@@ -39,11 +42,18 @@ export default function Dashboard() {
 
     return (
         <MainLayout>
-            <div className="mb-6">
+            <div className={`mb-6 ${experience.isUniversal ? 'border-l-[3px] border-brand-gold pl-4' : ''}`}>
+                {experience.isUniversal && (
+                    <JohnSignature compact className="mb-4" />
+                )}
                 <h1 className="text-2xl sm:text-3xl font-serif font-bold text-brand-navy">
-                    {t('dashboard.welcome', { name: currentUser?.displayName?.split(' ')[0] || 'User' })}
+                    {experience.isUniversal
+                        ? t('experienceV2.dashboard.greeting', { name: currentUser?.displayName?.split(' ')[0] || 'User' })
+                        : t('dashboard.welcome', { name: currentUser?.displayName?.split(' ')[0] || 'User' })}
                 </h1>
-                <p className="mt-2 text-grey-medium">{t('dashboard.subtitle')}</p>
+                <p className="mt-2 text-grey-medium">
+                    {experience.isUniversal ? t('experienceV2.dashboard.subtitle') : t('dashboard.subtitle')}
+                </p>
             </div>
 
             {/* Primary actions, inline under the subtitle (stacked on mobile) */}

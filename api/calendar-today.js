@@ -72,7 +72,7 @@ async function classify(events, language) {
     const list = events.map((e) => `- ${e.summary}${e.attendees ? ` (${e.attendees} pessoas)` : ''}`).join('\n');
     const system = `You classify a person's day for outfit planning based on their calendar events.
 Consider the MOST important / most visible / dressiest meeting of the day (you dress for that one).
-Return ONLY JSON: { "occasion": one of ["trabalho","casual executivo","dia a dia","festa","esporte","encontro"],
+Return ONLY JSON: { "occasion": one of ["trabalho","casual executivo","dia a dia","festa","esporte","encontro","evento formal","casamento ou formatura","viagem","lazer"],
 "formality": integer 1-5 (1 very casual, 5 formal), "headline": a short one-line reason in ${language} referencing the key event }.`;
 
     try {

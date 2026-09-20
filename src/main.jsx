@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import './assets/styles/global.css'
 import './i18n/config' // Import i18n configuration
 import App from './App.jsx'
+import { getCurrentExperience } from './experience/experience'
+
+document.documentElement.dataset.experience = getCurrentExperience().id
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

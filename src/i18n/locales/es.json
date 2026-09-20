@@ -3,6 +3,152 @@
     "name": "John Styles",
     "tagline": "Tu Asistente Personal de Moda"
   },
+  "experienceV2": {
+    "previewBadge": "Experiencia piloto",
+    "john": {
+      "role": "Chief Stylist Officer",
+      "avatarAlt": "Representación visual de John Styles, stylist digital de Fleek Authority"
+    },
+    "meta": {
+      "title": "Fleek Authority | Transforma tu estilo con John Styles",
+      "description": "Fleek Authority reúne curaduría, herramientas y John Styles, el experto digital que te ayuda a resolver qué vestir en cada ocasión."
+    },
+    "nav": {
+      "label": "Navegación de la nueva experiencia",
+      "how": "La experiencia",
+      "occasions": "Ocasiones",
+      "solutions": "Soluciones Fleek",
+      "business": "Para empresas"
+    },
+    "hero": {
+      "kicker": "Fleek Authority · Estilo para la vida real",
+      "title": "Transforma tu estilo para todo lo que vives",
+      "description": "En Fleek Authority encuentras curaduría, herramientas y John Styles, el experto digital que conoce tu armario y resuelve qué vestir en cada ocasión.",
+      "cta": "Encontrar mi look",
+      "secondary": "Conocer Fleek",
+      "trustLine": "John Styles combina inteligencia artificial, contexto y experiencia en styling para orientar una elección que siempre sigue siendo tuya.",
+      "pilotNote": "Experiencia en prueba. Tus elecciones y tus datos siguen siendo privados.",
+      "imageAlt": "Mujer y hombre con sastrería monocromática en una escena editorial urbana de alto contraste",
+      "imageCaption": "El experto digital que Fleek trae para resolver tu estilo."
+    },
+    "principle": {
+      "label": "Principio de la experiencia",
+      "text": "Fleek transforma lo que ya tienes en nuevas posibilidades de estilo."
+    },
+    "how": {
+      "kicker": "John Styles · El experto de Fleek",
+      "title": "Una solución personal para el problema de decidir qué vestir",
+      "description": "John conoce tus prendas, entiende el contexto y presenta combinaciones para el trabajo, citas, viajes, eventos y el día a día.",
+      "cards": {
+        "wardrobe": {
+          "title": "Tu armario se convierte en repertorio",
+          "description": "Cada prenda registrada ayuda a John a descubrir combinaciones útiles sin impulsar compras innecesarias."
+        },
+        "conversation": {
+          "title": "El contexto forma parte de la elección",
+          "description": "Ocasión, hora, clima, comodidad e intención hacen que la orientación sea más precisa para la vida real."
+        },
+        "tryOn": {
+          "title": "Recibes opciones que funcionan",
+          "description": "John presenta combinaciones, explica las elecciones y ajusta los detalles contigo antes de salir."
+        }
+      }
+    },
+    "occasions": {
+      "kicker": "Estilo para toda la vida",
+      "title": "La misma persona puede vestir muchos momentos sin perder su identidad",
+      "description": "Fleek amplía tu repertorio mientras John adapta cada dress code a tu estilo, desde el trabajo hasta el fin de semana.",
+      "imageAlt": "Mujer con un look elegante y hombre con ropa casual caminando por un distrito cultural al atardecer",
+      "items": {
+        "work": "Trabajo y carrera",
+        "everyday": "Día a día",
+        "date": "Citas",
+        "celebration": "Celebraciones y eventos",
+        "travel": "Viajes",
+        "wellbeing": "Ocio y bienestar"
+      }
+    },
+    "solutions": {
+      "kicker": "Un ecosistema en construcción",
+      "title": "Cuando el armario necesita evolucionar, Fleek conecta orientación y curaduría",
+      "description": "Tienda y suscripción son conceptos en validación para transformar necesidades reales en elecciones más inteligentes sin compras aleatorias.",
+      "conceptBadge": "En desarrollo",
+      "store": {
+        "title": "Fleek Store",
+        "description": "Explora el catálogo disponible mientras conectamos cada recomendación con lo que realmente falta en tu armario. La oferta aún es limitada por categoría y público.",
+        "action": "Conocer el catálogo actual"
+      },
+      "subscription": {
+        "title": "Suscripción Fleek",
+        "description": "Curaduría recurrente pensada a partir de las carencias que John identifica. El formato, la disponibilidad y la composición siguen en validación.",
+        "action": "Conocer el concepto"
+      }
+    },
+    "final": {
+      "kicker": "Empieza con lo que ya tienes",
+      "title": "Transformar tu estilo puede comenzar con tu próximo compromiso",
+      "description": "Cuéntale la ocasión a John Styles para recibir una orientación que considere tu contexto, tu intención y las prendas de tu armario.",
+      "cta": "Probar John Styles"
+    },
+    "footer": {
+      "tagline": "El lugar para transformar tu estilo."
+    },
+    "auth": {
+      "metaTitle": "Entrar | Fleek Authority y John Styles",
+      "title": "Tu experto digital está listo para conocerte",
+      "description": "Entra en Fleek Authority y muestra tu armario a John Styles para descubrir nuevas posibilidades."
+    },
+    "dashboard": {
+      "greeting": "Buenos días, {{name}} — ¿qué necesitas vestir hoy?",
+      "subtitle": "John considera tu agenda y tu armario para orientar la elección.",
+      "recommendationTitle": "La recomendación de John para hoy",
+      "whyTitle": "Por qué John lo eligió",
+      "whyDescription": "John combinó las prendas disponibles con el contexto de hoy. ¿Quieres cambiar la impresión o el nivel de formalidad? Solo pídeselo."
+    },
+    "chat": {
+      "greeting": "Soy John Styles, el experto digital de Fleek Authority; dime la ocasión, la hora y lo que quieres transmitir para que encuentre las mejores opciones en tu armario.",
+      "placeholder": "Ej.: cena a las 20 h, casual, quiero usar mi pantalón burdeos…"
+    },
+    "onboarding": {
+      "title": "Ayuda a John Styles a entender cómo vives y te vistes",
+      "subtitle": "Cuéntanos cómo vistes, dónde vives y qué quieres transmitir para que la experiencia Fleek sea realmente personal.",
+      "goalsPlaceholder": "Ej.: Quiero presencia en el trabajo, comodidad en viajes y más opciones para eventos especiales."
+    },
+    "wardrobe": {
+      "title": "Tu armario es el punto de partida",
+      "description": "Cada prenda ayuda a John a ampliar tus combinaciones y orientar compras solo cuando existe una necesidad real."
+    },
+    "tryOn": {
+      "title": "Mira cómo funciona el look antes de salir",
+      "description": "Crea, compara y ajusta con John Styles mientras la decisión final sigue siendo tuya."
+    },
+    "subscriptionConcept": {
+      "metaTitle": "Suscripción Fleek | Concepto en validación",
+      "badge": "Concepto en validación",
+      "title": "Si falta una prenda, que sea la correcta.",
+      "description": "Estamos creando una curaduría a partir de lo que John identifica en tu armario: carencias reales, nuevas combinaciones y ninguna prenda sin función. El formato sigue en validación.",
+      "cta": "Quiero ayudar a crearla",
+      "back": "Volver a la experiencia",
+      "emailSubject": "Quiero ayudar a crear la Suscripción Fleek",
+      "hypothesesKicker": "Lo que estamos investigando",
+      "hypothesesTitle": "Menos compras aleatorias. Más prendas con función.",
+      "hypotheses": {
+        "curation": {
+          "title": "Curaduría personal",
+          "description": "Selecciones basadas en el estilo, las ocasiones y las carencias reales del armario."
+        },
+        "rhythm": {
+          "title": "Ritmo flexible",
+          "description": "Una frecuencia que acompañe necesidades reales sin estimular consumo innecesario."
+        },
+        "circulation": {
+          "title": "Armario en movimiento",
+          "description": "Las posibilidades de cambio, devolución o crédito aún deben evaluarse operativamente."
+        }
+      },
+      "disclaimer": "El formato, el precio, el catálogo, la frecuencia, las devoluciones y la disponibilidad aún no se han definido. Esta página presenta hipótesis de producto para investigación, no una oferta de contratación."
+    }
+  },
   "nav": {
     "dashboard": "Panel",
     "chat": "Chat",
@@ -454,7 +600,11 @@
       "everyday": "Día a día",
       "party": "Fiesta",
       "sport": "Deporte",
-      "date": "Cita"
+      "date": "Cita",
+      "formalEvent": "Evento formal",
+      "wedding": "Boda o graduación",
+      "travel": "Viaje",
+      "leisure": "Ocio"
     },
     "dislikeOptions": {
       "brightColors": "Colores vivos",
