@@ -35,6 +35,21 @@ describe('MessageItem try-on handoff', () => {
         expect(navigate).toHaveBeenCalledWith('/try-on', { state: { lookPrompt: LOOK } });
     });
 
+    // Reported from real use: this reply is long and on-topic, but it asks which
+    // direction to take instead of naming a look. Offering the try-on there was
+    // noise, and it followed old messages into the thread when history loaded.
+    it('stays quiet on a long reply that asks rather than suggests', () => {
+        const question = 'Com certeza! Podemos criar sugestões completas e totalmente novas, sem nos '
+            + 'limitarmos às peças que você já tem cadastradas no guarda-roupa. Antes de montarmos as '
+            + 'opções ideais, preciso apenas de um alinhamento: Linha de vestuário: você prefere foco em '
+            + 'moda masculina, moda feminina ou ambas? Ocasião e clima: o foco principal continua sendo o '
+            + 'visual Casual Executivo / Business Casual para trabalho em TI?';
+
+        render(<MessageItem message={assistant(question)} />);
+
+        expect(screen.queryByRole('button', { name: 'Provar no modo avançado' })).not.toBeInTheDocument();
+    });
+
     it('stays out of the way on short replies and on the user\'s own messages', () => {
         const { unmount } = render(<MessageItem message={assistant(SHORT)} />);
         expect(screen.queryByRole('button', { name: 'Provar no modo avançado' })).not.toBeInTheDocument();

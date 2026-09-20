@@ -6,13 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { AutoAwesome, ArrowForward, Checkroom } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { MAX_LOOK_DESCRIPTION } from '../../utils/agentActions';
-
-/**
- * Below this, a reply is an acknowledgement ("Combina, sim!") or a greeting, not
- * a look worth sending to the generator. The offer is hidden there to keep the
- * thread from sprouting a button under every line John says.
- */
-const LOOK_REPLY_MIN_LENGTH = 180;
+import { describesLook } from '../../utils/lookDetection';
 
 export default function MessageItem({ message, userAvatar }) {
     const isUser = message.role === 'user';
@@ -35,11 +29,11 @@ export default function MessageItem({ message, userAvatar }) {
     };
 
     // The agent does not always emit an <actions> block, and users were copying
-    // John's reply into the advanced prompt by hand. Offer that as one tap.
+    // John's reply into the advanced prompt by hand. Offer that as one tap —
+    // but only where there is a look to carry, which is about the garments named
+    // and not the length of the reply.
     const hasTryOnAction = message.actions?.some((a) => a.type === 'tryOn');
-    const offerAdvancedTryOn = !isUser
-        && !hasTryOnAction
-        && (message.content?.trim().length || 0) >= LOOK_REPLY_MIN_LENGTH;
+    const offerAdvancedTryOn = !isUser && !hasTryOnAction && describesLook(message.content);
 
     const actionLabel = (action) => {
         if (action.label) return action.label;
