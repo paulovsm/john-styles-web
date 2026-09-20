@@ -23,6 +23,29 @@ const ALLOWED_ROUTES = new Set(['/wardrobe', '/gallery', '/try-on', '/dashboard'
 /** Keeps a seeded prompt from growing unbounded if the agent sends an essay. */
 export const MAX_LOOK_DESCRIPTION = 2000;
 
+/**
+ * Trims a look description to the cap without severing a sentence.
+ *
+ * A raw slice ends the prompt mid-word — a 3112-character reply with three
+ * looks cut at "cria uma linha " — and the generator then reads a fragment as
+ * if it were the whole instruction. Prefer the last sentence end, fall back to
+ * the last word boundary, and only cut hard if the text has neither.
+ */
+export function clampLookDescription(text) {
+    const trimmed = String(text || '').trim();
+    if (trimmed.length <= MAX_LOOK_DESCRIPTION) return trimmed;
+
+    const head = trimmed.slice(0, MAX_LOOK_DESCRIPTION);
+    // Keep at least half the budget, so a text without punctuation early on
+    // does not collapse to a few words.
+    const floor = Math.floor(MAX_LOOK_DESCRIPTION / 2);
+    const sentenceEnd = Math.max(head.lastIndexOf('. '), head.lastIndexOf('! '), head.lastIndexOf('? '));
+    if (sentenceEnd >= floor) return head.slice(0, sentenceEnd + 1);
+
+    const wordEnd = head.lastIndexOf(' ');
+    return (wordEnd >= floor ? head.slice(0, wordEnd) : head).trim();
+}
+
 function isValidAction(a) {
     if (!a || typeof a !== 'object') return false;
     if (a.type === 'tryOn') {
@@ -37,7 +60,7 @@ function isValidAction(a) {
 function normalizeAction(a) {
     if (a.type !== 'tryOn') return a;
     const description = typeof a.lookDescription === 'string'
-        ? a.lookDescription.trim().slice(0, MAX_LOOK_DESCRIPTION)
+        ? clampLookDescription(a.lookDescription)
         : '';
     // Drop the raw field rather than spreading it: anything non-string would
     // survive and end up seeded into the prompt textarea as-is.

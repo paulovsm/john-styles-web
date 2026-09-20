@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
 import { AutoAwesome, ArrowForward, Checkroom } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { MAX_LOOK_DESCRIPTION } from '../../utils/agentActions';
+import { clampLookDescription } from '../../utils/agentActions';
 import { describesLook } from '../../utils/lookDetection';
 
 export default function MessageItem({ message, userAvatar }) {
@@ -21,7 +21,7 @@ export default function MessageItem({ message, userAvatar }) {
             // the wardrobe have no id, and without the text they would be lost.
             openTryOn({
                 preselect: action.itemIds,
-                lookPrompt: action.lookDescription || message.content?.slice(0, MAX_LOOK_DESCRIPTION),
+                lookPrompt: action.lookDescription || clampLookDescription(message.content),
             });
         } else if (action.type === 'navigate') {
             navigate(action.to);
@@ -79,7 +79,7 @@ export default function MessageItem({ message, userAvatar }) {
                         ))}
                         {offerAdvancedTryOn && (
                             <button
-                                onClick={() => openTryOn({ lookPrompt: message.content.slice(0, MAX_LOOK_DESCRIPTION) })}
+                                onClick={() => openTryOn({ lookPrompt: clampLookDescription(message.content) })}
                                 className="inline-flex min-h-11 items-center gap-1 rounded-full border border-control-border px-3 py-1.5 text-sm font-medium text-brand-navy transition-colors hover:bg-grey-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2"
                             >
                                 <Checkroom style={{ fontSize: 14 }} />

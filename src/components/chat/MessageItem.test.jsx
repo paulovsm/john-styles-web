@@ -76,6 +76,30 @@ describe('MessageItem try-on handoff', () => {
         });
     });
 
+    // A reply can suggest three looks; each needs its own button, sending only
+    // its own description, or the generator gets all three at once.
+    it('renders one button per look and sends only that look', async () => {
+        const user = userEvent.setup();
+        const looks = [
+            { type: 'tryOn', label: 'Provar look 1', lookDescription: 'Polo grafite e calça azul-marinho' },
+            { type: 'tryOn', label: 'Provar look 2', itemIds: ['w1'], lookDescription: 'Camiseta off-white e blazer grafite' },
+            { type: 'tryOn', label: 'Provar look 3', lookDescription: 'Camiseta preta e calça grafite' },
+        ];
+        render(<MessageItem message={assistant(LOOK, looks)} />);
+
+        for (const label of ['Provar look 1', 'Provar look 2', 'Provar look 3']) {
+            expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
+        }
+        // The generic offer must not pile on top of the agent's own buttons.
+        expect(screen.queryByRole('button', { name: 'Provar no modo avançado' })).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole('button', { name: 'Provar look 2' }));
+
+        expect(navigate).toHaveBeenCalledWith('/try-on', {
+            state: { preselect: ['w1'], lookPrompt: 'Camiseta off-white e blazer grafite' },
+        });
+    });
+
     it('falls back to the reply text when the action carries no description', async () => {
         const user = userEvent.setup();
         render(<MessageItem message={assistant(LOOK, [{ type: 'tryOn', itemIds: ['a'] }])} />);
