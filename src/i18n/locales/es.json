@@ -257,7 +257,8 @@
       "tryOn": "Probar este look",
       "open": "Abrir",
       "tryOnAdvanced": "Probar en modo avanzado"
-    }
+    },
+    "timeoutError": "Tardé demasiado en responder y la conexión expiró. Inténtalo de nuevo, si puedes con una pregunta más directa."
   },
   "wardrobe": {
     "title": "Mi Guardarropa",

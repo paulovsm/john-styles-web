@@ -257,7 +257,8 @@
       "tryOn": "Try this look",
       "open": "Open",
       "tryOnAdvanced": "Try in advanced mode"
-    }
+    },
+    "timeoutError": "I took too long to answer and the connection expired. Try again — a more direct question helps."
   },
   "wardrobe": {
     "title": "My Wardrobe",

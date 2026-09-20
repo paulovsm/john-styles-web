@@ -40,9 +40,14 @@ export function ConversationProvider({ children }) {
             addMessage({ role: 'model', content, actions });
         } catch (error) {
             console.error('Error processing message:', error);
+            // A slow agent and an unreachable one are different problems for the
+            // user: one is worth retrying with a simpler question, the other is not.
+            const timedOut = error?.code === 'CHAT_TIMEOUT' || error?.status === 504;
             addMessage({
                 role: 'model',
-                content: i18n.t('chat.connectionError', 'Desculpe, estou com dificuldades para conectar agora. Tente novamente.'),
+                content: timedOut
+                    ? i18n.t('chat.timeoutError', 'Demorei demais para responder e a conexão expirou. Tente de novo, se puder com uma pergunta mais direta.')
+                    : i18n.t('chat.connectionError', 'Desculpe, estou com dificuldades para conectar agora. Tente novamente.'),
             });
         } finally {
             setIsTyping(false);
