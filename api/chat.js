@@ -7,7 +7,14 @@ import { consumeUsage, UsageLimitError } from "./_usage.js";
 // The n8n agent (web search + multiple sub-agents) can take a while to respond.
 // undici's default headers/body timeouts abort it too early, so use a dispatcher
 // with generous limits; an AbortSignal below caps the overall wait.
-const N8N_TIMEOUT_MS = 120000;
+//
+// This MUST stay below the platform ceiling for this route — `maxDuration` for
+// api/chat.js in vercel.json, which the test in _chat-timeout.test.js pins. When
+// it sits above, the platform kills the invocation first and the caller gets an
+// opaque 504 instead of the CHAT_TIMEOUT below, so a slow agent reads as a
+// connection failure. A real styling question measured 94s against the current
+// workflow, so the budget has to clear that by a wide margin.
+const N8N_TIMEOUT_MS = 240000;
 const n8nDispatcher = new Agent({ headersTimeout: N8N_TIMEOUT_MS, bodyTimeout: N8N_TIMEOUT_MS });
 
 /**
