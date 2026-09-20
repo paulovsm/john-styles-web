@@ -29,6 +29,8 @@ export const calendarService = {
                 timeMax: end.toISOString(),
                 dayKey,
                 language,
+                // Bounds the classifier to the occasions this experience offers.
+                experience: getCurrentExperience().agentExperience,
             }),
         });
         if (!res.ok) throw new Error('Failed to read calendar');

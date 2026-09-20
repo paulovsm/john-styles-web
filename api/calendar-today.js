@@ -4,6 +4,7 @@ import { requireAuth, handleAuthError } from './_auth.js';
 import { oauthConfigured, refreshAccessToken } from './_googleOAuth.js';
 import { getRefreshToken, getCachedContext, setCachedContext } from './_calendarStore.js';
 import { MODELS } from './_models.js';
+import { DEFAULT_OCCASION, normalizeOccasion, occasionsFor } from './_occasions.js';
 
 /**
  * Returns today's "dressing context" derived from the user's Google Calendar:
@@ -23,13 +24,21 @@ export default async function handler(req, res) {
         if (!refreshToken) return res.status(200).json({ connected: false });
 
         const { timeMin, timeMax, dayKey, language = 'pt' } = req.body || {};
+        const experience = req.body?.experience === 'universal' ? 'universal' : 'legacy';
         if (!timeMin || !timeMax || !dayKey) {
             return res.status(400).json({ error: 'Missing timeMin/timeMax/dayKey' });
         }
 
         // Serve cached classification if we already computed it for this day.
         const cached = await getCachedContext(uid, dayKey);
-        if (cached) return res.status(200).json({ connected: true, ...cached, cached: true });
+        if (cached) {
+            return res.status(200).json({
+                connected: true,
+                ...cached,
+                occasion: normalizeOccasion(cached.occasion, experience),
+                cached: true,
+            });
+        }
 
         // Fetch today's events with a fresh access token.
         const { access_token } = await refreshAccessToken(refreshToken);
@@ -49,9 +58,9 @@ export default async function handler(req, res) {
 
         let context;
         if (events.length === 0) {
-            context = { occasion: 'dia a dia', formality: 2, headline: null, events: [] };
+            context = { occasion: DEFAULT_OCCASION, formality: 2, headline: null, events: [] };
         } else {
-            context = await classify(events, language);
+            context = await classify(events, language, experience);
             context.events = events.map((e) => e.summary);
         }
 
@@ -64,15 +73,15 @@ export default async function handler(req, res) {
     }
 }
 
-async function classify(events, language) {
+async function classify(events, language, experience) {
     const apiKey = process.env.GOOGLE_AI_API_KEY;
-    const fallback = { occasion: 'dia a dia', formality: 2, headline: null };
+    const fallback = { occasion: DEFAULT_OCCASION, formality: 2, headline: null };
     if (!apiKey) return fallback;
 
     const list = events.map((e) => `- ${e.summary}${e.attendees ? ` (${e.attendees} pessoas)` : ''}`).join('\n');
     const system = `You classify a person's day for outfit planning based on their calendar events.
 Consider the MOST important / most visible / dressiest meeting of the day (you dress for that one).
-Return ONLY JSON: { "occasion": one of ["trabalho","casual executivo","dia a dia","festa","esporte","encontro","evento formal","casamento ou formatura","viagem","lazer"],
+Return ONLY JSON: { "occasion": one of ${JSON.stringify(occasionsFor(experience))},
 "formality": integer 1-5 (1 very casual, 5 formal), "headline": a short one-line reason in ${language} referencing the key event }.`;
 
     try {
@@ -85,7 +94,7 @@ Return ONLY JSON: { "occasion": one of ["trabalho","casual executivo","dia a dia
         const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
         const parsed = JSON.parse(text);
         return {
-            occasion: parsed.occasion || fallback.occasion,
+            occasion: normalizeOccasion(parsed.occasion, experience),
             formality: Number(parsed.formality) || fallback.formality,
             headline: parsed.headline || null,
         };
