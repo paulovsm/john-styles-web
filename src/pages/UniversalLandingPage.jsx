@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,6 +12,14 @@ import {
 import LanguageSelector from '../components/common/LanguageSelector';
 import useDocumentMeta from '../hooks/useDocumentMeta';
 import { useExperience } from '../experience/ExperienceContext';
+import { listPublishedPosts } from '../services/api/blogService';
+import {
+    ORGANIZATION_ID,
+    WEBSITE_ID,
+    absoluteSiteUrl,
+    organizationSchema,
+    websiteSchema,
+} from '../utils/seo';
 import './UniversalLandingPage.css';
 
 const FLEEK_STORE_URL = 'https://loja.fleekauthority.com';
@@ -23,15 +31,57 @@ const CAPABILITIES = [
 ];
 
 export default function UniversalLandingPage() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const experience = useExperience();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [articles, setArticles] = useState([]);
+
+    useEffect(() => {
+        let active = true;
+        listPublishedPosts({ featured: true, limit: 3 })
+            .then((posts) => {
+                if (active) setArticles(posts);
+            })
+            .catch(() => {
+                if (active) setArticles([]);
+            });
+        return () => { active = false; };
+    }, []);
+
+    const language = i18n.resolvedLanguage || i18n.language || 'pt';
+    const pageLanguage = language.startsWith('en') ? 'en' : language.startsWith('es') ? 'es' : 'pt-BR';
+    const canonicalUrl = absoluteSiteUrl(experience.basename);
+    const structuredData = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            organizationSchema(),
+            websiteSchema(),
+            {
+                '@type': 'WebPage',
+                '@id': `${canonicalUrl}#webpage`,
+                url: canonicalUrl,
+                name: t('experienceV2.meta.title'),
+                description: t('experienceV2.meta.description'),
+                isPartOf: { '@id': WEBSITE_ID },
+                about: { '@id': ORGANIZATION_ID },
+                primaryImageOfPage: {
+                    '@type': 'ImageObject',
+                    url: absoluteSiteUrl('/experience-v2/universal-hero-v2.webp'),
+                },
+                inLanguage: pageLanguage,
+            },
+        ],
+    };
 
     useDocumentMeta({
         title: t('experienceV2.meta.title'),
         description: t('experienceV2.meta.description'),
         image: '/experience-v2/universal-hero-v2.webp',
+        imageAlt: t('experienceV2.hero.imageAlt'),
         canonical: experience.basename,
+        language: pageLanguage,
+        author: 'Fleek Authority',
+        structuredData,
     });
 
     const closeMenu = () => setMenuOpen(false);
@@ -64,6 +114,7 @@ export default function UniversalLandingPage() {
                         <a href="#como-funciona" onClick={closeMenu}>{t('experienceV2.nav.how')}</a>
                         <a href="#ocasioes" onClick={closeMenu}>{t('experienceV2.nav.occasions')}</a>
                         <a href="#solucoes" onClick={closeMenu}>{t('experienceV2.nav.solutions')}</a>
+                        <a href="#conteudos" onClick={closeMenu}>{t('experienceV2.nav.blog')}</a>
                         <LanguageSelector />
                         <Link className="universal-nav-login" to="/login" onClick={closeMenu}>
                             {t('auth.login')}
@@ -196,6 +247,57 @@ export default function UniversalLandingPage() {
                                 </Link>
                             </article>
                         </div>
+                    </div>
+                </section>
+
+                <section className="universal-journal" id="conteudos" aria-labelledby="universal-journal-title">
+                    <div className="universal-shell">
+                        <header className="universal-journal-heading">
+                            <div>
+                                <span className="universal-kicker">{t('experienceV2.journal.kicker')}</span>
+                                <h2 id="universal-journal-title">{t('experienceV2.journal.title')}</h2>
+                                <p>{t('experienceV2.journal.description')}</p>
+                            </div>
+                            <Link className="universal-journal-all" to="/blog">
+                                {t('experienceV2.journal.all')} <ArrowOutward aria-hidden="true" />
+                            </Link>
+                        </header>
+
+                        {articles.length ? (
+                            <div className="universal-journal-grid">
+                                {articles.map((article) => (
+                                    <article className="universal-journal-card" key={article.id || article.slug}>
+                                        <Link className="universal-journal-image" to={`/blog/${article.slug}`} aria-label={`${t('experienceV2.journal.read')}: ${article.title}`}>
+                                            <img
+                                                src={article.coverImage || '/og.jpg'}
+                                                alt={article.coverAlt || ''}
+                                                width="800"
+                                                height="600"
+                                                loading="lazy"
+                                                onError={(event) => {
+                                                    event.currentTarget.onerror = null;
+                                                    event.currentTarget.src = '/og.jpg';
+                                                }}
+                                            />
+                                        </Link>
+                                        <div className="universal-journal-meta">
+                                            <span>{article.category || t('experienceV2.journal.defaultCategory')}</span>
+                                            {article.readTime ? <span>{article.readTime} min</span> : null}
+                                        </div>
+                                        <h3><Link to={`/blog/${article.slug}`}>{article.title}</Link></h3>
+                                        <p>{article.excerpt}</p>
+                                        <Link className="universal-journal-read" to={`/blog/${article.slug}`}>
+                                            {t('experienceV2.journal.read')} <ArrowOutward aria-hidden="true" />
+                                        </Link>
+                                    </article>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="universal-journal-empty">
+                                <p>{t('experienceV2.journal.empty')}</p>
+                                <Link to="/blog">{t('experienceV2.journal.all')}</Link>
+                            </div>
+                        )}
                     </div>
                 </section>
 

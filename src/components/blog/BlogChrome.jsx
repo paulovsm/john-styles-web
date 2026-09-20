@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 export function BlogHeader() {
     return (
@@ -10,9 +10,10 @@ export function BlogHeader() {
                     <span>Fleek Authority</span>
                 </Link>
                 <nav aria-label="Navegação do blog">
-                    <Link to="/blog">Artigos</Link>
+                    <Link to="/">Início</Link>
+                    <NavLink to="/blog" end>Artigos</NavLink>
                     <Link to="/login">John Styles</Link>
-                    <Link className="blog-header__cta" to="/login">Transforme seu estilo</Link>
+                    <Link className="blog-header__cta" to="/login">Entrar</Link>
                 </nav>
             </div>
         </header>
@@ -25,26 +26,16 @@ export function BlogFooter() {
             <div className="blog-shell blog-footer__inner">
                 <div>
                     <strong>Fleek Authority</strong>
-                    <p>Estilo profissional que evolui com você.</p>
+                    <p>O lugar para transformar o seu estilo.</p>
                 </div>
                 <div className="blog-footer__links">
-                    <a href="mailto:contato@fleekauthority.com">contato@fleekauthority.com</a>
+                    <Link to="/">Início</Link>
+                    <Link to="/empresas">Para empresas</Link>
+                    <Link to="/assinatura">Assinatura Fleek</Link>
                     <Link to="/privacy">Política de Privacidade</Link>
                 </div>
                 <small>© {new Date().getFullYear()} Fleek Authority</small>
             </div>
         </footer>
     );
-}
-
-export function formatPostDate(value) {
-    if (!value) return '';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '';
-    return new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        timeZone: 'UTC',
-    }).format(date);
 }
