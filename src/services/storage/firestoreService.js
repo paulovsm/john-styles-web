@@ -23,6 +23,12 @@ import {
 /** Firestore caps a batched write at 500 operations. */
 const BATCH_LIMIT = 500;
 
+/** Storage extension per thumbnail format createWardrobeThumbnail can produce. */
+const THUMBNAIL_EXTENSIONS = Object.freeze({
+    'image/webp': 'webp',
+    'image/jpeg': 'jpg',
+});
+
 /**
  * True only when a local item is provably identical to its stored counterpart,
  * so the write can be skipped.
@@ -323,8 +329,11 @@ class FirestoreService {
     }
 
     /**
-     * Upload the small WebP variant used by wardrobe grids and carousels.
-     * @param {Blob|File} thumbnailBlob - 320px WebP thumbnail
+     * Upload the small variant used by wardrobe grids and carousels. WebP where
+     * the browser can encode it, JPEG on WebKit — the extension and content
+     * type follow the blob instead of being assumed, so iPhone thumbnails are
+     * not stored as webp bytes they never were.
+     * @param {Blob|File} thumbnailBlob - 320px WebP or JPEG thumbnail
      * @param {string} itemId - Item ID
      * @param {string} userId - User ID
      * @returns {Promise<string>} Download URL of uploaded thumbnail
@@ -336,8 +345,10 @@ class FirestoreService {
                 throw new Error('Cannot upload thumbnail: user not authenticated');
             }
 
-            const storageRef = ref(storage, `users/${uid}/wardrobe/${itemId}-thumb.webp`);
-            await uploadBytes(storageRef, thumbnailBlob, { contentType: 'image/webp' });
+            const contentType = thumbnailBlob?.type || 'image/webp';
+            const extension = THUMBNAIL_EXTENSIONS[contentType] || 'jpg';
+            const storageRef = ref(storage, `users/${uid}/wardrobe/${itemId}-thumb.${extension}`);
+            await uploadBytes(storageRef, thumbnailBlob, { contentType });
             return await getDownloadURL(storageRef);
         } catch (error) {
             console.error('Error uploading thumbnail to Storage:', error);
@@ -359,9 +370,12 @@ class FirestoreService {
                 return false;
             }
 
+            // Both thumbnail extensions: the item may have been added from a
+            // browser that can encode webp or from one that fell back to JPEG.
             const storageRefs = [
                 ref(storage, `users/${uid}/wardrobe/${itemId}.jpg`),
-                ref(storage, `users/${uid}/wardrobe/${itemId}-thumb.webp`),
+                ...Object.values(THUMBNAIL_EXTENSIONS).map((extension) =>
+                    ref(storage, `users/${uid}/wardrobe/${itemId}-thumb.${extension}`)),
             ];
             const results = await Promise.allSettled(storageRefs.map((storageRef) => deleteObject(storageRef)));
             const unexpectedFailure = results.find((result) =>

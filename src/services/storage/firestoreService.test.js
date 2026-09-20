@@ -82,14 +82,32 @@ describe('wardrobe image storage', () => {
         expect(url).toBe('https://storage.test/users/user-1/wardrobe/item-1-thumb.webp');
     });
 
-    it('deletes both the original and thumbnail and tolerates a missing legacy thumbnail', async () => {
+    // WebKit cannot encode webp, so createWardrobeThumbnail hands us a JPEG on
+    // every iPhone. Storing those bytes under a .webp name with an image/webp
+    // content type would misdescribe them to every client that reads them back.
+    it('follows the blob when the browser could only encode JPEG', async () => {
+        const thumbnail = new Blob(['thumb'], { type: 'image/jpeg' });
+
+        const url = await firestoreService.uploadThumbnail(thumbnail, 'item-1', 'user-1');
+
+        expect(storageMocks.uploadBytes).toHaveBeenCalledWith(
+            { path: 'users/user-1/wardrobe/item-1-thumb.jpg' },
+            thumbnail,
+            { contentType: 'image/jpeg' },
+        );
+        expect(url).toBe('https://storage.test/users/user-1/wardrobe/item-1-thumb.jpg');
+    });
+
+    it('deletes the original and both thumbnail formats, tolerating the absent one', async () => {
         storageMocks.deleteObject
+            .mockResolvedValueOnce(undefined)
             .mockResolvedValueOnce(undefined)
             .mockRejectedValueOnce({ code: 'storage/object-not-found' });
 
         await expect(firestoreService.deleteImage('item-1', 'user-1')).resolves.toBe(true);
-        expect(storageMocks.deleteObject).toHaveBeenCalledTimes(2);
+        expect(storageMocks.deleteObject).toHaveBeenCalledTimes(3);
         expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1.jpg');
         expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1-thumb.webp');
+        expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1-thumb.jpg');
     });
 });

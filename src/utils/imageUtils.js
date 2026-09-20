@@ -95,21 +95,46 @@ const fitDimensions = (width, height, maxDimension) => {
         : { width: Math.round((width * maxDimension) / height), height: maxDimension };
 };
 
-const canvasToFile = (canvas, name, mimeType, quality) =>
-    new Promise((resolve, reject) => {
-        canvas.toBlob(
-            (blob) => {
-                if (!blob) { reject(new Error('Canvas is empty')); return; }
-                if (mimeType === 'image/webp' && blob.type !== 'image/webp') {
-                    reject(new Error('WebP encoding is not supported by this browser'));
-                    return;
-                }
-                resolve(new File([blob], name, { type: blob.type || mimeType, lastModified: Date.now() }));
-            },
-            mimeType,
-            quality
-        );
-    });
+const canvasToBlob = (canvas, mimeType, quality) =>
+    new Promise((resolve) => canvas.toBlob(resolve, mimeType, quality));
+
+const FALLBACK_MIME_TYPE = 'image/jpeg';
+
+const EXTENSION_BY_MIME_TYPE = Object.freeze({
+    'image/webp': 'webp',
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+});
+
+/** Puts the extension in sync with the format the browser actually encoded. */
+const withExtensionFor = (name, mimeType) => {
+    const extension = EXTENSION_BY_MIME_TYPE[mimeType];
+    if (!extension) return name;
+    return /\.[^.]+$/.test(name)
+        ? name.replace(/\.[^.]+$/, `.${extension}`)
+        : `${name}.${extension}`;
+};
+
+/**
+ * Encodes the canvas, falling back to JPEG when the browser refuses the format
+ * we asked for. Every WebKit browser — so every iPhone, plus Safari on desktop
+ * — ignores a webp request in toBlob and silently hands back a PNG. Failing
+ * there costs the user the whole upload, and storing that PNG under a .webp
+ * name would be worse, so the returned File always carries the type and
+ * extension of the bytes actually produced.
+ */
+const canvasToFile = async (canvas, name, mimeType, quality) => {
+    let blob = await canvasToBlob(canvas, mimeType, quality);
+
+    if (blob && blob.type !== mimeType && mimeType !== FALLBACK_MIME_TYPE) {
+        blob = (await canvasToBlob(canvas, FALLBACK_MIME_TYPE, quality)) || blob;
+    }
+
+    if (!blob) throw new Error('Canvas is empty');
+
+    const type = blob.type || mimeType;
+    return new File([blob], withExtensionFor(name, type), { type, lastModified: Date.now() });
+};
 
 const resizeImage = async (file, maxDimension, quality, mimeType, outputName) => {
     // Decode with EXIF orientation applied. Phone photos carry an orientation
