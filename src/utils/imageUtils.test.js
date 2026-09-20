@@ -3,6 +3,7 @@ import {
     MAX_WARDROBE_IMAGE_BYTES,
     compressImage,
     createWardrobeThumbnail,
+    cropImage,
     getWardrobeThumbnailUrl,
     validateWardrobeImageFile,
 } from './imageUtils';
@@ -88,6 +89,45 @@ describe('wardrobe image utilities', () => {
         expect(requested).toEqual(['image/webp', 'image/jpeg']);
         expect(thumbnail.name).toBe('terno-thumb.jpg');
         expect(thumbnail.type).toBe('image/jpeg');
+    });
+
+    describe('cropImage', () => {
+        it('cuts out exactly the requested region', async () => {
+            const { canvas, drawImage, bitmap } = stubCanvas(() => new Blob(['jpeg'], { type: 'image/jpeg' }));
+
+            const cropped = await cropImage(
+                new File(['image'], 'terno.png', { type: 'image/png' }),
+                { x: 100, y: 50, width: 400, height: 300 },
+            );
+
+            expect(canvas.width).toBe(400);
+            expect(canvas.height).toBe(300);
+            // Source rect first, then the destination rect at the origin.
+            expect(drawImage).toHaveBeenCalledWith(bitmap, 100, 50, 400, 300, 0, 0, 400, 300);
+            expect(cropped.name).toBe('terno-crop.jpg');
+            expect(cropped.type).toBe('image/jpeg');
+        });
+
+        // The cropper can report a region running past the edge; drawImage would
+        // then paint transparent padding into the result.
+        it('clamps a region that overflows the image', async () => {
+            const { canvas, drawImage, bitmap } = stubCanvas(() => new Blob(['jpeg'], { type: 'image/jpeg' }));
+
+            await cropImage(
+                new File(['image'], 'terno.jpg', { type: 'image/jpeg' }),
+                { x: 1500, y: 700, width: 900, height: 900 },
+            );
+
+            expect(canvas.width).toBe(bitmap.width - 1500);
+            expect(canvas.height).toBe(bitmap.height - 700);
+            expect(drawImage).toHaveBeenCalledWith(bitmap, 1500, 700, 100, 100, 0, 0, 100, 100);
+        });
+
+        it('returns the file untouched when there is no area to cut', async () => {
+            const file = new File(['image'], 'terno.jpg', { type: 'image/jpeg' });
+            expect(await cropImage(file, null)).toBe(file);
+            expect(await cropImage(file, { x: 0, y: 0, width: 0, height: 0 })).toBe(file);
+        });
     });
 
     it('does not re-encode the full-size image, which is already JPEG', async () => {

@@ -255,7 +255,8 @@
     "connectionError": "Desculpe, estou com dificuldades para conectar agora. Tente novamente.",
     "actions": {
       "tryOn": "Provar este look",
-      "open": "Abrir"
+      "open": "Abrir",
+      "tryOnAdvanced": "Provar no modo avançado"
     }
   },
   "wardrobe": {
@@ -318,7 +319,8 @@
         "grey": "Cinza",
         "brown": "Marrom",
         "beige": "Bege"
-      }
+      },
+      "toggle": "Filtros"
     },
     "types": {
       "unclassified": "Não classificada",
@@ -415,7 +417,8 @@
     "deleteTitle": "Excluir peça",
     "deleteConfirm": "Tem certeza que deseja excluir esta peça do guarda-roupa?",
     "sampleNotice": "Seu guarda-roupa inclui peças de exemplo para você testar.",
-    "removeSamples": "Remover exemplos"
+    "removeSamples": "Remover exemplos",
+    "savedButFiltered": "Peça salva. Ela está fora dos filtros ativos — limpe os filtros para vê-la."
   },
   "tryOn": {
     "title": "Prova Virtual",
@@ -453,7 +456,8 @@
     "outfitPartial": "Algumas peças deste look não estão mais no guarda-roupa.",
     "share": "Compartilhar",
     "downloaded": "Imagem baixada.",
-    "shareError": "Não foi possível compartilhar a imagem."
+    "shareError": "Não foi possível compartilhar a imagem.",
+    "advancedWithoutItems": "Sem peça selecionada, John monta o look só a partir da descrição acima."
   },
   "history": {
     "title": "Histórico de Interações",
@@ -670,5 +674,14 @@
       "menswear": "masculino",
       "womenswear": "feminino"
     }
+  },
+  "imageCrop": {
+    "title": "Ajustar a foto",
+    "wardrobeTitle": "Enquadrar a peça",
+    "modelTitle": "Enquadrar sua foto",
+    "description": "Arraste e use o zoom para destacar o que importa. Se preferir, use a foto inteira.",
+    "zoom": "Zoom",
+    "confirm": "Recortar e usar",
+    "useWholePhoto": "Usar foto inteira"
   }
 }

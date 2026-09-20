@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseAgentActions } from './agentActions';
+import { MAX_LOOK_DESCRIPTION, parseAgentActions } from './agentActions';
 
 describe('parseAgentActions', () => {
     it('returns the text unchanged when there is no actions block', () => {
@@ -21,10 +21,39 @@ describe('parseAgentActions', () => {
         expect(actions).toEqual([{ type: 'navigate', to: '/wardrobe' }]);
     });
 
-    it('drops invalid actions (bad type, empty itemIds)', () => {
+    it('drops invalid actions (bad type, nothing to try on)', () => {
         const raw = 'x<actions>[{"type":"tryOn","itemIds":[]},{"type":"boom"},{"foo":1}]</actions>';
         const { actions } = parseAgentActions(raw);
         expect(actions).toEqual([]);
+    });
+
+    // A look John describes can name pieces the wardrobe does not have, and
+    // those have no id to send — the description is the only way they reach the
+    // generator. So a tryOn with a description but no ids is valid.
+    it('accepts a described look with no wardrobe pieces', () => {
+        const raw = 'Sugestão:<actions>[{"type":"tryOn","itemIds":[],"lookDescription":"camisa branca e calça bege"}]</actions>';
+        const { actions } = parseAgentActions(raw);
+        expect(actions).toEqual([
+            { type: 'tryOn', itemIds: [], lookDescription: 'camisa branca e calça bege' },
+        ]);
+    });
+
+    it('keeps ids and description together and trims the description', () => {
+        const raw = 'ok<actions>[{"type":"tryOn","itemIds":["a"],"lookDescription":"  com mocassim  "}]</actions>';
+        const { actions } = parseAgentActions(raw);
+        expect(actions[0]).toEqual({ type: 'tryOn', itemIds: ['a'], lookDescription: 'com mocassim' });
+    });
+
+    it('caps a runaway description so the seeded prompt stays bounded', () => {
+        const raw = `ok<actions>[{"type":"tryOn","itemIds":["a"],"lookDescription":"${'x'.repeat(MAX_LOOK_DESCRIPTION + 500)}"}]</actions>`;
+        const { actions } = parseAgentActions(raw);
+        expect(actions[0].lookDescription).toHaveLength(MAX_LOOK_DESCRIPTION);
+    });
+
+    it('drops a non-string description instead of seeding it into the prompt', () => {
+        const raw = 'ok<actions>[{"type":"tryOn","itemIds":["a"],"lookDescription":42}]</actions>';
+        const { actions } = parseAgentActions(raw);
+        expect(actions).toEqual([{ type: 'tryOn', itemIds: ['a'] }]);
     });
 
     it('ignores a malformed actions block but keeps the text', () => {

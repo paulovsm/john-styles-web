@@ -9,21 +9,30 @@ import Button from '../components/common/Button';
 import { Add, HelpOutline } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useExperience } from '../experience/ExperienceContext';
+import { useToast } from '../contexts/ToastContext';
 import JohnSignature from '../components/common/JohnSignature';
+
+const TUTORIAL_DISMISSED_KEY = 'john-styles.wardrobe-tutorial-dismissed';
 
 export default function WardrobePage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [showTutorial, setShowTutorial] = useState(() => {
+    const [tutorialDismissed, setTutorialDismissed] = useState(() => {
         try {
-            return localStorage.getItem('john-styles.wardrobe-tutorial-dismissed') !== 'true';
+            return localStorage.getItem(TUTORIAL_DISMISSED_KEY) === 'true';
         } catch {
-            return true;
+            return false;
         }
     });
+    // Set only by the "reopen" button, so the tutorial can be summoned back on a
+    // wardrobe that already has pieces.
+    const [tutorialReopened, setTutorialReopened] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-    const { addItem, updateItem, hasDemoItems, removeSampleItems } = useWardrobeContext();
+    // The piece to bring into view after a save, so the user sees what happened.
+    const [highlightItemId, setHighlightItemId] = useState(null);
+    const { addItem, updateItem, hasDemoItems, removeSampleItems, allItems } = useWardrobeContext();
     const { t } = useTranslation();
     const experience = useExperience();
+    const toast = useToast();
 
     const handleSaveItem = (item) => {
         if (editingItem) {
@@ -33,6 +42,7 @@ export default function WardrobePage() {
         }
         setIsModalOpen(false);
         setEditingItem(null);
+        setHighlightItemId(item.id);
     };
 
     const handleItemClick = (item) => {
@@ -51,13 +61,21 @@ export default function WardrobePage() {
     };
 
     const dismissTutorial = () => {
-        setShowTutorial(false);
+        setTutorialReopened(false);
+        setTutorialDismissed(true);
         try {
-            localStorage.setItem('john-styles.wardrobe-tutorial-dismissed', 'true');
+            localStorage.setItem(TUTORIAL_DISMISSED_KEY, 'true');
         } catch {
             // The tutorial can still be reopened during this session.
         }
     };
+
+    // On a phone the tutorial is the tallest block above the grid, and it used to
+    // greet everyone until dismissed — pushing the pieces themselves off screen.
+    // It now opens on its own only when there is nothing else to show. Derived
+    // rather than stored, so it disappears as soon as the first piece lands
+    // (the wardrobe resolves asynchronously).
+    const showTutorial = tutorialReopened || (!tutorialDismissed && allItems.length === 0);
 
     return (
         <MainLayout>
@@ -67,7 +85,7 @@ export default function WardrobePage() {
                     <h1 className="text-xl font-serif font-bold text-brand-navy sm:text-2xl">
                         {t('experienceV2.wardrobe.title')}
                     </h1>
-                    <p className="mt-2 max-w-2xl text-sm leading-6 text-grey-medium">
+                    <p className="mt-2 hidden max-w-2xl text-sm leading-6 text-grey-medium sm:block">
                         {t('experienceV2.wardrobe.description')}
                     </p>
                 </div>
@@ -78,7 +96,7 @@ export default function WardrobePage() {
                 )}
                 <div className="flex flex-wrap justify-end gap-2">
                     {!showTutorial && (
-                        <Button variant="text" className="px-3 sm:px-5" onClick={() => setShowTutorial(true)}>
+                        <Button variant="text" className="px-3 sm:px-5" onClick={() => setTutorialReopened(true)}>
                             <HelpOutline className="mr-2 h-5 w-5" />
                             {t('wardrobe.tutorial.reopen')}
                         </Button>
@@ -104,7 +122,16 @@ export default function WardrobePage() {
             )}
 
             <WardrobeFilters />
-            <WardrobeGrid onAddItem={openNewItem} onItemClick={handleItemClick} />
+            <WardrobeGrid
+                onAddItem={openNewItem}
+                onItemClick={handleItemClick}
+                highlightItemId={highlightItemId}
+                onHighlightShown={() => setHighlightItemId(null)}
+                onHighlightMissed={() => {
+                    setHighlightItemId(null);
+                    toast.info(t('wardrobe.savedButFiltered'));
+                }}
+            />
 
             <AddItemModal
                 isOpen={isModalOpen}

@@ -3,21 +3,43 @@ import Avatar from '../common/Avatar';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
-import { AutoAwesome, ArrowForward } from '@mui/icons-material';
+import { AutoAwesome, ArrowForward, Checkroom } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { MAX_LOOK_DESCRIPTION } from '../../utils/agentActions';
+
+/**
+ * Below this, a reply is an acknowledgement ("Combina, sim!") or a greeting, not
+ * a look worth sending to the generator. The offer is hidden there to keep the
+ * thread from sprouting a button under every line John says.
+ */
+const LOOK_REPLY_MIN_LENGTH = 180;
 
 export default function MessageItem({ message, userAvatar }) {
     const isUser = message.role === 'user';
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    const openTryOn = (state) => navigate('/try-on', { state });
+
     const runAction = (action) => {
         if (action.type === 'tryOn') {
-            navigate('/try-on', { state: { preselect: action.itemIds } });
+            // Carry the described look too: the pieces John named that are not in
+            // the wardrobe have no id, and without the text they would be lost.
+            openTryOn({
+                preselect: action.itemIds,
+                lookPrompt: action.lookDescription || message.content?.slice(0, MAX_LOOK_DESCRIPTION),
+            });
         } else if (action.type === 'navigate') {
             navigate(action.to);
         }
     };
+
+    // The agent does not always emit an <actions> block, and users were copying
+    // John's reply into the advanced prompt by hand. Offer that as one tap.
+    const hasTryOnAction = message.actions?.some((a) => a.type === 'tryOn');
+    const offerAdvancedTryOn = !isUser
+        && !hasTryOnAction
+        && (message.content?.trim().length || 0) >= LOOK_REPLY_MIN_LENGTH;
 
     const actionLabel = (action) => {
         if (action.label) return action.label;
@@ -49,9 +71,9 @@ export default function MessageItem({ message, userAvatar }) {
                     }`}>
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
                 </div>
-                {!isUser && message.actions?.length > 0 && (
+                {!isUser && (message.actions?.length > 0 || offerAdvancedTryOn) && (
                     <div className="mt-2 flex flex-wrap gap-2">
-                        {message.actions.map((action, i) => (
+                        {message.actions?.map((action, i) => (
                             <button
                                 key={i}
                                 onClick={() => runAction(action)}
@@ -61,6 +83,15 @@ export default function MessageItem({ message, userAvatar }) {
                                 {actionLabel(action)}
                             </button>
                         ))}
+                        {offerAdvancedTryOn && (
+                            <button
+                                onClick={() => openTryOn({ lookPrompt: message.content.slice(0, MAX_LOOK_DESCRIPTION) })}
+                                className="inline-flex min-h-11 items-center gap-1 rounded-full border border-control-border px-3 py-1.5 text-sm font-medium text-brand-navy transition-colors hover:bg-grey-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2"
+                            >
+                                <Checkroom style={{ fontSize: 14 }} />
+                                {t('chat.actions.tryOnAdvanced', 'Provar no modo avançado')}
+                            </button>
+                        )}
                     </div>
                 )}
                 <div className={`text-xs mt-1 ${isUser ? 'text-white-pure/70' : 'text-grey-medium'}`}>

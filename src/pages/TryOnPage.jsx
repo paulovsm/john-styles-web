@@ -14,7 +14,14 @@ import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserProfileContext } from '../contexts/UserProfileContext';
 import { useToast } from '../contexts/ToastContext';
-import { compressImage, getWardrobeThumbnailUrl, toCompressedDataUrl } from '../utils/imageUtils';
+import {
+    compressImage,
+    cropImage,
+    getWardrobeThumbnailUrl,
+    toCompressedDataUrl,
+    validateWardrobeImageFile,
+} from '../utils/imageUtils';
+import ImageCropModal from '../components/common/ImageCropModal';
 import { garmentsConflict } from '../utils/garmentTaxonomy';
 import { useExperience } from '../experience/ExperienceContext';
 import JohnSignature from '../components/common/JohnSignature';
@@ -42,10 +49,14 @@ export default function TryOnPage() {
     const [advancedMode, setAdvancedMode] = useState(false);
     const [customPrompt, setCustomPrompt] = useState('');
     const [usageRefresh, setUsageRefresh] = useState(0);
+    const [photoError, setPhotoError] = useState('');
+    // { file, url } while the user frames a freshly picked photo.
+    const [cropSource, setCropSource] = useState(null);
     const [outfits, setOutfits] = useState([]);
     const [savingOutfit, setSavingOutfit] = useState(false);
     const [sharing, setSharing] = useState(false);
     const resultRef = useRef(null);
+    const advancedRef = useRef(null);
 
     const handleShare = async () => {
         if (!generatedImage) return;
@@ -83,6 +94,21 @@ export default function TryOnPage() {
         // Run once when we arrive with a preselection.
     }, [preselectIds]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Arriving from a look John suggested in the chat: seed the advanced prompt
+    // with his description, so the pieces he named that are NOT in the wardrobe
+    // still reach the generator. This is the copy-and-paste users were doing by
+    // hand. The textarea stays editable — the seed is a starting point.
+    const lookPrompt = location.state?.lookPrompt;
+    React.useEffect(() => {
+        if (!lookPrompt) return;
+        // Route state intentionally seeds an editable prompt on arrival.
+        setCustomPrompt(lookPrompt);
+        setAdvancedMode(true);
+        // The advanced card sits below the (long) input column on mobile, so an
+        // arrival that silently prefills it looks like nothing happened.
+        requestAnimationFrame(() => advancedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+    }, [lookPrompt]);
+
     const persistModelPhoto = async (blob) => {
         if (!currentUser) return;
         setSavingPhoto(true);
@@ -98,12 +124,37 @@ export default function TryOnPage() {
         }
     };
 
-    const handlePhotoChange = async (e) => {
+    const handlePhotoChange = (e) => {
         const file = e.target.files[0];
+        e.target.value = '';
         if (!file) return;
-        let usable = file;
+        // Same gate as the wardrobe upload. This input used to accept image/*,
+        // which let through HEIC — decodable in Safari, not in Chrome.
+        const validationError = validateWardrobeImageFile(file);
+        if (validationError) {
+            setPhotoError(t(`wardrobe.errors.${validationError === 'too_large' ? 'imageTooLarge' : 'unsupportedImageType'}`));
+            return;
+        }
+        setPhotoError('');
+        setCropSource({ file, url: URL.createObjectURL(file) });
+    };
+
+    const closeCropper = () => {
+        setCropSource((current) => {
+            if (current) URL.revokeObjectURL(current.url);
+            return null;
+        });
+    };
+
+    const handleCropConfirm = async (area) => {
+        const source = cropSource;
+        closeCropper();
+        if (!source) return;
+
+        let usable = source.file;
         try {
-            usable = await compressImage(file);
+            const framed = area ? await cropImage(source.file, area) : source.file;
+            usable = await compressImage(framed);
         } catch (error) {
             console.error('Error compressing image:', error);
         }
@@ -239,8 +290,14 @@ export default function TryOnPage() {
         }
     };
 
+    // Advanced mode can stand on its own: a described look needs no wardrobe
+    // piece, and the API already accepts zero item images — only the prompt is
+    // required server-side.
+    const hasAdvancedPrompt = advancedMode && customPrompt.trim().length > 0;
+    const canGenerate = !!userPhotoPreview && (selectedItems.length > 0 || hasAdvancedPrompt);
+
     const handleGenerate = async () => {
-        if (!userPhotoPreview || selectedItems.length === 0) return;
+        if (!canGenerate) return;
 
         setGenerating(true);
         setErrorMessage('');
@@ -256,7 +313,7 @@ export default function TryOnPage() {
         try {
             let prompt;
 
-            if (advancedMode && customPrompt.trim()) {
+            if (hasAdvancedPrompt) {
                 // Use custom prompt with placeholders replaced
                 prompt = replacePlaceholders(customPrompt, selectedItems);
             } else {
@@ -361,7 +418,7 @@ export default function TryOnPage() {
                                             <div className="flex text-sm text-grey-medium justify-center">
                                                 <span className="relative bg-white-pure rounded-md font-medium text-brand-navy hover:text-brand-navy focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-navy">
                                                     <span>{t('wardrobe.addModal.uploadImage')}</span>
-                                                    <input id="user-photo-upload" name="user-photo-upload" type="file" className="sr-only" accept="image/*" onChange={handlePhotoChange} />
+                                                    <input id="user-photo-upload" name="user-photo-upload" type="file" className="sr-only" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" onChange={handlePhotoChange} />
                                                 </span>
                                             </div>
                                             <p className="text-xs text-grey-medium">{t('tryOn.uploadPhotoDescription')}</p>
@@ -369,6 +426,9 @@ export default function TryOnPage() {
                                     </label>
                                 )}
                             </div>
+                            {photoError && (
+                                <p role="alert" className="mt-2 text-sm text-status-error-content">{photoError}</p>
+                            )}
                         </Card.Body>
                     </Card>
 
@@ -448,6 +508,7 @@ export default function TryOnPage() {
                     </Card>
 
                     {/* Step 3: Advanced Mode */}
+                    <div ref={advancedRef} className="scroll-mt-4">
                     <Card>
                         <Card.Body>
                             <div className="flex items-center justify-between mb-4">
@@ -476,10 +537,16 @@ export default function TryOnPage() {
                                     <p className="text-xs text-grey-medium">
                                         {t('tryOn.customPromptHelp')}
                                     </p>
+                                    {selectedItems.length === 0 && (
+                                        <p className="text-xs text-grey-medium">
+                                            {t('tryOn.advancedWithoutItems')}
+                                        </p>
+                                    )}
                                 </div>
                             )}
                         </Card.Body>
                     </Card>
+                    </div>
 
                     {/* Error/Success Message Display */}
                     {(errorMessage || successMessage) && (
@@ -499,7 +566,7 @@ export default function TryOnPage() {
                     <Button
                         variant="primary"
                         className="w-full py-3"
-                        disabled={!userPhotoPreview || selectedItems.length === 0 || generating || !!retryAfter}
+                        disabled={!canGenerate || generating || !!retryAfter}
                         onClick={handleGenerate}
                     >
                         {generating ? <Loading type="spinner" size={20} className="mr-2" /> : <AutoAwesome className="mr-2" />}
@@ -560,6 +627,14 @@ export default function TryOnPage() {
                     )}
                 </div>
             </div>
+
+            <ImageCropModal
+                isOpen={!!cropSource}
+                imageSrc={cropSource?.url}
+                onConfirm={handleCropConfirm}
+                onCancel={closeCropper}
+                title={t('imageCrop.modelTitle')}
+            />
         </MainLayout>
     );
 }
