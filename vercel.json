@@ -26,6 +26,11 @@
         }
     ],
     "functions": {
+        "api/chat.js": {
+            "memory": 1024,
+            "maxDuration": 300,
+            "includeFiles": "dist/**"
+        },
         "api/*.js": {
             "memory": 1024,
             "maxDuration": 60,

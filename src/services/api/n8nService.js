@@ -25,7 +25,14 @@ export const n8nService = {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to connect to John Styles agent');
+                // Carry the server's code so the caller can tell "the agent took
+                // too long" apart from "we could not reach it" — they read the
+                // same to the user otherwise, and the timeout is the common one.
+                const body = await response.json().catch(() => ({}));
+                const error = new Error(body.message || body.error || 'Failed to connect to John Styles agent');
+                error.code = body.error;
+                error.status = response.status;
+                throw error;
             }
 
             const data = await response.json();

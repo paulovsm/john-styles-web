@@ -256,7 +256,8 @@
     "actions": {
       "tryOn": "Probar este look",
       "open": "Abrir"
-    }
+    },
+    "timeoutError": "Tardé demasiado en responder y la conexión expiró. Inténtalo de nuevo, si puedes con una pregunta más directa."
   },
   "wardrobe": {
     "title": "Mi Guardarropa",

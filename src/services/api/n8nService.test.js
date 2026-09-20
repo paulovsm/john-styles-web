@@ -20,3 +20,41 @@ describe('chat contract after visual promotion', () => {
         },
     );
 });
+
+const context = { userProfile: {}, wardrobeItems: [], chatHistory: [] };
+
+describe('chat failure modes', () => {
+    // A slow agent and an unreachable one used to raise identical errors, so the
+    // UI called a 240s timeout a connection problem.
+    it('surfaces the timeout code so the caller can say what went wrong', async () => {
+        authFetch.mockResolvedValue({
+            ok: false,
+            status: 504,
+            json: async () => ({ error: 'CHAT_TIMEOUT', message: 'The assistant took too long to respond.' }),
+        });
+
+        await expect(n8nService.sendMessage('Test', context)).rejects.toMatchObject({
+            code: 'CHAT_TIMEOUT',
+            status: 504,
+        });
+    });
+
+    it('still reports a plain failure when the body carries no code', async () => {
+        authFetch.mockResolvedValue({ ok: false, status: 500, json: async () => ({}) });
+
+        await expect(n8nService.sendMessage('Test', context)).rejects.toMatchObject({
+            code: undefined,
+            status: 500,
+        });
+    });
+
+    it('survives an error response that is not JSON at all', async () => {
+        authFetch.mockResolvedValue({
+            ok: false,
+            status: 502,
+            json: async () => { throw new SyntaxError('Unexpected token <'); },
+        });
+
+        await expect(n8nService.sendMessage('Test', context)).rejects.toMatchObject({ status: 502 });
+    });
+});
