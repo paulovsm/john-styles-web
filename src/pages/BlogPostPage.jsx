@@ -107,7 +107,9 @@ export default function BlogPostPage() {
         imageAlt: post?.coverAlt || 'Fleek Authority',
         canonical: post?.canonicalUrl || `/blog/${slug}`,
         type: 'article',
-        robots: notFound ? 'noindex, follow' : 'index, follow',
+        // Only state it for a missing post. Claiming "index, follow" for a found
+        // one would also claim it inside the pilot, which must stay unindexed.
+        robots: notFound ? 'noindex, follow' : undefined,
         publishedAt: post?.publishedAt,
         modifiedAt: post?.updatedAt || post?.publishedAt,
         author: postAuthor,

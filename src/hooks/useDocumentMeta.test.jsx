@@ -50,3 +50,34 @@ describe('useDocumentMeta', () => {
         expect(JSON.parse(document.querySelector('#page-structured-data').textContent)).toMatchObject({ '@type': 'BlogPosting' });
     });
 });
+
+describe('useDocumentMeta robots handling', () => {
+    // The universal pilot is kept out of the index by ExperienceProvider, which
+    // writes noindex on the shared tag. A page that does not state its own
+    // robots value must leave that alone — defaulting to "index, follow" here
+    // made every /teste-novo-app page indexable.
+    it('leaves an existing robots tag untouched when the page states nothing', () => {
+        document.head.innerHTML = '<meta name="robots" content="noindex, nofollow">';
+
+        render(<MetaHarness title="Piloto" description="Prévia" canonical="/teste-novo-app" />);
+
+        expect(document.head.querySelector('meta[name="robots"]').content).toBe('noindex, nofollow');
+    });
+
+    it('does not remove the site-wide default either', () => {
+        document.head.innerHTML = '<meta name="robots" content="index, follow">';
+
+        render(<MetaHarness title="Início" description="Home" canonical="/" />);
+
+        expect(document.head.querySelector('meta[name="robots"]')).not.toBeNull();
+        expect(document.head.querySelector('meta[name="robots"]').content).toBe('index, follow');
+    });
+
+    it('still applies a value the page states explicitly', () => {
+        document.head.innerHTML = '<meta name="robots" content="index, follow">';
+
+        render(<MetaHarness title="Post ausente" description="404" robots="noindex, follow" />);
+
+        expect(document.head.querySelector('meta[name="robots"]').content).toBe('noindex, follow');
+    });
+});

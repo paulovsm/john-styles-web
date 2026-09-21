@@ -38,7 +38,10 @@ export default function useDocumentMeta({
     canonical,
     type = 'website',
     language = 'pt-BR',
-    robots = 'index, follow',
+    // No default on purpose: the site-wide value lives in index.html, and the
+    // universal pilot's `noindex` is owned by ExperienceProvider. Defaulting to
+    // "index, follow" here overwrote that on every page of /teste-novo-app.
+    robots,
     publishedAt,
     modifiedAt,
     author,
@@ -53,7 +56,10 @@ export default function useDocumentMeta({
         document.documentElement.lang = language;
 
         upsertMeta('description', description);
-        upsertMeta('robots', robots);
+        // Skipped rather than cleared when absent: upsertMeta REMOVES the tag on
+        // an empty value, which would drop both the site-wide default from
+        // index.html and the pilot's noindex.
+        if (robots) upsertMeta('robots', robots);
         upsertMeta('author', author);
         upsertMeta('og:title', title, true);
         upsertMeta('og:description', description, true);
