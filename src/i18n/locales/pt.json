@@ -18,6 +18,7 @@
       "how": "A experiência",
       "occasions": "Ocasiões",
       "solutions": "Soluções Fleek",
+      "blog": "Conteúdos",
       "business": "Para empresas"
     },
     "hero": {
@@ -83,6 +84,15 @@
         "description": "Curadoria recorrente pensada a partir das lacunas identificadas por John. Formato, disponibilidade e composição continuam em validação.",
         "action": "Conhecer o conceito"
       }
+    },
+    "journal": {
+      "kicker": "Fleek Journal",
+      "title": "Repertório para fazer escolhas de estilo melhores",
+      "description": "Análises, referências e orientação prática para entender códigos de estilo, usar melhor o guarda-roupa e decidir com mais clareza.",
+      "all": "Ver todos os artigos",
+      "read": "Ler artigo",
+      "empty": "O Fleek Journal reúne conteúdo sobre estilo, ocasiões e decisões de guarda-roupa.",
+      "defaultCategory": "Estilo"
     },
     "final": {
       "kicker": "Comece com o que você já tem",

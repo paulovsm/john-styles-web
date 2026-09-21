@@ -3,9 +3,8 @@
 Plain-language list of what's left to do. Estimates are hands-on coding time
 (review and verification add overhead on top).
 
-Last updated on 2026-09-06 after establishing Fleek Authority as the place for
-style transformation, John Styles as its expert solution, and mobile-first as
-the approval order for copy, imagery and interface.
+Last updated on 2026-09-20 after promoting the universal experience and opening
+the Fleek Journal redesign plus the SEO, AIO and GEO review.
 
 ---
 
@@ -25,7 +24,8 @@ the approval order for copy, imagery and interface.
 | #21 | **Womenswear support** — new garment types (dress, skirt, jumpsuit, etc.), onboarding "styling register" choice, shopping-query wording no longer assumes menswear | merged |
 | #22 | Fix Google login on Safari for iPhone | merged |
 | #23 | 320px WebP thumbnails, legacy fallback, early file validation and paired Storage cleanup | merged |
-| `feat/universal-stylist-experience` | Full universal stylist pilot under `/teste-novo-app`; Fleek-led narrative, John as expert solution, high-impact monochrome hero and mobile-first CTA system | implemented locally; review pending |
+| #24 | Universal Fleek experience promoted to the Home and internal pages while preserving production behavior | merged |
+| `feat/blog-seo-aio-geo` | Fleek Journal restored to the Home, blog redesign and technical SEO/AIO/GEO foundation | ready for review |
 
 ---
 
@@ -70,6 +70,12 @@ does **not** do yet:
 ---
 
 ## Next up
+
+### Search measurement and submission
+After publication, validate structured data, submit the sitemap in Google Search
+Console and Bing Webmaster Tools, and establish the 30–90 day baseline for
+impressions, CTR, AI citations and article-to-John conversion.
+_Est: ~1 h setup + recurring review._
 
 ### Upload progress
 Saving a garment on a slow connection shows only a small spinner — no percentage,
@@ -143,12 +149,6 @@ The "join the movement" email box currently just opens the visitor's email app
 **save the address**. Needs one decision: where to store the emails (recommended:
 the existing database — no extra tools).
 _Est: ~45 min + a storage decision._
-
-### Improve overall SEO
-Audit and improve search visibility: page titles/descriptions, social-share
-previews (Open Graph), sitemap, structured data. Some pieces already exist — this
-fills the gaps and makes them consistent.
-_Est: ~2–4 h._
 
 ### Slim down the icon library
 We use ~30 icons but pull them from a library of ~11,000. Extra weight for no

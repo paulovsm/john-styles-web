@@ -15,21 +15,68 @@ function upsertMeta(name, content, property = false) {
     element.setAttribute('content', content);
 }
 
-export default function useDocumentMeta({ title, description, image, canonical, type = 'website' }) {
+function upsertStructuredData(serializedStructuredData) {
+    let element = document.head.querySelector('#page-structured-data');
+    if (!serializedStructuredData) {
+        element?.remove();
+        return;
+    }
+    if (!element) {
+        element = document.createElement('script');
+        element.id = 'page-structured-data';
+        element.type = 'application/ld+json';
+        document.head.appendChild(element);
+    }
+    element.textContent = serializedStructuredData;
+}
+
+export default function useDocumentMeta({
+    title,
+    description,
+    image,
+    imageAlt,
+    canonical,
+    type = 'website',
+    language = 'pt-BR',
+    // No default on purpose: the site-wide value lives in index.html, and the
+    // universal pilot's `noindex` is owned by ExperienceProvider. Defaulting to
+    // "index, follow" here overwrote that on every page of /teste-novo-app.
+    robots,
+    publishedAt,
+    modifiedAt,
+    author,
+    structuredData,
+}) {
+    const serializedStructuredData = structuredData
+        ? JSON.stringify(structuredData).replaceAll('<', '\\u003c')
+        : '';
+
     useEffect(() => {
         if (title) document.title = title;
+        document.documentElement.lang = language;
 
         upsertMeta('description', description);
+        // Skipped rather than cleared when absent: upsertMeta REMOVES the tag on
+        // an empty value, which would drop both the site-wide default from
+        // index.html and the pilot's noindex.
+        if (robots) upsertMeta('robots', robots);
+        upsertMeta('author', author);
         upsertMeta('og:title', title, true);
         upsertMeta('og:description', description, true);
         upsertMeta('og:type', type, true);
+        upsertMeta('og:locale', language.replace('-', '_'), true);
         upsertMeta('twitter:card', image ? 'summary_large_image' : 'summary');
         upsertMeta('twitter:title', title);
         upsertMeta('twitter:description', description);
 
         const absoluteImage = image ? new URL(image, window.location.origin).href : '';
         upsertMeta('og:image', absoluteImage, true);
+        upsertMeta('og:image:alt', imageAlt, true);
         upsertMeta('twitter:image', absoluteImage);
+        upsertMeta('twitter:image:alt', imageAlt);
+        upsertMeta('article:published_time', publishedAt, true);
+        upsertMeta('article:modified_time', modifiedAt, true);
+        upsertMeta('article:author', author, true);
 
         let canonicalLink = document.head.querySelector('link[rel="canonical"]');
         if (canonical) {
@@ -39,8 +86,25 @@ export default function useDocumentMeta({ title, description, image, canonical, 
                 document.head.appendChild(canonicalLink);
             }
             canonicalLink.href = new URL(canonical, window.location.origin).href;
+            upsertMeta('og:url', canonicalLink.href, true);
         } else {
             canonicalLink?.remove();
+            upsertMeta('og:url', '', true);
         }
-    }, [title, description, image, canonical, type]);
+
+        upsertStructuredData(serializedStructuredData);
+    }, [
+        author,
+        canonical,
+        description,
+        image,
+        imageAlt,
+        language,
+        modifiedAt,
+        publishedAt,
+        robots,
+        serializedStructuredData,
+        title,
+        type,
+    ]);
 }

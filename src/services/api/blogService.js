@@ -13,14 +13,23 @@ async function parseResponse(response) {
     return payload;
 }
 
-export async function listPublishedPosts({ featured = false, limit } = {}) {
+const pendingPostLists = new Map();
+
+export function listPublishedPosts({ featured = false, limit } = {}) {
     const params = new URLSearchParams();
     if (featured) params.set('featured', 'true');
     if (limit) params.set('limit', String(limit));
     const query = params.toString();
-    const response = await fetch(`/api/blog-posts${query ? `?${query}` : ''}`);
-    const payload = await parseResponse(response);
-    return Array.isArray(payload.data) ? payload.data : [];
+    if (pendingPostLists.has(query)) return pendingPostLists.get(query);
+
+    const request = fetch(`/api/blog-posts${query ? `?${query}` : ''}`)
+        .then(parseResponse)
+        .then((payload) => (Array.isArray(payload.data) ? payload.data : []));
+    pendingPostLists.set(query, request);
+
+    return request.finally(() => {
+        if (pendingPostLists.get(query) === request) pendingPostLists.delete(query);
+    });
 }
 
 export async function getPublishedPost(slug) {

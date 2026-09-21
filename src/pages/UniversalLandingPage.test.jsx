@@ -22,6 +22,10 @@ vi.mock('../components/common/LanguageSelector', () => ({
     default: () => <span>language-selector</span>,
 }));
 
+vi.mock('../services/api/blogService', () => ({
+    listPublishedPosts: vi.fn(() => new Promise(() => {})),
+}));
+
 describe('UniversalLandingPage', () => {
     it('presents the universal positioning and transparent service status', () => {
         render(
@@ -35,6 +39,7 @@ describe('UniversalLandingPage', () => {
         expect(screen.getByAltText('experienceV2.john.avatarAlt')).toBeInTheDocument();
         expect(screen.getAllByText('experienceV2.solutions.conceptBadge')).toHaveLength(2);
         expect(screen.getByRole('link', { name: /experienceV2.hero.cta/ })).toHaveAttribute('href', '/login');
+        expect(screen.getByRole('heading', { name: 'experienceV2.journal.title' })).toBeInTheDocument();
     });
 
     it.each([

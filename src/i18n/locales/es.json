@@ -18,6 +18,7 @@
       "how": "La experiencia",
       "occasions": "Ocasiones",
       "solutions": "Soluciones Fleek",
+      "blog": "Contenidos",
       "business": "Para empresas"
     },
     "hero": {
@@ -83,6 +84,15 @@
         "description": "Curaduría recurrente pensada a partir de las carencias que John identifica. El formato, la disponibilidad y la composición siguen en validación.",
         "action": "Conocer el concepto"
       }
+    },
+    "journal": {
+      "kicker": "Fleek Journal",
+      "title": "Repertorio para tomar mejores decisiones de estilo",
+      "description": "Análisis, referencias y orientación práctica para entender los códigos de estilo, aprovechar mejor tu armario y decidir con más claridad.",
+      "all": "Ver todos los artículos",
+      "read": "Leer artículo",
+      "empty": "Fleek Journal reúne contenidos sobre estilo, ocasiones y decisiones de vestuario.",
+      "defaultCategory": "Estilo"
     },
     "final": {
       "kicker": "Empieza con lo que ya tienes",

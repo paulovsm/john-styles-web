@@ -18,6 +18,7 @@
       "how": "The experience",
       "occasions": "Occasions",
       "solutions": "Fleek solutions",
+      "blog": "Journal",
       "business": "For businesses"
     },
     "hero": {
@@ -83,6 +84,15 @@
         "description": "Recurring curation built around the gaps John identifies. Format, availability and service composition remain under validation.",
         "action": "Explore the concept"
       }
+    },
+    "journal": {
+      "kicker": "Fleek Journal",
+      "title": "A stronger repertoire for better style choices",
+      "description": "Analysis, references and practical guidance to understand style codes, use your wardrobe better and decide with greater clarity.",
+      "all": "View all articles",
+      "read": "Read article",
+      "empty": "Fleek Journal brings together content about style, occasions and wardrobe decisions.",
+      "defaultCategory": "Style"
     },
     "final": {
       "kicker": "Start with what you already own",

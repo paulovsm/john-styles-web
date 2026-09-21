@@ -1,6 +1,13 @@
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /teste-novo-app/
+
 User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /teste-novo-app/
 
 Sitemap: https://fleekauthority.com/sitemap.xml
