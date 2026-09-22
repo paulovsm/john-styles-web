@@ -15,6 +15,10 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" />
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" />
+  <!-- The hero image is the landing page's LCP element. Without this hint the
+       browser only discovers it after React renders, which on the promoted
+       landing lands ~400ms in. -->
+  <link rel="preload" as="image" href="/experience-v2/universal-hero-v2.webp" fetchpriority="high" />
   <meta name="description" content="Transforme seu estilo para tudo o que você vive com a Fleek Authority e John Styles, seu especialista digital de estilo." />
   <meta name="author" content="Fleek Authority" />
   <meta name="theme-color" content="#000000" />

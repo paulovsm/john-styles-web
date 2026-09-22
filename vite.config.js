@@ -24,9 +24,12 @@ export default defineConfig(({ command }) => ({
       output: {
         // Split the large, rarely-changing vendors into their own chunks so a
         // deploy of app code doesn't invalidate them in the browser cache.
+        // react-markdown is deliberately absent: naming it here promotes it to
+        // the entry's chunk group, so the landing page preloads ~50KB gzip it
+        // never renders. Rollup still gives it a shared, hashed chunk across
+        // the lazy routes that do use it.
         manualChunks: {
           firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-          markdown: ['react-markdown', 'remark-gfm'],
           i18n: ['i18next', 'react-i18next'],
         },
       },
