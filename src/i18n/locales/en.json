@@ -445,9 +445,9 @@
     "saveGallery": "Save to Gallery",
     "placeholder": "Upload a photo and select an item to see the magic happen.",
     "advancedMode": "Advanced Mode",
-    "customPrompt": "Custom Prompt",
-    "customPromptPlaceholder": "Use placeholders: {item.name}, {item.color}, {item.category}, {item.style}",
-    "customPromptHelp": "Describe how you want the clothing item to appear on the person in the photo",
+    "customPrompt": "Custom request",
+    "customPromptPlaceholder": "E.g. at an outdoor dinner, warm late-afternoon light",
+    "customPromptHelp": "Describe the setting, the light or the fit you want to see. The selected items are already taken into account.",
     "errors": {
       "quotaExceeded": "API quota limit reached. Please wait {{seconds}} seconds before trying again. Consider upgrading to a paid plan if you need more capacity.",
       "retryIn": "You can retry in approximately {{seconds}} seconds.",
@@ -649,7 +649,13 @@
     "deleteSuccess": "Look deleted.",
     "savedLook": "Saved look",
     "savedLookAlt": "Look saved on {{date}}",
-    "savedLookNumber": "Saved look {{number}}"
+    "savedLookNumber": "Saved look {{number}}",
+    "requestLabel": "Request",
+    "openLook": "Open look",
+    "previousLook": "Previous look",
+    "nextLook": "Next look",
+    "expandRequest": "See full request",
+    "collapseRequest": "Collapse request"
   },
   "footer": {
     "rights": "All rights reserved.",
@@ -693,6 +699,10 @@
     "description": "Drag and zoom to emphasise what matters. You can also keep the whole photo.",
     "zoom": "Zoom",
     "confirm": "Crop and use",
-    "useWholePhoto": "Use whole photo"
+    "useWholePhoto": "Use whole photo",
+    "ratioLabel": "Format",
+    "ratioPortrait": "Portrait",
+    "ratioSquare": "Square",
+    "ratioLandscape": "Landscape"
   }
 }

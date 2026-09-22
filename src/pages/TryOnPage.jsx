@@ -10,6 +10,7 @@ import { geminiService } from '../services/api/geminiService';
 import { CloudUpload, AutoAwesome, Check, IosShare } from '@mui/icons-material';
 import { shareOrDownloadImage } from '../utils/shareImage';
 import { useTranslation } from 'react-i18next';
+import { buildTryOnPrompt } from '../utils/tryOnPrompt';
 import { firestoreService } from '../services/storage/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserProfileContext } from '../contexts/UserProfileContext';
@@ -227,20 +228,7 @@ export default function TryOnPage() {
         }
     };
 
-    const replacePlaceholders = (prompt, items) => {
-        // Simple join for multiple items for now, or just use the first one if the prompt expects single item fields
-        // Ideally prompt should be constructed dynamically
-        const itemNames = items.map(i => i.name).join(', ');
-        const itemDescriptions = items.map(i => i.description).join('; ');
-
-        return prompt
-            .replace(/{item\.name}/g, itemNames || '')
-            .replace(/{item\.description}/g, itemDescriptions || '')
-            // Fallback for singular placeholders - use first item
-            .replace(/{item\.color}/g, items[0]?.colors?.[0] || '')
-            .replace(/{item\.category}/g, items[0]?.category || '')
-            .replace(/{item\.style}/g, items[0]?.styles?.[0] || '');
-    };
+    const hasAdvancedPrompt = advancedMode && customPrompt.trim().length > 0;
 
     const handleSaveToGallery = async () => {
         if (!generatedImage || !currentUser) return;
@@ -269,7 +257,9 @@ export default function TryOnPage() {
             await firestoreService.saveGalleryItem({
                 imageUrl: storageUrl,
                 itemsUsed: selectedItems.map(i => i.id),
-                prompt: advancedMode ? customPrompt : 'Default prompt',
+                // Only the user's own words are worth keeping: a look generated
+                // without a custom request has nothing to caption in the gallery.
+                prompt: hasAdvancedPrompt ? customPrompt.trim() : '',
                 originalPhoto: userPhotoPreview // Optional: save original photo URL if we uploaded it too
             });
 
@@ -293,7 +283,6 @@ export default function TryOnPage() {
     // Advanced mode can stand on its own: a described look needs no wardrobe
     // piece, and the API already accepts zero item images — only the prompt is
     // required server-side.
-    const hasAdvancedPrompt = advancedMode && customPrompt.trim().length > 0;
     const canGenerate = !!userPhotoPreview && (selectedItems.length > 0 || hasAdvancedPrompt);
 
     const handleGenerate = async () => {
@@ -311,21 +300,10 @@ export default function TryOnPage() {
         }
 
         try {
-            let prompt;
-
-            if (hasAdvancedPrompt) {
-                // Use custom prompt with placeholders replaced
-                prompt = replacePlaceholders(customPrompt, selectedItems);
-            } else {
-                // Construct prompt for multiple items
-                const itemsDescription = selectedItems.map(item => {
-                    const itemCategory = item.category || '';
-                    const itemName = item.name || '';
-                    return `${itemCategory} (${itemName})`;
-                }).join(', ');
-
-                prompt = `Keep this person's appearance exactly as shown in the image. Dress person with the following items: ${itemsDescription}. Replace the current outfit if needed. Maintain photorealistic quality, natural lighting, and the original photo composition. The clothing items should fit naturally on the person.`;
-            }
+            const prompt = buildTryOnPrompt({
+                items: selectedItems,
+                customRequest: hasAdvancedPrompt ? customPrompt : '',
+            });
 
             // Convert to inline base64 for the API, RE-COMPRESSED so the combined
             // payload (photo + items) stays under the serverless body limit.
