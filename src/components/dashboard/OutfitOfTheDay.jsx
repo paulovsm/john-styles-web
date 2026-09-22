@@ -45,7 +45,7 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
     return (
         <Card className="h-full">
             <Card.Body>
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                     <div className="flex items-center min-w-0">
                         <div className="bg-brand-gold/15 p-2 rounded-full mr-3">
                             <AutoAwesome className="text-brand-gold-dark" />
@@ -71,24 +71,6 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                         )}
                     </div>
                 </div>
-
-                {/* Calendar-derived context: headline, or a connect CTA */}
-                {dailyContext?.connected && dailyContext.headline && (
-                    <div className="mb-3 flex items-start gap-2 text-sm text-brand-navy bg-brand-navy/5 rounded-lg px-3 py-2">
-                        <Event style={{ fontSize: 18 }} className="mt-0.5 shrink-0 text-brand-gold-dark" />
-                        <span>{dailyContext.headline}</span>
-                    </div>
-                )}
-                {dailyContext?.status === 'ready' && !dailyContext.connected && dailyContext.reason !== 'not_configured' && (
-                    <button
-                        type="button"
-                        onClick={connectCalendar}
-                        className="mb-3 flex min-h-11 items-center gap-1.5 rounded-md text-left text-sm text-brand-gold-dark hover:bg-grey-light hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
-                    >
-                        <CalendarMonth style={{ fontSize: 16 }} className="shrink-0 mt-0.5" />
-                        {t('dashboard.connectCalendar', 'Conectar Google Agenda para sugestões pelo seu dia')}
-                    </button>
-                )}
 
                 {outfit.length === 0 ? (
                     <div className="text-center py-8">
@@ -138,6 +120,27 @@ export default function OutfitOfTheDay({ weather, dailyContext }) {
                             </div>
                         )}
                     </>
+                )}
+
+                {/* Calendar context sits below the look rather than above it. It is
+                    secondary, it appears only some of the time, and anything variable
+                    stacked above the strip is what knocked these photos out of line
+                    with the Recent Looks card beside them. */}
+                {dailyContext?.connected && dailyContext.headline && (
+                    <div className="mt-3 flex items-start gap-2 text-sm text-brand-navy bg-brand-navy/5 rounded-lg px-3 py-2">
+                        <Event style={{ fontSize: 18 }} className="mt-0.5 shrink-0 text-brand-gold-dark" />
+                        <span>{dailyContext.headline}</span>
+                    </div>
+                )}
+                {dailyContext?.status === 'ready' && !dailyContext.connected && dailyContext.reason !== 'not_configured' && (
+                    <button
+                        type="button"
+                        onClick={connectCalendar}
+                        className="mt-3 flex min-h-11 items-center gap-1.5 rounded-md text-left text-sm text-brand-gold-dark hover:bg-grey-light hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
+                    >
+                        <CalendarMonth style={{ fontSize: 16 }} className="shrink-0 mt-0.5" />
+                        {t('dashboard.connectCalendar', 'Conectar Google Agenda para sugestões pelo seu dia')}
+                    </button>
                 )}
             </Card.Body>
         </Card>
