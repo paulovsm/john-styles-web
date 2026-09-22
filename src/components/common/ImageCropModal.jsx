@@ -14,18 +14,29 @@ import Button from './Button';
  * Cropping stays optional: "use the whole photo" resolves with no area, so the
  * original framing survives and nobody is forced through this step.
  *
+ * react-easy-crop has no free-form mode — it falls back to 4:3 when no ratio is
+ * given, which silently forced landscape on the phone photos this is mostly fed.
+ * The ratio is picked here instead, defaulting to portrait.
+ *
  * @param {object} props
  * @param {boolean} props.isOpen
  * @param {string} props.imageSrc - object URL or data URL of the selected file
- * @param {number} [props.aspect] - fixed ratio; omit for a free-form crop
+ * @param {number} [props.aspect] - starting ratio; the user can switch
  * @param {(area: {x,y,width,height}|null) => void} props.onConfirm
  * @param {() => void} props.onCancel
  */
-export default function ImageCropModal({ isOpen, imageSrc, aspect, onConfirm, onCancel, title }) {
+const RATIOS = [
+    { id: 'portrait', value: 3 / 4, labelKey: 'imageCrop.ratioPortrait' },
+    { id: 'square', value: 1, labelKey: 'imageCrop.ratioSquare' },
+    { id: 'landscape', value: 4 / 3, labelKey: 'imageCrop.ratioLandscape' },
+];
+
+export default function ImageCropModal({ isOpen, imageSrc, aspect = 3 / 4, onConfirm, onCancel, title }) {
     const { t } = useTranslation();
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [areaPixels, setAreaPixels] = useState(null);
+    const [ratio, setRatio] = useState(aspect);
 
     const handleCropComplete = useCallback((_area, croppedAreaPixels) => {
         setAreaPixels(croppedAreaPixels);
@@ -44,13 +55,33 @@ export default function ImageCropModal({ isOpen, imageSrc, aspect, onConfirm, on
                         image={imageSrc}
                         crop={crop}
                         zoom={zoom}
-                        aspect={aspect}
+                        aspect={ratio}
                         onCropChange={setCrop}
                         onZoomChange={setZoom}
                         onCropComplete={handleCropComplete}
                         restrictPosition={false}
                     />
                 </div>
+
+                <fieldset className="flex flex-wrap items-center gap-2">
+                    <legend className="sr-only">{t('imageCrop.ratioLabel')}</legend>
+                    <span className="text-sm text-grey-medium">{t('imageCrop.ratioLabel')}:</span>
+                    {RATIOS.map(({ id, value, labelKey }) => (
+                        <button
+                            key={id}
+                            type="button"
+                            onClick={() => setRatio(value)}
+                            aria-pressed={ratio === value}
+                            className={`min-h-11 rounded-md border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy ${
+                                ratio === value
+                                    ? 'border-brand-navy bg-brand-navy text-white-pure'
+                                    : 'border-control-border text-grey-dark hover:border-brand-navy'
+                            }`}
+                        >
+                            {t(labelKey)}
+                        </button>
+                    ))}
+                </fieldset>
 
                 <div className="flex items-center gap-3">
                     <ZoomIn className="shrink-0 text-grey-medium" fontSize="small" aria-hidden="true" />
