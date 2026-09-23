@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Close, ExpandLess, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
@@ -27,8 +27,10 @@ export default function LookViewer({ items, startIndex = 0, onClose, formatDate 
     }, [items.length]);
 
     // Jump to the tapped look before the first paint the user sees, so opening
-    // the viewer never looks like it starts at the top and then scrolls.
-    useEffect(() => {
+    // the viewer never looks like it starts at the top and then scrolls. This
+    // has to be layout-effect: useEffect runs after the paint, so the first
+    // frame would show look 0 whenever the tapped one is further down.
+    useLayoutEffect(() => {
         itemRefs.current[startIndex]?.scrollIntoView({ block: 'start' });
         closeRef.current?.focus();
     }, [startIndex]);

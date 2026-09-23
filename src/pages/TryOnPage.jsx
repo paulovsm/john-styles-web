@@ -283,13 +283,14 @@ export default function TryOnPage() {
     // Advanced mode can stand on its own: a described look needs no wardrobe
     // piece, and the API already accepts zero item images — only the prompt is
     // required server-side.
-    const canGenerate = !!userPhotoPreview && (selectedItems.length > 0 || hasAdvancedPrompt);
+    const hasLookSource = selectedItems.length > 0 || hasAdvancedPrompt;
+    const canGenerate = !!userPhotoPreview && hasLookSource;
 
     // The result panel used to ask for a photo and an item no matter what was
     // already done, so it kept requesting things the user had just provided.
     const emptyStateKey = canGenerate
         ? 'tryOn.placeholderReady'
-        : !userPhotoPreview && selectedItems.length === 0
+        : !userPhotoPreview && !hasLookSource
             ? 'tryOn.placeholderNeedsBoth'
             : userPhotoPreview
                 ? 'tryOn.placeholderNeedsItem'
