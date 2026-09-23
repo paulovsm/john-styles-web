@@ -7,6 +7,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { Collections, CalendarToday, Style, Delete } from '@mui/icons-material';
+import LookViewer from '../components/gallery/LookViewer';
+
+// Looks saved before the try-on stopped inventing a request carry the literal
+// string "Default prompt". It was never the user's words, so it is not a caption.
+const LEGACY_EMPTY_REQUEST = 'Default prompt';
+
+const normalizeRequest = (item) => (
+    item?.prompt?.trim() === LEGACY_EMPTY_REQUEST ? { ...item, prompt: '' } : item
+);
 
 export default function GalleryPage() {
     const { currentUser } = useAuth();
@@ -16,6 +25,7 @@ export default function GalleryPage() {
     const [loading, setLoading] = useState(true);
     const [pendingDelete, setPendingDelete] = useState(null);
     const [deleting, setDeleting] = useState(false);
+    const [viewerIndex, setViewerIndex] = useState(null);
 
     useEffect(() => {
         async function loadGallery() {
@@ -25,7 +35,7 @@ export default function GalleryPage() {
                     // getGalleryItems resolves to null on a read failure rather
                     // than rejecting, so the catch below never sees it — and an
                     // unguarded null here crashes the page on `items.length`.
-                    setItems(Array.isArray(galleryItems) ? galleryItems : []);
+                    setItems(Array.isArray(galleryItems) ? galleryItems.map(normalizeRequest) : []);
                 } catch (error) {
                     console.error('Error loading gallery:', error);
                 } finally {
@@ -84,20 +94,30 @@ export default function GalleryPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-                    {items.map((item) => (
+                    {items.map((item, index) => (
                         <div key={item.id} className="bg-white-pure rounded-lg shadow-sm border border-grey-light overflow-hidden hover:shadow-md transition-shadow">
                             <div className="relative aspect-[3/4] bg-grey-light">
-                                <img
-                                    src={item.imageUrl}
-                                    alt={item.createdAt
-                                        ? t('gallery.savedLookAlt', { date: formatDate(item.createdAt) })
-                                        : t('gallery.savedLook', 'Look salvo')}
-                                    className="w-full h-full object-cover"
-                                    loading="lazy"
-                                />
+                                {/* The card crops to 3:4, so the saved look is only ever
+                                    partly visible here — opening the viewer is the only way
+                                    to see what was actually generated. */}
+                                <button
+                                    type="button"
+                                    onClick={() => setViewerIndex(index)}
+                                    aria-label={t('gallery.openLook')}
+                                    className="absolute inset-0 h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-navy"
+                                >
+                                    <img
+                                        src={item.imageUrl}
+                                        alt={item.createdAt
+                                            ? t('gallery.savedLookAlt', { date: formatDate(item.createdAt) })
+                                            : t('gallery.savedLook', 'Look salvo')}
+                                        className="h-full w-full object-cover"
+                                        loading="lazy"
+                                    />
+                                </button>
                                 <button
                                     onClick={() => setPendingDelete(item)}
-                                    className="absolute top-2 right-2 grid h-11 w-11 place-items-center bg-white-pure/90 rounded-full text-grey-dark hover:text-status-error-content hover:bg-white-pure transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
+                                    className="absolute top-2 right-2 z-10 grid h-11 w-11 place-items-center bg-white-pure/90 rounded-full text-grey-dark hover:text-status-error-content hover:bg-white-pure transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                     aria-label={t('common.delete', 'Excluir')}
                                     title={t('common.delete', 'Excluir')}
                                 >
@@ -109,16 +129,33 @@ export default function GalleryPage() {
                                     <CalendarToday className="h-3 w-3 mr-1" />
                                     <span>{formatDate(item.createdAt)}</span>
                                 </div>
-                                {item.prompt && (
-                                    <div className="mt-2 text-sm text-grey-dark lg:line-clamp-2" title={item.prompt}>
-                                        <span className="font-medium text-brand-navy mr-1"><Style className="h-3 w-3 inline mr-1" />Prompt:</span>
-                                        {item.prompt}
-                                    </div>
-                                )}
+                                {/* Always two lines tall, with or without a request, so cards in a
+                                    row share a baseline instead of leaving dead space under the
+                                    short ones. The full text lives in the look viewer. */}
+                                <div className="mt-2 line-clamp-2 min-h-[2.5rem] text-sm text-grey-dark" title={item.prompt || undefined}>
+                                    {item.prompt && (
+                                        <>
+                                            <span className="mr-1 font-medium text-brand-navy">
+                                                <Style className="mr-1 inline h-3 w-3" />
+                                                {t('gallery.requestLabel')}:
+                                            </span>
+                                            {item.prompt}
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
+            )}
+
+            {viewerIndex !== null && items.length > 0 && (
+                <LookViewer
+                    items={items}
+                    startIndex={Math.min(viewerIndex, items.length - 1)}
+                    onClose={() => setViewerIndex(null)}
+                    formatDate={formatDate}
+                />
             )}
 
             <ConfirmDialog

@@ -443,11 +443,10 @@
     "yourLook": "Seu Look",
     "tryAnother": "Tentar Outro",
     "saveGallery": "Salvar na Galeria",
-    "placeholder": "Envie uma foto e selecione um item para ver a mágica acontecer.",
     "advancedMode": "Modo Avançado",
-    "customPrompt": "Prompt Personalizado",
-    "customPromptPlaceholder": "Use marcadores: {item.name}, {item.color}, {item.category}, {item.style}",
-    "customPromptHelp": "Descreva como você quer que a peça de roupa apareça na pessoa da foto",
+    "customPrompt": "Pedido personalizado",
+    "customPromptPlaceholder": "Ex.: com a camisa por dentro da calça e as mangas dobradas",
+    "customPromptHelp": "Peça ajustes no look sugerido: caimento, cor, como usar cada peça. As peças selecionadas já são consideradas.",
     "errors": {
       "quotaExceeded": "Cota excedida. Tente novamente em {{seconds}} segundos.",
       "genericError": "Ocorreu um erro ao gerar a imagem.",
@@ -468,7 +467,12 @@
     "share": "Compartilhar",
     "downloaded": "Imagem baixada.",
     "shareError": "Não foi possível compartilhar a imagem.",
-    "advancedWithoutItems": "Sem peça selecionada, John monta o look só a partir da descrição acima."
+    "advancedWithoutItems": "Sem peça selecionada, John monta o look só a partir da descrição acima.",
+    "placeholderNeedsBoth": "Envie uma foto sua e escolha uma peça para começar.",
+    "placeholderNeedsItem": "Falta escolher uma peça do guarda-roupa.",
+    "placeholderNeedsPhoto": "Falta enviar uma foto sua de corpo inteiro.",
+    "placeholderReady": "Toque em Gerar para ver o resultado.",
+    "placeholderTitle": "Seu look aparece aqui"
   },
   "history": {
     "title": "Histórico de Interações",
@@ -649,7 +653,13 @@
     "deleteSuccess": "Look excluído.",
     "savedLook": "Look salvo",
     "savedLookAlt": "Look salvo em {{date}}",
-    "savedLookNumber": "Look salvo {{number}}"
+    "savedLookNumber": "Look salvo {{number}}",
+    "requestLabel": "Pedido",
+    "openLook": "Abrir look",
+    "previousLook": "Look anterior",
+    "nextLook": "Próximo look",
+    "expandRequest": "Ver pedido completo",
+    "collapseRequest": "Recolher pedido"
   },
   "footer": {
     "rights": "Todos os direitos reservados.",
@@ -693,6 +703,10 @@
     "description": "Arraste e use o zoom para destacar o que importa. Se preferir, use a foto inteira.",
     "zoom": "Zoom",
     "confirm": "Recortar e usar",
-    "useWholePhoto": "Usar foto inteira"
+    "useWholePhoto": "Usar foto inteira",
+    "ratioLabel": "Formato",
+    "ratioPortrait": "Retrato",
+    "ratioSquare": "Quadrado",
+    "ratioLandscape": "Paisagem"
   }
 }

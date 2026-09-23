@@ -443,11 +443,10 @@
     "yourLook": "Your Look",
     "tryAnother": "Try Another",
     "saveGallery": "Save to Gallery",
-    "placeholder": "Upload a photo and select an item to see the magic happen.",
     "advancedMode": "Advanced Mode",
-    "customPrompt": "Custom Prompt",
-    "customPromptPlaceholder": "Use placeholders: {item.name}, {item.color}, {item.category}, {item.style}",
-    "customPromptHelp": "Describe how you want the clothing item to appear on the person in the photo",
+    "customPrompt": "Custom request",
+    "customPromptPlaceholder": "E.g. shirt tucked in, with the sleeves rolled up",
+    "customPromptHelp": "Ask for adjustments to the look: fit, colour, how each piece is worn. The selected items are already taken into account.",
     "errors": {
       "quotaExceeded": "API quota limit reached. Please wait {{seconds}} seconds before trying again. Consider upgrading to a paid plan if you need more capacity.",
       "retryIn": "You can retry in approximately {{seconds}} seconds.",
@@ -468,7 +467,12 @@
     "share": "Share",
     "downloaded": "Image downloaded.",
     "shareError": "Could not share the image.",
-    "advancedWithoutItems": "With no piece selected, John builds the look from the description above alone."
+    "advancedWithoutItems": "With no piece selected, John builds the look from the description above alone.",
+    "placeholderNeedsBoth": "Upload a photo and pick an item to start.",
+    "placeholderNeedsItem": "One thing left: pick an item from your wardrobe.",
+    "placeholderNeedsPhoto": "One thing left: upload a full-body photo.",
+    "placeholderReady": "Tap Generate to see the result.",
+    "placeholderTitle": "Your look shows up here"
   },
   "history": {
     "title": "Interaction History",
@@ -649,7 +653,13 @@
     "deleteSuccess": "Look deleted.",
     "savedLook": "Saved look",
     "savedLookAlt": "Look saved on {{date}}",
-    "savedLookNumber": "Saved look {{number}}"
+    "savedLookNumber": "Saved look {{number}}",
+    "requestLabel": "Request",
+    "openLook": "Open look",
+    "previousLook": "Previous look",
+    "nextLook": "Next look",
+    "expandRequest": "See full request",
+    "collapseRequest": "Collapse request"
   },
   "footer": {
     "rights": "All rights reserved.",
@@ -693,6 +703,10 @@
     "description": "Drag and zoom to emphasise what matters. You can also keep the whole photo.",
     "zoom": "Zoom",
     "confirm": "Crop and use",
-    "useWholePhoto": "Use whole photo"
+    "useWholePhoto": "Use whole photo",
+    "ratioLabel": "Format",
+    "ratioPortrait": "Portrait",
+    "ratioSquare": "Square",
+    "ratioLandscape": "Landscape"
   }
 }
