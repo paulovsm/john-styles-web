@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import UniversalLandingPage from './UniversalLandingPage';
@@ -59,5 +59,43 @@ describe('UniversalLandingPage', () => {
         expect(Boolean(screen.queryByText('experienceV2.previewBadge'))).toBe(preview);
         expect(screen.getByRole('link', { name: /experienceV2.hero.cta/ })).toHaveAttribute('href', preview ? `${path}/login` : '/login');
         expect(screen.getByRole('link', { name: 'Blog' })).toHaveAttribute('href', preview ? `${path}/blog` : '/blog');
+    });
+
+    describe('mobile menu dismissal', () => {
+        const openMenu = () => {
+            render(
+                <MemoryRouter>
+                    <UniversalLandingPage />
+                </MemoryRouter>,
+            );
+            const toggle = screen.getByRole('button', { name: 'common.openMainMenu' });
+            fireEvent.click(toggle);
+            return screen.getByRole('navigation', { name: 'experienceV2.nav.label' });
+        };
+
+        it('closes on Escape', () => {
+            const nav = openMenu();
+            expect(nav.className).toContain('is-open');
+
+            fireEvent.keyDown(document, { key: 'Escape' });
+
+            expect(nav.className).not.toContain('is-open');
+        });
+
+        it('closes when pointing outside the header', () => {
+            const nav = openMenu();
+
+            fireEvent.pointerDown(screen.getByRole('main'));
+
+            expect(nav.className).not.toContain('is-open');
+        });
+
+        it('stays open while interacting inside the menu', () => {
+            const nav = openMenu();
+
+            fireEvent.pointerDown(screen.getByText('language-selector'));
+
+            expect(nav.className).toContain('is-open');
+        });
     });
 });

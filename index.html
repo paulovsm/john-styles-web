@@ -5,6 +5,29 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/avif" href="/FA_Icon_White.avif" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- The hero image is the landing page's LCP element. Without this hint the
+       browser only discovers it after React renders, which on the promoted
+       landing lands ~400ms in.
+
+       Emitted only for the landing route. This file is the entry for every
+       route, so a static tag would make /dashboard and /login fetch 145KB at
+       high priority, against the app's own JS, for an image they never render.
+       The two paths below are the ones router.jsx serves the landing from.
+
+       Kept above the font stylesheet on purpose: an inline script placed after
+       a stylesheet link waits for that CSS to load before it runs, which is
+       exactly the head start this is here to buy. -->
+  <script>
+    (function () {
+      var path = location.pathname.replace(/^\/teste-novo-app/, '').replace(/\/$/, '');
+      if (path !== '') return;
+      document.head.insertAdjacentHTML(
+        'beforeend',
+        '<link rel="preload" as="image" href="/experience-v2/universal-hero-v2.webp" fetchpriority="high">'
+      );
+    })();
+  </script>
+
   <!-- Fonts are loaded here rather than via @import in CSS: an @import inside a
        JS-imported stylesheet is invisible to the browser's preload scanner and
        serialises HTML -> JS -> CSS -> DNS -> CSS -> font (4 round trips) before

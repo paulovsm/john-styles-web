@@ -85,6 +85,23 @@ export default function UniversalLandingPage() {
     });
 
     const closeMenu = () => setMenuOpen(false);
+
+    useEffect(() => {
+        if (!menuOpen) return undefined;
+        const onKeyDown = (event) => {
+            if (event.key === 'Escape') setMenuOpen(false);
+        };
+        const onPointerDown = (event) => {
+            if (!event.target.closest('.universal-nav, .universal-menu-button')) setMenuOpen(false);
+        };
+        document.addEventListener('keydown', onKeyDown);
+        document.addEventListener('pointerdown', onPointerDown);
+        return () => {
+            document.removeEventListener('keydown', onKeyDown);
+            document.removeEventListener('pointerdown', onPointerDown);
+        };
+    }, [menuOpen]);
+
     return (
         <div className="universal-landing" id="inicio">
             <header className="universal-header">
