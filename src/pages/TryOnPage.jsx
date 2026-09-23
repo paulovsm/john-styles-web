@@ -285,6 +285,16 @@ export default function TryOnPage() {
     // required server-side.
     const canGenerate = !!userPhotoPreview && (selectedItems.length > 0 || hasAdvancedPrompt);
 
+    // The result panel used to ask for a photo and an item no matter what was
+    // already done, so it kept requesting things the user had just provided.
+    const emptyStateKey = canGenerate
+        ? 'tryOn.placeholderReady'
+        : !userPhotoPreview && selectedItems.length === 0
+            ? 'tryOn.placeholderNeedsBoth'
+            : userPhotoPreview
+                ? 'tryOn.placeholderNeedsItem'
+                : 'tryOn.placeholderNeedsPhoto';
+
     const handleGenerate = async () => {
         if (!canGenerate) return;
 
@@ -597,9 +607,12 @@ export default function TryOnPage() {
                         </div>
                     ) : (
                         <div className="rounded-2xl border border-dashed border-grey-light bg-white-off flex items-center justify-center min-h-[240px] sm:min-h-[500px]">
-                            <div className="text-center text-grey-medium px-6">
-                                <AutoAwesome className="h-16 w-16 mx-auto mb-4 opacity-20" />
-                                <p>{t('tryOn.placeholder')}</p>
+                            {/* Say what the panel is for first: on desktop it is half the
+                                screen, and an instruction on its own never explained why. */}
+                            <div className="px-6 text-center">
+                                <AutoAwesome className="mx-auto mb-4 h-16 w-16 text-grey-medium opacity-20" />
+                                <p className="font-medium text-brand-navy">{t('tryOn.placeholderTitle')}</p>
+                                <p className="mt-1 text-sm text-grey-medium">{t(emptyStateKey)}</p>
                             </div>
                         </div>
                     )}

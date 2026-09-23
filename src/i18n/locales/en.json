@@ -443,7 +443,6 @@
     "yourLook": "Your Look",
     "tryAnother": "Try Another",
     "saveGallery": "Save to Gallery",
-    "placeholder": "Upload a photo and select an item to see the magic happen.",
     "advancedMode": "Advanced Mode",
     "customPrompt": "Custom request",
     "customPromptPlaceholder": "E.g. shirt tucked in, with the sleeves rolled up",
@@ -468,7 +467,12 @@
     "share": "Share",
     "downloaded": "Image downloaded.",
     "shareError": "Could not share the image.",
-    "advancedWithoutItems": "With no piece selected, John builds the look from the description above alone."
+    "advancedWithoutItems": "With no piece selected, John builds the look from the description above alone.",
+    "placeholderNeedsBoth": "Upload a photo and pick an item to start.",
+    "placeholderNeedsItem": "One thing left: pick an item from your wardrobe.",
+    "placeholderNeedsPhoto": "One thing left: upload a full-body photo.",
+    "placeholderReady": "Tap Generate to see the result.",
+    "placeholderTitle": "Your look shows up here"
   },
   "history": {
     "title": "Interaction History",

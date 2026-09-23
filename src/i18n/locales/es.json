@@ -443,7 +443,6 @@
     "yourLook": "Tu Look",
     "tryAnother": "Probar Otro",
     "saveGallery": "Guardar en Galería",
-    "placeholder": "Sube una foto y selecciona un artículo para ver la magia suceder.",
     "advancedMode": "Modo Avanzado",
     "customPrompt": "Pedido personalizado",
     "customPromptPlaceholder": "Ej.: con la camisa por dentro y las mangas dobladas",
@@ -468,7 +467,12 @@
     "share": "Compartir",
     "downloaded": "Imagen descargada.",
     "shareError": "No se pudo compartir la imagen.",
-    "advancedWithoutItems": "Sin prenda seleccionada, John arma el look solo con la descripción de arriba."
+    "advancedWithoutItems": "Sin prenda seleccionada, John arma el look solo con la descripción de arriba.",
+    "placeholderNeedsBoth": "Sube una foto y elige una prenda para empezar.",
+    "placeholderNeedsItem": "Falta elegir una prenda del armario.",
+    "placeholderNeedsPhoto": "Falta subir una foto tuya de cuerpo entero.",
+    "placeholderReady": "Toca Generar para ver el resultado.",
+    "placeholderTitle": "Tu look aparece aquí"
   },
   "history": {
     "title": "Historial de Interacciones",

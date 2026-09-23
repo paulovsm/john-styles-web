@@ -443,7 +443,6 @@
     "yourLook": "Seu Look",
     "tryAnother": "Tentar Outro",
     "saveGallery": "Salvar na Galeria",
-    "placeholder": "Envie uma foto e selecione um item para ver a mágica acontecer.",
     "advancedMode": "Modo Avançado",
     "customPrompt": "Pedido personalizado",
     "customPromptPlaceholder": "Ex.: com a camisa por dentro da calça e as mangas dobradas",
@@ -468,7 +467,12 @@
     "share": "Compartilhar",
     "downloaded": "Imagem baixada.",
     "shareError": "Não foi possível compartilhar a imagem.",
-    "advancedWithoutItems": "Sem peça selecionada, John monta o look só a partir da descrição acima."
+    "advancedWithoutItems": "Sem peça selecionada, John monta o look só a partir da descrição acima.",
+    "placeholderNeedsBoth": "Envie uma foto sua e escolha uma peça para começar.",
+    "placeholderNeedsItem": "Falta escolher uma peça do guarda-roupa.",
+    "placeholderNeedsPhoto": "Falta enviar uma foto sua de corpo inteiro.",
+    "placeholderReady": "Toque em Gerar para ver o resultado.",
+    "placeholderTitle": "Seu look aparece aqui"
   },
   "history": {
     "title": "Histórico de Interações",
