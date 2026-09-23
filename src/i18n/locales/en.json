@@ -446,8 +446,8 @@
     "placeholder": "Upload a photo and select an item to see the magic happen.",
     "advancedMode": "Advanced Mode",
     "customPrompt": "Custom request",
-    "customPromptPlaceholder": "E.g. at an outdoor dinner, warm late-afternoon light",
-    "customPromptHelp": "Describe the setting, the light or the fit you want to see. The selected items are already taken into account.",
+    "customPromptPlaceholder": "E.g. shirt tucked in, with the sleeves rolled up",
+    "customPromptHelp": "Ask for adjustments to the look: fit, colour, how each piece is worn. The selected items are already taken into account.",
     "errors": {
       "quotaExceeded": "API quota limit reached. Please wait {{seconds}} seconds before trying again. Consider upgrading to a paid plan if you need more capacity.",
       "retryIn": "You can retry in approximately {{seconds}} seconds.",

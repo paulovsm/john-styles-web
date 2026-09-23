@@ -446,8 +446,8 @@
     "placeholder": "Sube una foto y selecciona un artículo para ver la magia suceder.",
     "advancedMode": "Modo Avanzado",
     "customPrompt": "Pedido personalizado",
-    "customPromptPlaceholder": "Ej.: en una cena al aire libre, con luz cálida al atardecer",
-    "customPromptHelp": "Describe el escenario, la luz o la caída que quieres ver. Las prendas seleccionadas ya se tienen en cuenta.",
+    "customPromptPlaceholder": "Ej.: con la camisa por dentro y las mangas dobladas",
+    "customPromptHelp": "Pide ajustes al look sugerido: caída, color, cómo llevar cada prenda. Las prendas seleccionadas ya se tienen en cuenta.",
     "errors": {
       "quotaExceeded": "Cuota excedida. Inténtalo de nuevo en {{seconds}} segundos.",
       "genericError": "Ocurrió un error al generar la imagen.",

@@ -446,8 +446,8 @@
     "placeholder": "Envie uma foto e selecione um item para ver a mágica acontecer.",
     "advancedMode": "Modo Avançado",
     "customPrompt": "Pedido personalizado",
-    "customPromptPlaceholder": "Ex.: em um jantar ao ar livre, com luz quente no fim da tarde",
-    "customPromptHelp": "Descreva o cenário, a luz ou o caimento que você quer ver. As peças selecionadas já são consideradas.",
+    "customPromptPlaceholder": "Ex.: com a camisa por dentro da calça e as mangas dobradas",
+    "customPromptHelp": "Peça ajustes no look sugerido: caimento, cor, como usar cada peça. As peças selecionadas já são consideradas.",
     "errors": {
       "quotaExceeded": "Cota excedida. Tente novamente em {{seconds}} segundos.",
       "genericError": "Ocorreu um erro ao gerar a imagem.",
