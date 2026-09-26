@@ -292,6 +292,8 @@
     "generatedImageAlt": "Look con el cambio sugerido por John",
     "error": "No pude evaluar esta foto ahora. Inténtalo de nuevo con una imagen nítida del look completo.",
     "limitError": "Has alcanzado el límite de evaluaciones de hoy. Inténtalo de nuevo mañana.",
+    "quotaError": "El servicio de análisis está temporalmente al límite. Inténtalo de nuevo en unos minutos.",
+    "responseError": "Pude leer la foto, pero el análisis llegó incompleto. Intenta enviarla de nuevo.",
     "itemUnavailable": "Esa prenda ya no está disponible en tu guardarropa.",
     "generationError": "No pude generar este cambio ahora. Inténtalo de nuevo en unos instantes.",
     "generationLimitError": "Has alcanzado el límite de imágenes de hoy."

@@ -97,11 +97,15 @@ export function ConversationProvider({ children }) {
             });
         } catch (error) {
             console.error('Error evaluating look:', error);
+            const errorMessages = {
+                LIMIT_REACHED: i18n.t('lookEvaluation.limitError', 'Você atingiu o limite de avaliações de hoje. Tente novamente amanhã.'),
+                QUOTA_EXCEEDED: i18n.t('lookEvaluation.quotaError', 'O serviço de análise está temporariamente no limite. Tente novamente em alguns minutos.'),
+                INVALID_MODEL_RESPONSE: i18n.t('lookEvaluation.responseError', 'Consegui ler a foto, mas a análise veio incompleta. Tente enviar novamente.'),
+            };
             addMessage({
                 role: 'model',
-                content: error?.code === 'LIMIT_REACHED'
-                    ? i18n.t('lookEvaluation.limitError', 'Você atingiu o limite de avaliações de hoje. Tente novamente amanhã.')
-                    : i18n.t('lookEvaluation.error', 'Não consegui avaliar esta foto agora. Tente novamente com uma imagem nítida do look completo.'),
+                content: errorMessages[error?.code]
+                    || i18n.t('lookEvaluation.error', 'Não consegui avaliar esta foto agora. Tente novamente com uma imagem nítida do look completo.'),
             });
         } finally {
             setIsTyping(false);

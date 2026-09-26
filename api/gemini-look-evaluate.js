@@ -7,6 +7,33 @@ import { MODELS } from './_models.js';
 
 const MAX_WARDROBE_ITEMS = 120;
 
+export const LOOK_EVALUATION_SCHEMA = {
+    type: 'object',
+    additionalProperties: false,
+    required: ['verdict', 'strengths', 'improvements', 'shouldImprove', 'suggestions'],
+    properties: {
+        verdict: { type: 'string' },
+        strengths: { type: 'array', items: { type: 'string' } },
+        improvements: { type: 'array', items: { type: 'string' } },
+        shouldImprove: { type: 'boolean' },
+        suggestions: {
+            type: 'array',
+            maxItems: 3,
+            items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['itemId', 'itemName', 'replaceTarget', 'reason'],
+                properties: {
+                    itemId: { type: 'string' },
+                    itemName: { type: 'string' },
+                    replaceTarget: { type: 'string' },
+                    reason: { type: 'string' },
+                },
+            },
+        },
+    },
+};
+
 function compactWardrobe(items) {
     if (!Array.isArray(items)) return [];
     return items.slice(0, MAX_WARDROBE_ITEMS).map((item) => ({
@@ -75,14 +102,24 @@ export default async function handler(req, res) {
     const apiKey = process.env.GOOGLE_AI_API_KEY;
     if (!apiKey) return res.status(500).json({ error: 'API Key not configured' });
 
+    let stage = 'authentication';
     try {
         const { uid } = await requireAuth(req);
         const { image, language = 'pt', request = '', userProfile = {}, wardrobeItems = [] } = req.body || {};
+        stage = 'validation';
         const { data, mimeType } = parseImage(image, 'look image');
         const wardrobe = compactWardrobe(wardrobeItems);
         const profile = compactProfile(userProfile);
 
+        stage = 'usage';
         await consumeUsage(uid, 'chat');
+
+        console.info('[look-evaluate] request accepted', {
+            language: String(language).slice(0, 10),
+            mimeType,
+            wardrobeCount: wardrobe.length,
+            imageBytesApprox: Math.floor((data.length * 3) / 4),
+        });
 
         const prompt = `You are John Styles, a candid, respectful personal stylist. Evaluate the complete outfit in the attached photo.
 
@@ -116,22 +153,47 @@ Available wardrobe (metadata extracted from the user's garment photos):
 ${JSON.stringify(wardrobe)}`;
 
         const ai = new GoogleGenAI({ apiKey });
+        stage = 'generation';
         const response = await ai.models.generateContent({
             model: MODELS.vision,
-            config: { responseMimeType: 'application/json' },
+            config: {
+                responseMimeType: 'application/json',
+                responseJsonSchema: LOOK_EVALUATION_SCHEMA,
+            },
             contents: [{ text: prompt }, { inlineData: { data, mimeType } }],
         });
 
+        stage = 'response';
         let text = response.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
         text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-        return res.status(200).json(normalizeLookEvaluation(JSON.parse(text), wardrobe));
+        const result = normalizeLookEvaluation(JSON.parse(text), wardrobe);
+        console.info('[look-evaluate] completed', {
+            shouldImprove: result.shouldImprove,
+            suggestionCount: result.suggestions.length,
+        });
+        return res.status(200).json(result);
     } catch (error) {
         if (handleAuthError(res, error)) return;
         if (handleValidationError(res, error)) return;
         if (error instanceof UsageLimitError) {
             return res.status(429).json({ error: 'LIMIT_REACHED', limitType: error.limitType, limit: error.limit });
         }
-        console.error('Look evaluation error:', error);
-        return res.status(500).json({ error: 'LOOK_EVALUATION_FAILED', message: 'Failed to evaluate look' });
+        console.error('[look-evaluate] failed', {
+            stage,
+            name: error?.name,
+            status: error?.status,
+            message: error?.message,
+        });
+        if (error?.status === 429) {
+            return res.status(429).json({ error: 'QUOTA_EXCEEDED', message: 'Gemini quota exceeded' });
+        }
+        if (error instanceof SyntaxError && stage === 'response') {
+            return res.status(502).json({ error: 'INVALID_MODEL_RESPONSE', message: 'Gemini returned an invalid response' });
+        }
+        return res.status(error?.status >= 400 && error?.status < 500 ? 502 : 500).json({
+            error: 'LOOK_EVALUATION_FAILED',
+            message: 'Failed to evaluate look',
+            ...(process.env.NODE_ENV !== 'production' ? { stage, details: error?.message } : {}),
+        });
     }
 }

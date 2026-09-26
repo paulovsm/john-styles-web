@@ -292,6 +292,8 @@
     "generatedImageAlt": "Outfit with John's suggested swap",
     "error": "I couldn't evaluate this photo right now. Try again with a clear image of the complete outfit.",
     "limitError": "You've reached today's evaluation limit. Try again tomorrow.",
+    "quotaError": "The analysis service is temporarily at capacity. Try again in a few minutes.",
+    "responseError": "I could read the photo, but the analysis was incomplete. Try sending it again.",
     "itemUnavailable": "That item is no longer available in your wardrobe.",
     "generationError": "I couldn't generate this swap right now. Try again in a moment.",
     "generationLimitError": "You've reached today's image limit."

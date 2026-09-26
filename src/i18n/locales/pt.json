@@ -292,6 +292,8 @@
     "generatedImageAlt": "Look com a troca sugerida por John",
     "error": "Não consegui avaliar esta foto agora. Tente novamente com uma imagem nítida do look completo.",
     "limitError": "Você atingiu o limite de avaliações de hoje. Tente novamente amanhã.",
+    "quotaError": "O serviço de análise está temporariamente no limite. Tente novamente em alguns minutos.",
+    "responseError": "Consegui ler a foto, mas a análise veio incompleta. Tente enviar novamente.",
     "itemUnavailable": "Essa peça não está mais disponível no seu guarda-roupa.",
     "generationError": "Não consegui gerar essa troca agora. Tente novamente em alguns instantes.",
     "generationLimitError": "Você atingiu o limite de imagens de hoje."
