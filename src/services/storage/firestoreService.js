@@ -441,6 +441,26 @@ class FirestoreService {
     }
 
     /**
+     * Store a source or generated image referenced by chat history.
+     * The URL is persisted with the message, so the visual conversation works
+     * across devices without placing large base64 payloads in Firestore.
+     */
+    async uploadLookHistoryImage(imageBlob, kind = 'source', userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) throw new Error('Cannot upload look history image: user not authenticated');
+
+            const safeKind = kind === 'generated' ? 'generated' : 'source';
+            const storageRef = ref(storage, `users/${uid}/look-history/${safeKind}_${Date.now()}.jpg`);
+            await uploadBytes(storageRef, imageBlob, { contentType: imageBlob.type || 'image/jpeg' });
+            return await getDownloadURL(storageRef);
+        } catch (error) {
+            console.error('Error uploading look history image:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Save a gallery item to Firestore
      * @param {Object} item - Gallery item data
      * @param {string} userId - User ID

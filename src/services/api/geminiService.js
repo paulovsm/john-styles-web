@@ -3,6 +3,42 @@ import { compressImage } from '../../utils/imageUtils';
 import { authFetch } from './authFetch';
 
 export const geminiService = {
+    /** Evaluates a complete outfit photo against the user's profile and wardrobe. */
+    async evaluateLook(imageFile, { language = 'pt', request = '', userProfile = {}, wardrobeItems = [] } = {}) {
+        try {
+            const compressedFile = await compressImage(imageFile);
+            const image = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(compressedFile);
+            });
+
+            const response = await authFetch(`${API_BASE_URL}/gemini-look-evaluate`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    image,
+                    language,
+                    request,
+                    userProfile,
+                    wardrobeItems: wardrobeItems.map(({ image: _image, thumbnailUrl: _thumbnail, ...item }) => item),
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const error = new Error(errorData.message || errorData.error || 'Failed to evaluate look');
+                error.code = errorData.error;
+                error.status = response.status;
+                throw error;
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error evaluating look with Gemini:', error);
+            throw error;
+        }
+    },
+
     /**
      * Analyzes an image using the Gemini Vision API.
      * @param {File} imageFile - The image file to analyze.

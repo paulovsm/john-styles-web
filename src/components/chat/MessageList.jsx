@@ -5,7 +5,7 @@ import Avatar from '../common/Avatar';
 import { useTranslation } from 'react-i18next';
 import { useExperience } from '../../experience/ExperienceContext';
 
-export default function MessageList({ messages, isTyping, userAvatar }) {
+export default function MessageList({ messages, isTyping, userAvatar, onAction }) {
     const messagesEndRef = useRef(null);
     const { t } = useTranslation();
     const experience = useExperience();
@@ -37,7 +37,7 @@ export default function MessageList({ messages, isTyping, userAvatar }) {
             )}
 
             {messages.map((message, index) => (
-                <MessageItem key={index} message={message} userAvatar={userAvatar} />
+                <MessageItem key={index} message={message} userAvatar={userAvatar} onAction={onAction} />
             ))}
 
             {isTyping && (

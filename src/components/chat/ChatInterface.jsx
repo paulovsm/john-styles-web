@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useConversationContext } from '../../contexts/ConversationContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function ChatInterface() {
-    const { history, processMessage, isTyping, agentState } = useConversationContext();
+    const { history, processMessage, processLookEvaluation, processLookSwap, isTyping, agentState } = useConversationContext();
     const { currentUser } = useAuth();
     const { t } = useTranslation();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [requestLookPhoto, setRequestLookPhoto] = useState(Boolean(location.state?.requestLookPhoto));
 
-    const handleSendMessage = async (text) => {
-        await processMessage(text);
+    const handleSendMessage = async (text, photo) => {
+        if (photo) await processLookEvaluation(photo, text);
+        else await processMessage(text);
+    };
+
+    const handlePhotoPrompt = () => {
+        setRequestLookPhoto(false);
+        navigate(location.pathname, { replace: true, state: null });
     };
 
     // dvh (not vh) so the box tracks the visible area when the mobile URL bar /
@@ -29,8 +39,18 @@ export default function ChatInterface() {
                     </span>
                 )}
             </div>
-            <MessageList messages={history} isTyping={isTyping} userAvatar={currentUser?.photoURL} />
-            <ChatInput onSend={handleSendMessage} disabled={isTyping} />
+            <MessageList
+                messages={history}
+                isTyping={isTyping}
+                userAvatar={currentUser?.photoURL}
+                onAction={processLookSwap}
+            />
+            <ChatInput
+                onSend={handleSendMessage}
+                disabled={isTyping}
+                requestLookPhoto={requestLookPhoto}
+                onPhotoPromptHandled={handlePhotoPrompt}
+            />
         </div>
     );
 }

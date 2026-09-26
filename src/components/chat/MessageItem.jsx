@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { clampLookDescription } from '../../utils/agentActions';
 import { describesLook } from '../../utils/lookDetection';
 
-export default function MessageItem({ message, userAvatar }) {
+export default function MessageItem({ message, userAvatar, onAction }) {
     const isUser = message.role === 'user';
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -25,6 +25,8 @@ export default function MessageItem({ message, userAvatar }) {
             });
         } else if (action.type === 'navigate') {
             navigate(action.to);
+        } else if (action.type === 'lookSwap') {
+            onAction?.(action);
         }
     };
 
@@ -59,6 +61,15 @@ export default function MessageItem({ message, userAvatar }) {
                     only right half the time. Inherit the bubble's own foreground
                     instead — `text-white-pure` already tracks the fill. The
                     assistant bubble sits on a surface and keeps the defaults. */}
+                {message.imageUrl && (
+                    <img
+                        src={message.imageUrl}
+                        alt={message.kind === 'look-swap-result'
+                            ? t('lookEvaluation.generatedImageAlt', 'Look com a troca sugerida por John')
+                            : t('lookEvaluation.sourceImageAlt', 'Look enviado para avaliação')}
+                        className="mb-3 max-h-[28rem] w-full rounded-card object-contain bg-white-off"
+                    />
+                )}
                 <div className={`text-sm prose prose-sm max-w-none prose-p:my-1 ${isUser
                     ? 'text-inherit prose-p:text-inherit prose-headings:text-inherit prose-strong:text-inherit prose-em:text-inherit prose-li:text-inherit prose-code:text-inherit prose-blockquote:text-inherit prose-a:text-inherit prose-a:underline'
                     : 'dark:prose-invert prose-a:text-brand-navy'
@@ -73,7 +84,7 @@ export default function MessageItem({ message, userAvatar }) {
                                 onClick={() => runAction(action)}
                                 className="inline-flex min-h-11 items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full bg-brand-navy text-white-pure hover:bg-opacity-90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2"
                             >
-                                {action.type === 'tryOn' ? <AutoAwesome style={{ fontSize: 14 }} /> : <ArrowForward style={{ fontSize: 14 }} />}
+                                {action.type === 'tryOn' || action.type === 'lookSwap' ? <AutoAwesome style={{ fontSize: 14 }} /> : <ArrowForward style={{ fontSize: 14 }} />}
                                 {actionLabel(action)}
                             </button>
                         ))}
