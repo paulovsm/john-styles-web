@@ -8,7 +8,7 @@ import i18n from '../i18n/config';
 import { geminiService } from '../services/api/geminiService';
 import { firestoreService } from '../services/storage/firestoreService';
 import { compressImage, toCompressedDataUrl } from '../utils/imageUtils';
-import { buildLookSwapPrompt, formatLookEvaluation } from '../utils/lookEvaluation';
+import { buildLookSwapPrompt, formatLookEvaluation, toAgentHistory } from '../utils/lookEvaluation';
 
 const ConversationContext = createContext();
 
@@ -36,7 +36,7 @@ export function ConversationProvider({ children }) {
             const responseText = await n8nService.sendMessage(text, {
                 userProfile: profile,
                 wardrobeItems: allItems,
-                chatHistory: history,
+                chatHistory: toAgentHistory(history),
             });
 
             // The agent may append a <actions> block for one-click follow-ups.
