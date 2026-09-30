@@ -12,6 +12,7 @@ Google Gemini + Firebase.
 - **Looks salvos**: combinações reutilizáveis + galeria.
 - **Dashboard/hub**: "look do dia" (com clima e, opcionalmente, sua Google Agenda), atividade recente e insights do guarda-roupa.
 - **Chat com o John**: assistente (via n8n) que pode sugerir ações (provar um look, etc.).
+- **Avaliação do look vestido**: envie uma foto no chat; John avalia a composição e, quando houver ganho real, sugere e gera trocas com peças do guarda-roupa.
 - **Dark mode** (sistema + toggle) e **multilíngue** (en/pt/es).
 
 ## Tech stack

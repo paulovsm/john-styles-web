@@ -110,4 +110,35 @@ describe('MessageItem try-on handoff', () => {
             state: { preselect: ['a'], lookPrompt: LOOK },
         });
     });
+
+    it('delegates a wardrobe swap action without leaving the chat', async () => {
+        const user = userEvent.setup();
+        const onAction = vi.fn();
+        const action = {
+            type: 'lookSwap',
+            itemId: 'shirt-1',
+            itemName: 'Camisa branca',
+            label: 'Ver troca com Camisa branca',
+            sourcePhotoUrl: 'https://example.com/look.jpg',
+        };
+        render(<MessageItem message={assistant('Uma troca pode ajudar.', [action])} onAction={onAction} />);
+
+        await user.click(screen.getByRole('button', { name: action.label }));
+
+        expect(onAction).toHaveBeenCalledWith(action);
+        expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it('renders a persisted look image in the conversation', () => {
+        render(<MessageItem message={{
+            role: 'user',
+            content: 'Avalie meu look.',
+            imageUrl: 'https://example.com/look.jpg',
+            kind: 'look-evaluation',
+            timestamp: Date.now(),
+        }} />);
+
+        expect(screen.getByRole('img', { name: 'Look enviado para avaliação' }))
+            .toHaveAttribute('src', 'https://example.com/look.jpg');
+    });
 });

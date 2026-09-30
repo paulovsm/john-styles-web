@@ -6,7 +6,7 @@ import OutfitOfTheDay from '../components/dashboard/OutfitOfTheDay';
 import RecentLooks from '../components/dashboard/RecentLooks';
 import WardrobeCarousel from '../components/dashboard/WardrobeCarousel';
 import Button from '../components/common/Button';
-import { Chat, AddAPhoto, History } from '@mui/icons-material';
+import { Chat, AddAPhoto, History, PhotoCamera } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useWeather } from '../hooks/useWeather';
@@ -58,7 +58,15 @@ export default function Dashboard() {
 
             {/* Primary actions, inline under the subtitle (stacked on mobile) */}
             <div className="mb-8 flex flex-col sm:flex-row sm:flex-wrap gap-3">
-                <Button variant="primary" className="w-full sm:w-auto" onClick={() => navigate('/chat')}>
+                <Button
+                    variant="primary"
+                    className="w-full sm:w-auto"
+                    onClick={() => navigate('/chat', { state: { requestLookPhoto: true } })}
+                >
+                    <PhotoCamera className="mr-2 h-5 w-5" />
+                    {t('dashboard.evaluateLook', 'Avaliar meu look')}
+                </Button>
+                <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigate('/chat')}>
                     <Chat className="mr-2 h-5 w-5" />
                     {t('dashboard.askJohn')}
                 </Button>

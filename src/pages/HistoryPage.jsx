@@ -35,6 +35,16 @@ export default function HistoryPage() {
                                     {new Date(msg.timestamp).toLocaleString()}
                                 </span>
                             </div>
+                            {msg.imageUrl && (
+                                <img
+                                    src={msg.imageUrl}
+                                    alt={msg.kind === 'look-swap-result'
+                                        ? t('lookEvaluation.generatedImageAlt')
+                                        : t('lookEvaluation.sourceImageAlt')}
+                                    className="mb-4 max-h-[36rem] w-full rounded-card bg-white-off object-contain"
+                                    loading="lazy"
+                                />
+                            )}
                             <div className="prose prose-sm dark:prose-invert max-w-none text-grey-dark">
                                 <ReactMarkdown>{msg.content}</ReactMarkdown>
                             </div>
