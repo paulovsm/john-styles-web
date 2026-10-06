@@ -54,6 +54,9 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     // it. The model will get some garments wrong, and this photo is what the
     // try-on dresses people in — so reverting cannot depend on re-uploading.
     const [originalPhoto, setOriginalPhoto] = useState(null);
+    // Set once the user reverts, so the item's stored original stops offering
+    // itself — they are already looking at it.
+    const [restoredOriginal, setRestoredOriginal] = useState(false);
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
 
@@ -101,6 +104,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setFile(null);
                 setThumbnailFile(null);
                 setOriginalPhoto(null);
+                setRestoredOriginal(false);
             } else {
                 setFormData({
                     name: '',
@@ -114,6 +118,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setFile(null);
                 setThumbnailFile(null);
                 setOriginalPhoto(null);
+                setRestoredOriginal(false);
             }
             setPhotoError('');
             setCleanupError('');
@@ -155,6 +160,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
             // A fresh photo invalidates any original kept from a previous
             // cleanup — otherwise "restore" would reach for someone else's file.
             setOriginalPhoto(null);
+            setRestoredOriginal(false);
             setCleanupError('');
             const reader = new FileReader();
             reader.onloadend = () => setPreview(reader.result);
@@ -241,11 +247,24 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         }
     };
 
+    // Either the photo cleanup just displaced, or the one stored on a previous
+    // visit. Without the stored one, reopening a cleaned item offered no way
+    // back — the in-memory copy dies with the modal.
+    const storedOriginalUrl = restoredOriginal ? '' : (item?.originalImageUrl || '');
+    const canRestoreOriginal = Boolean(originalPhoto || storedOriginalUrl);
+
     const handleRestoreOriginal = async () => {
-        if (!originalPhoto) return;
+        if (!canRestoreOriginal) return;
         setCleanupError('');
-        await applyPhoto(originalPhoto);
-        setOriginalPhoto(null);
+        try {
+            const source = originalPhoto || await fileFromUrl(storedOriginalUrl);
+            await applyPhoto(source);
+            setOriginalPhoto(null);
+            setRestoredOriginal(true);
+        } catch (error) {
+            console.error('Restoring the original photo failed', error);
+            setCleanupError(t('wardrobe.errors.restoreFailed'));
+        }
     };
 
     const handleChange = (e) => {
@@ -279,7 +298,9 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
             // Kept alongside the cleaned photo, not instead of it: this image is
             // what the try-on dresses people in, so a garment the cleanup got
             // wrong has to be recoverable weeks after it was catalogued.
-            let originalImageUrl = item?.originalImageUrl || '';
+            // Restoring makes the main photo the original again, so the item
+            // should stop pointing at a separate copy of it.
+            let originalImageUrl = restoredOriginal ? '' : (item?.originalImageUrl || '');
 
             if (file) {
                 const [uploadedImage, uploadedThumbnail, uploadedOriginal] = await Promise.all([
@@ -334,7 +355,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                 <img src={preview} alt={t('wardrobe.addModal.previewAlt', 'Prévia da peça selecionada')} className="mx-auto h-48 object-cover rounded-md" style={{ imageOrientation: 'from-image' }} />
                                 <button
                                     type="button"
-                                    onClick={(e) => { e.stopPropagation(); setFile(null); setThumbnailFile(null); setPreview(''); setPhotoError(''); setOriginalPhoto(null); setCleanupError(''); }}
+                                    onClick={(e) => { e.stopPropagation(); setFile(null); setThumbnailFile(null); setPreview(''); setPhotoError(''); setOriginalPhoto(null); setRestoredOriginal(false); setCleanupError(''); }}
                                     aria-label={t('common.remove', 'Remover')}
                                     className="absolute top-0 right-0 -mt-2 -mr-2 grid place-items-center h-11 w-11 bg-white-pure rounded-full shadow-md text-grey-medium hover:text-status-error-content active:text-status-error-content z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                 >
@@ -397,7 +418,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                             item has only a stored URL, and that is exactly the
                             photo most worth cleaning. */}
                         {preview && (
-                            originalPhoto ? (
+                            canRestoreOriginal ? (
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -440,7 +461,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     </p>
                 )}
 
-                {originalPhoto && !cleaning && (
+                {canRestoreOriginal && !cleaning && (
                     <p className="text-right text-xs text-grey-medium">
                         {t('wardrobe.addModal.cleanedPhotoHint')}
                     </p>

@@ -23,6 +23,17 @@ import {
 /** Firestore caps a batched write at 500 operations. */
 const BATCH_LIMIT = 500;
 
+/**
+ * Mirror of PLAN_LIMITS in api/_usage.js, which is the authority: the server
+ * enforces every limit, this copy only draws the counter. It cannot import the
+ * real one because api/_usage.js pulls firebase-admin, which has no business in
+ * a browser bundle — so the two must be kept in step by hand.
+ */
+const PLAN_LIMITS = Object.freeze({
+    free: { wardrobeAnalysis: 5, lookGeneration: 5, chat: 100, backgroundRemoval: 5 },
+    pro: { wardrobeAnalysis: 100, lookGeneration: 100, chat: 1000, backgroundRemoval: 100 },
+});
+
 /** Storage extension per thumbnail format createWardrobeThumbnail can produce. */
 const THUMBNAIL_EXTENSIONS = Object.freeze({
     'image/webp': 'webp',
@@ -714,11 +725,16 @@ class FirestoreService {
             if (!uid) return null;
 
             const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-            const docRef = doc(db, 'users', uid, 'data', 'usageLimits');
-            const docSnap = await getDoc(docRef);
+            const [docSnap, profileSnap] = await Promise.all([
+                getDoc(doc(db, 'users', uid, 'data', 'usageLimits')),
+                getDoc(doc(db, 'users', uid, 'data', 'profile')),
+            ]);
 
-            const limits = { wardrobeAnalysis: 5, lookGeneration: 5, chat: 100 };
-            const limit = limits[limitType] || 5;
+            // The plan was ignored here, so a pro user saw the free ceiling on
+            // every counter while the server happily allowed the higher one.
+            const plan = (profileSnap.exists() && profileSnap.data().plan) || 'free';
+            const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
+            const limit = limits[limitType] ?? PLAN_LIMITS.free[limitType] ?? 5;
 
             let used = 0;
             if (docSnap.exists()) {

@@ -453,7 +453,8 @@
       "unsupportedImageType": "Formato não aceito. Use uma imagem JPG, PNG ou WebP.",
       "imageTooLarge": "A imagem ultrapassa 8 MB. Escolha um arquivo menor.",
       "imageProcessingFailed": "Não foi possível processar esta imagem. Tente outro arquivo JPG, PNG ou WebP.",
-      "cleanupFailed": "Não foi possível limpar o fundo. A foto original foi mantida."
+      "cleanupFailed": "Não foi possível limpar o fundo. A foto original foi mantida.",
+      "restoreFailed": "Não foi possível voltar à foto original. Tente de novo."
     },
     "exploreSamples": "Explorar com peças de exemplo",
     "exploreSamplesHint": "Peças de exemplo para testar o app — você pode removê-las quando quiser.",
