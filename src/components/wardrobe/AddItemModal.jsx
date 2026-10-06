@@ -100,6 +100,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setPreview(item.image || '');
                 setFile(null);
                 setThumbnailFile(null);
+                setOriginalPhoto(null);
             } else {
                 setFormData({
                     name: '',
@@ -112,8 +113,10 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setPreview('');
                 setFile(null);
                 setThumbnailFile(null);
+                setOriginalPhoto(null);
             }
             setPhotoError('');
+            setCleanupError('');
         } else {
             closeCropper();
         }
@@ -149,6 +152,10 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
             const generatedThumbnail = await createWardrobeThumbnail(compressedFile);
             setFile(compressedFile);
             setThumbnailFile(generatedThumbnail);
+            // A fresh photo invalidates any original kept from a previous
+            // cleanup — otherwise "restore" would reach for someone else's file.
+            setOriginalPhoto(null);
+            setCleanupError('');
             const reader = new FileReader();
             reader.onloadend = () => setPreview(reader.result);
             reader.readAsDataURL(compressedFile);
@@ -275,13 +282,19 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
             let originalImageUrl = item?.originalImageUrl || '';
 
             if (file) {
-                [imageUrl, thumbnailUrl, originalImageUrl] = await Promise.all([
+                const [uploadedImage, uploadedThumbnail, uploadedOriginal] = await Promise.all([
                     firestoreService.uploadImage(file, id),
                     firestoreService.uploadThumbnail(thumbnailFile, id),
                     originalPhoto
                         ? firestoreService.uploadOriginalImage(originalPhoto, id)
                         : Promise.resolve(''),
                 ]);
+                imageUrl = uploadedImage;
+                thumbnailUrl = uploadedThumbnail;
+                // Only overwrite when this save actually produced one: destructuring
+                // straight into the variable blanked the stored original on every
+                // later edit that did not run cleanup again.
+                if (uploadedOriginal) originalImageUrl = uploadedOriginal;
             }
 
             onSave({
@@ -321,7 +334,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                 <img src={preview} alt={t('wardrobe.addModal.previewAlt', 'Prévia da peça selecionada')} className="mx-auto h-48 object-cover rounded-md" style={{ imageOrientation: 'from-image' }} />
                                 <button
                                     type="button"
-                                    onClick={(e) => { e.stopPropagation(); setFile(null); setThumbnailFile(null); setPreview(''); setPhotoError(''); }}
+                                    onClick={(e) => { e.stopPropagation(); setFile(null); setThumbnailFile(null); setPreview(''); setPhotoError(''); setOriginalPhoto(null); setCleanupError(''); }}
                                     aria-label={t('common.remove', 'Remover')}
                                     className="absolute top-0 right-0 -mt-2 -mr-2 grid place-items-center h-11 w-11 bg-white-pure rounded-full shadow-md text-grey-medium hover:text-status-error-content active:text-status-error-content z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                 >
