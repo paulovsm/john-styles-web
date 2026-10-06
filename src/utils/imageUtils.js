@@ -1,3 +1,5 @@
+import { flattenBackdrop } from './backgroundFlatten';
+
 /**
  * Ensures an image reference is a base64 data URL.
  * Wardrobe/gallery images are now stored as Storage URLs, but our image APIs
@@ -177,6 +179,18 @@ export const flattenOnBackground = async (file, background = '#ffffff') => {
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.drawImage(bitmap, 0, 0);
     bitmap.close?.();
+
+    // The model paints its backdrop rather than returning alpha, so the flat
+    // colour has to be produced here. flattenBackdrop declines when the fill
+    // would claim the whole frame, in which case the model's own output stands.
+    try {
+        const frame = context.getImageData(0, 0, canvas.width, canvas.height);
+        const result = flattenBackdrop(frame);
+        if (result.applied) context.putImageData(frame, 0, 0);
+    } catch {
+        // Keep the composited image: a failed normalisation is not worth
+        // costing the user the cleanup they already spent quota on.
+    }
 
     const blob = await canvasToBlob(canvas, FALLBACK_MIME_TYPE, 0.92);
     if (!blob) throw new Error('Canvas is empty');

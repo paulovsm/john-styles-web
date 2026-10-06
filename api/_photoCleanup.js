@@ -13,15 +13,15 @@
  * wrong look later.
  */
 const BASE_INSTRUCTION = [
-    'Cut the garment out of this photo and return it on a fully transparent background, as a PNG with an alpha channel.',
-    'Every pixel that is not part of the garment must be fully transparent. Do not paint, shade or gradient the background.',
+    'Remove the background from this garment photo and replace it with a plain, even, pure white background.',
+    'The background must be a solid white surface. Never draw a checkerboard or chequered pattern, and never draw anything that represents transparency.',
     'Keep the garment itself completely unchanged: same colour, same pattern, same print, same texture, same proportions, same shape, same folds.',
     'Do not redraw, restyle, straighten, or reposition the garment. Do not add, remove or invent any detail.',
     'Preserve every logo, label, button, zipper and graphic exactly as it appears.',
     'Do not add a drop shadow, reflection or contact shadow under the garment.',
-    'Keep the garment centred, fully inside the frame, with a small even margin around it.',
+    'Keep the garment centred, fully inside the frame, with a small even margin of background around it.',
     'Even out colour casts from the original lighting, but do not change the garment colour itself.',
-    'Return a photorealistic product cut-out, not an illustration or a render.',
+    'Return a photorealistic product photo, not an illustration or a render.',
 ].join(' ');
 
 /**
