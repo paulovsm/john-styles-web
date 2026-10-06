@@ -20,7 +20,7 @@ export const toDataUrl = async (src) => {
     });
 };
 
-const blobToDataUrl = (blob) =>
+export const blobToDataUrl = (blob) =>
     new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
@@ -134,6 +134,37 @@ const canvasToFile = async (canvas, name, mimeType, quality) => {
 
     const type = blob.type || mimeType;
     return new File([blob], withExtensionFor(name, type), { type, lastModified: Date.now() });
+};
+
+/**
+ * Paints `file` over an opaque background and returns it as a JPEG File.
+ *
+ * The cleanup model returns PNG and may hand back real transparency where the
+ * background used to be. Every resize in here draws onto a fresh canvas, which
+ * starts transparent, and transparent pixels encode to BLACK in JPEG — so a
+ * cut-out would reach the wardrobe as a garment on a black rectangle. Filling
+ * first makes the background a property of our code rather than of whatever
+ * the model happened to return.
+ *
+ * @param {File|Blob} file
+ * @param {string} [background] any canvas-accepted colour
+ * @returns {Promise<File>} JPEG with an opaque background
+ */
+export const flattenOnBackground = async (file, background = '#ffffff') => {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+
+    const context = canvas.getContext('2d');
+    context.fillStyle = background;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(bitmap, 0, 0);
+    bitmap.close?.();
+
+    const blob = await canvasToBlob(canvas, FALLBACK_MIME_TYPE, 0.92);
+    if (!blob) throw new Error('Canvas is empty');
+    return new File([blob], 'cleaned.jpg', { type: FALLBACK_MIME_TYPE, lastModified: Date.now() });
 };
 
 const resizeImage = async (file, maxDimension, quality, mimeType, outputName) => {

@@ -329,6 +329,33 @@ class FirestoreService {
     }
 
     /**
+     * Keeps the photo the user actually took when AI cleanup replaces it.
+     *
+     * Follows the same `{itemId}-suffix` convention as the thumbnail so the
+     * delete path can clear it with the rest of the item's files.
+     *
+     * @param {Blob|File} imageBlob
+     * @param {string} itemId
+     * @param {string} [userId]
+     * @returns {Promise<string>} Download URL
+     */
+    async uploadOriginalImage(imageBlob, itemId, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) {
+                throw new Error('Cannot upload image: user not authenticated');
+            }
+
+            const storageRef = ref(storage, `users/${uid}/wardrobe/${itemId}-original.jpg`);
+            await uploadBytes(storageRef, imageBlob);
+            return await getDownloadURL(storageRef);
+        } catch (error) {
+            console.error('Error uploading original image to Storage:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Upload the small variant used by wardrobe grids and carousels. WebP where
      * the browser can encode it, JPEG on WebKit — the extension and content
      * type follow the blob instead of being assumed, so iPhone thumbnails are
@@ -374,6 +401,9 @@ class FirestoreService {
             // browser that can encode webp or from one that fell back to JPEG.
             const storageRefs = [
                 ref(storage, `users/${uid}/wardrobe/${itemId}.jpg`),
+                // Written only when AI cleanup replaced the photo; left out of
+                // this list it would outlive the item and bill storage forever.
+                ref(storage, `users/${uid}/wardrobe/${itemId}-original.jpg`),
                 ...Object.values(THUMBNAIL_EXTENSIONS).map((extension) =>
                     ref(storage, `users/${uid}/wardrobe/${itemId}-thumb.${extension}`)),
             ];
