@@ -1,3 +1,5 @@
+import { flattenBackdrop } from './backgroundFlatten';
+
 /**
  * Ensures an image reference is a base64 data URL.
  * Wardrobe/gallery images are now stored as Storage URLs, but our image APIs
@@ -20,13 +22,29 @@ export const toDataUrl = async (src) => {
     });
 };
 
-const blobToDataUrl = (blob) =>
+export const blobToDataUrl = (blob) =>
     new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
         reader.onerror = reject;
         reader.readAsDataURL(blob);
     });
+
+/**
+ * Pulls an already-stored image back down as a File.
+ *
+ * Editing a catalogued item gives the form a Storage URL and no File, so any
+ * operation that needs bytes — AI cleanup, re-compression — has to fetch first.
+ *
+ * @param {string} src data: or http(s) URL
+ * @param {string} [name]
+ * @returns {Promise<File>}
+ */
+export const fileFromUrl = async (src, name = 'photo.jpg') => {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    return new File([blob], name, { type: blob.type || 'image/jpeg' });
+};
 
 export const MAX_WARDROBE_IMAGE_BYTES = 8 * 1024 * 1024;
 export const SUPPORTED_WARDROBE_IMAGE_TYPES = Object.freeze([
@@ -134,6 +152,49 @@ const canvasToFile = async (canvas, name, mimeType, quality) => {
 
     const type = blob.type || mimeType;
     return new File([blob], withExtensionFor(name, type), { type, lastModified: Date.now() });
+};
+
+/**
+ * Paints `file` over an opaque background and returns it as a JPEG File.
+ *
+ * The cleanup model returns PNG and may hand back real transparency where the
+ * background used to be. Every resize in here draws onto a fresh canvas, which
+ * starts transparent, and transparent pixels encode to BLACK in JPEG — so a
+ * cut-out would reach the wardrobe as a garment on a black rectangle. Filling
+ * first makes the background a property of our code rather than of whatever
+ * the model happened to return.
+ *
+ * @param {File|Blob} file
+ * @param {string} [background] any canvas-accepted colour
+ * @returns {Promise<File>} JPEG with an opaque background
+ */
+export const flattenOnBackground = async (file, background = '#ffffff') => {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+
+    const context = canvas.getContext('2d');
+    context.fillStyle = background;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(bitmap, 0, 0);
+    bitmap.close?.();
+
+    // The model paints its backdrop rather than returning alpha, so the flat
+    // colour has to be produced here. flattenBackdrop declines when the fill
+    // would claim the whole frame, in which case the model's own output stands.
+    try {
+        const frame = context.getImageData(0, 0, canvas.width, canvas.height);
+        const result = flattenBackdrop(frame);
+        if (result.applied) context.putImageData(frame, 0, 0);
+    } catch {
+        // Keep the composited image: a failed normalisation is not worth
+        // costing the user the cleanup they already spent quota on.
+    }
+
+    const blob = await canvasToBlob(canvas, FALLBACK_MIME_TYPE, 0.92);
+    if (!blob) throw new Error('Canvas is empty');
+    return new File([blob], 'cleaned.jpg', { type: FALLBACK_MIME_TYPE, lastModified: Date.now() });
 };
 
 const resizeImage = async (file, maxDimension, quality, mimeType, outputName) => {

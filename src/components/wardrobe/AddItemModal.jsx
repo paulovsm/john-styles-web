@@ -5,11 +5,14 @@ import Button from '../common/Button';
 import Loading from '../common/Loading';
 import { geminiService } from '../../services/api/geminiService';
 import { firestoreService } from '../../services/storage/firestoreService';
-import { AutoAwesome, CameraAlt, CloudUpload, LightbulbOutlined } from '@mui/icons-material';
+import { AutoAwesome, AutoFixHigh, CameraAlt, CloudUpload, LightbulbOutlined, Undo } from '@mui/icons-material';
 import {
+    blobToDataUrl,
     compressImage,
     createWardrobeThumbnail,
     cropImage,
+    fileFromUrl,
+    flattenOnBackground,
     validateWardrobeImageFile,
 } from '../../utils/imageUtils';
 import ImageCropModal from '../common/ImageCropModal';
@@ -45,6 +48,15 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     const [showAllTypes, setShowAllTypes] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
     const [analyzeError, setAnalyzeError] = useState('');
+    const [cleaning, setCleaning] = useState(false);
+    const [cleanupError, setCleanupError] = useState('');
+    // The photo as the user framed it, kept aside the moment cleanup replaces
+    // it. The model will get some garments wrong, and this photo is what the
+    // try-on dresses people in — so reverting cannot depend on re-uploading.
+    const [originalPhoto, setOriginalPhoto] = useState(null);
+    // Set once the user reverts, so the item's stored original stops offering
+    // itself — they are already looking at it.
+    const [restoredOriginal, setRestoredOriginal] = useState(false);
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
 
@@ -91,6 +103,8 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setPreview(item.image || '');
                 setFile(null);
                 setThumbnailFile(null);
+                setOriginalPhoto(null);
+                setRestoredOriginal(false);
             } else {
                 setFormData({
                     name: '',
@@ -103,8 +117,11 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 setPreview('');
                 setFile(null);
                 setThumbnailFile(null);
+                setOriginalPhoto(null);
+                setRestoredOriginal(false);
             }
             setPhotoError('');
+            setCleanupError('');
         } else {
             closeCropper();
         }
@@ -140,6 +157,11 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
             const generatedThumbnail = await createWardrobeThumbnail(compressedFile);
             setFile(compressedFile);
             setThumbnailFile(generatedThumbnail);
+            // A fresh photo invalidates any original kept from a previous
+            // cleanup — otherwise "restore" would reach for someone else's file.
+            setOriginalPhoto(null);
+            setRestoredOriginal(false);
+            setCleanupError('');
             const reader = new FileReader();
             reader.onloadend = () => setPreview(reader.result);
             reader.readAsDataURL(compressedFile);
@@ -183,6 +205,68 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
         }
     };
 
+    const applyPhoto = async (photoFile) => {
+        const thumbnail = await createWardrobeThumbnail(photoFile);
+        setFile(photoFile);
+        setThumbnailFile(thumbnail);
+        setPreview(await blobToDataUrl(photoFile));
+    };
+
+    const handleCleanUpPhoto = async () => {
+        if (!file && !preview) return;
+
+        setCleaning(true);
+        setCleanupError('');
+        try {
+            // Editing an existing item hands us a stored URL and no File, so the
+            // photo has to be pulled back down before it can be cleaned. Without
+            // this, cleanup would only ever reach items being catalogued now.
+            const source = file || await fileFromUrl(preview);
+            const cleanedDataUrl = await geminiService.cleanUpPhoto(source, formData.type);
+            const response = await fetch(cleanedDataUrl);
+            const cleanedBlob = await response.blob();
+
+            // Flatten before compressing: the model returns PNG and may include
+            // real transparency, which JPEG would encode as black.
+            const flattened = await flattenOnBackground(cleanedBlob);
+            const compressed = await compressImage(flattened);
+
+            // Only stash the original once, so cleaning twice still reverts to
+            // the photo the user actually took.
+            setOriginalPhoto((current) => current || source);
+            await applyPhoto(compressed);
+        } catch (error) {
+            console.error('Photo cleanup failed', error);
+            setCleanupError(
+                error.code === 'LIMIT_REACHED'
+                    ? t('wardrobe.errors.limitReached')
+                    : t('wardrobe.errors.cleanupFailed')
+            );
+        } finally {
+            setCleaning(false);
+        }
+    };
+
+    // Either the photo cleanup just displaced, or the one stored on a previous
+    // visit. Without the stored one, reopening a cleaned item offered no way
+    // back — the in-memory copy dies with the modal.
+    const storedOriginalUrl = restoredOriginal ? '' : (item?.originalImageUrl || '');
+    const canRestoreOriginal = Boolean(originalPhoto || storedOriginalUrl);
+
+    const handleRestoreOriginal = async () => {
+        if (!canRestoreOriginal) return;
+        setCleanupError('');
+        try {
+            const source = originalPhoto || await fileFromUrl(storedOriginalUrl);
+            await applyPhoto(source);
+            setOriginalPhoto(null);
+            setRestoredOriginal(true);
+        } catch (error) {
+            console.error('Restoring the original photo failed', error);
+            setCleanupError(t('wardrobe.errors.restoreFailed'));
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -211,11 +295,27 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
             // If a new image was selected (we still hold the File), upload it to
             // Storage and persist only the URL — never the base64 blob, which
             // would bloat the Firestore doc / localStorage.
+            // Kept alongside the cleaned photo, not instead of it: this image is
+            // what the try-on dresses people in, so a garment the cleanup got
+            // wrong has to be recoverable weeks after it was catalogued.
+            // Restoring makes the main photo the original again, so the item
+            // should stop pointing at a separate copy of it.
+            let originalImageUrl = restoredOriginal ? '' : (item?.originalImageUrl || '');
+
             if (file) {
-                [imageUrl, thumbnailUrl] = await Promise.all([
+                const [uploadedImage, uploadedThumbnail, uploadedOriginal] = await Promise.all([
                     firestoreService.uploadImage(file, id),
                     firestoreService.uploadThumbnail(thumbnailFile, id),
+                    originalPhoto
+                        ? firestoreService.uploadOriginalImage(originalPhoto, id)
+                        : Promise.resolve(''),
                 ]);
+                imageUrl = uploadedImage;
+                thumbnailUrl = uploadedThumbnail;
+                // Only overwrite when this save actually produced one: destructuring
+                // straight into the variable blanked the stored original on every
+                // later edit that did not run cleanup again.
+                if (uploadedOriginal) originalImageUrl = uploadedOriginal;
             }
 
             onSave({
@@ -223,6 +323,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 id,
                 image: imageUrl,
                 ...(thumbnailUrl ? { thumbnailUrl } : {}),
+                ...(originalImageUrl ? { originalImageUrl } : {}),
                 type,
                 category,
                 taxonomyVersion: TAXONOMY_VERSION,
@@ -254,7 +355,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                                 <img src={preview} alt={t('wardrobe.addModal.previewAlt', 'Prévia da peça selecionada')} className="mx-auto h-48 object-cover rounded-md" style={{ imageOrientation: 'from-image' }} />
                                 <button
                                     type="button"
-                                    onClick={(e) => { e.stopPropagation(); setFile(null); setThumbnailFile(null); setPreview(''); setPhotoError(''); }}
+                                    onClick={(e) => { e.stopPropagation(); setFile(null); setThumbnailFile(null); setPreview(''); setPhotoError(''); setOriginalPhoto(null); setRestoredOriginal(false); setCleanupError(''); }}
                                     aria-label={t('common.remove', 'Remover')}
                                     className="absolute top-0 right-0 -mt-2 -mr-2 grid place-items-center h-11 w-11 bg-white-pure rounded-full shadow-md text-grey-medium hover:text-status-error-content active:text-status-error-content z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy"
                                 >
@@ -312,12 +413,40 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                 </div>
 
                 {preview && (
-                    <div className="flex justify-end">
+                    <div className="flex flex-wrap justify-end gap-2">
+                        {/* Keyed off the preview, not the File: editing an existing
+                            item has only a stored URL, and that is exactly the
+                            photo most worth cleaning. */}
+                        {preview && (
+                            canRestoreOriginal ? (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={handleRestoreOriginal}
+                                    disabled={cleaning || analyzing}
+                                    className="text-xs"
+                                >
+                                    <Undo className="mr-1 h-4 w-4" />
+                                    {t('wardrobe.addModal.restoreOriginalPhoto')}
+                                </Button>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={handleCleanUpPhoto}
+                                    disabled={cleaning || analyzing}
+                                    className="text-xs"
+                                >
+                                    {cleaning ? <Loading type="spinner" size={16} className="mr-2" /> : <AutoFixHigh className="mr-1 h-4 w-4" />}
+                                    {t('wardrobe.addModal.cleanUpPhoto')}
+                                </Button>
+                            )
+                        )}
                         <Button
                             type="button"
                             variant="accent"
                             onClick={handleAnalyze}
-                            disabled={analyzing}
+                            disabled={analyzing || cleaning}
                             className="text-xs"
                         >
                             {analyzing ? <Loading type="spinner" size={16} className="mr-2" /> : <AutoAwesome className="mr-1 h-4 w-4" />}
@@ -326,8 +455,30 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     </div>
                 )}
 
+                {cleaning && (
+                    <p className="text-right text-xs text-grey-medium" role="status">
+                        {t('wardrobe.addModal.cleaningPhoto')}
+                    </p>
+                )}
+
+                {canRestoreOriginal && !cleaning && (
+                    <p className="text-right text-xs text-grey-medium">
+                        {t('wardrobe.addModal.cleanedPhotoHint')}
+                    </p>
+                )}
+
+                {cleanupError && (
+                    <div role="alert" className="rounded-md border border-status-error bg-status-error/10 px-3 py-2 text-sm text-status-error-content">
+                        {cleanupError}
+                    </div>
+                )}
+
                 {preview && (
                     <UsageCounter limitType="wardrobeAnalysis" refreshKey={analyzing ? 0 : 1} className="text-right" />
+                )}
+
+                {preview && (
+                    <UsageCounter limitType="backgroundRemoval" refreshKey={cleaning ? 0 : 1} className="text-right" />
                 )}
 
                 {analyzeError && (
