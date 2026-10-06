@@ -2,13 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { buildPhotoCleanupPrompt } from './_photoCleanup.js';
 
 describe('buildPhotoCleanupPrompt', () => {
-    it('asks for a painted background rather than a cut-out', () => {
+    it('asks for a cut-out rather than a painted background', () => {
         const prompt = buildPhotoCleanupPrompt();
 
-        // The storage pipeline is JPEG, which has no alpha: a transparent
-        // result would be flattened to black on write.
-        expect(prompt).toMatch(/uniform white background/i);
-        expect(prompt).not.toMatch(/transparen/i);
+        // A model told to paint white paints a photographic white — gradients
+        // and a contact shadow — so garments stop matching each other. The flat
+        // colour is composited client-side instead.
+        expect(prompt).toMatch(/fully transparent background/i);
+        expect(prompt).toMatch(/do not paint, shade or gradient/i);
+        expect(prompt).toMatch(/do not add a drop shadow/i);
     });
 
     it('forbids altering the garment itself', () => {
@@ -31,6 +33,6 @@ describe('buildPhotoCleanupPrompt', () => {
         const prompt = buildPhotoCleanupPrompt(value);
 
         expect(prompt).not.toContain('The garment in this photo is');
-        expect(prompt).toMatch(/uniform white background/i);
+        expect(prompt).toMatch(/fully transparent background/i);
     });
 });

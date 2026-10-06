@@ -28,6 +28,22 @@ export const blobToDataUrl = (blob) =>
         reader.readAsDataURL(blob);
     });
 
+/**
+ * Pulls an already-stored image back down as a File.
+ *
+ * Editing a catalogued item gives the form a Storage URL and no File, so any
+ * operation that needs bytes — AI cleanup, re-compression — has to fetch first.
+ *
+ * @param {string} src data: or http(s) URL
+ * @param {string} [name]
+ * @returns {Promise<File>}
+ */
+export const fileFromUrl = async (src, name = 'photo.jpg') => {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    return new File([blob], name, { type: blob.type || 'image/jpeg' });
+};
+
 export const MAX_WARDROBE_IMAGE_BYTES = 8 * 1024 * 1024;
 export const SUPPORTED_WARDROBE_IMAGE_TYPES = Object.freeze([
     'image/jpeg',

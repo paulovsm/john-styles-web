@@ -11,6 +11,7 @@ import {
     compressImage,
     createWardrobeThumbnail,
     cropImage,
+    fileFromUrl,
     flattenOnBackground,
     validateWardrobeImageFile,
 } from '../../utils/imageUtils';
@@ -199,12 +200,16 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
     };
 
     const handleCleanUpPhoto = async () => {
-        if (!file) return;
+        if (!file && !preview) return;
 
         setCleaning(true);
         setCleanupError('');
         try {
-            const cleanedDataUrl = await geminiService.cleanUpPhoto(file, formData.type);
+            // Editing an existing item hands us a stored URL and no File, so the
+            // photo has to be pulled back down before it can be cleaned. Without
+            // this, cleanup would only ever reach items being catalogued now.
+            const source = file || await fileFromUrl(preview);
+            const cleanedDataUrl = await geminiService.cleanUpPhoto(source, formData.type);
             const response = await fetch(cleanedDataUrl);
             const cleanedBlob = await response.blob();
 
@@ -215,7 +220,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
 
             // Only stash the original once, so cleaning twice still reverts to
             // the photo the user actually took.
-            setOriginalPhoto((current) => current || file);
+            setOriginalPhoto((current) => current || source);
             await applyPhoto(compressed);
         } catch (error) {
             console.error('Photo cleanup failed', error);
@@ -375,9 +380,10 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
 
                 {preview && (
                     <div className="flex flex-wrap justify-end gap-2">
-                        {/* Cleanup only has a file to work on; in edit mode the preview
-                            is a stored URL until the user picks a new photo. */}
-                        {file && (
+                        {/* Keyed off the preview, not the File: editing an existing
+                            item has only a stored URL, and that is exactly the
+                            photo most worth cleaning. */}
+                        {preview && (
                             originalPhoto ? (
                                 <Button
                                     type="button"
@@ -437,7 +443,7 @@ export default function AddItemModal({ isOpen, onClose, onSave, item }) {
                     <UsageCounter limitType="wardrobeAnalysis" refreshKey={analyzing ? 0 : 1} className="text-right" />
                 )}
 
-                {preview && file && (
+                {preview && (
                     <UsageCounter limitType="backgroundRemoval" refreshKey={cleaning ? 0 : 1} className="text-right" />
                 )}
 

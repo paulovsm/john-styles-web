@@ -1,23 +1,27 @@
 /**
  * Instruction for isolating a garment from its background.
  *
- * Two things drive the wording. First, the stored photo feeds the virtual
- * try-on, so a garment the model "improved" produces a wrong look later —
- * every clause that forbids redrawing is load-bearing, not boilerplate.
+ * Asking for a cut-out rather than a painted backdrop is deliberate. A model
+ * told to paint white paints a *photographic* white — soft gradients and a
+ * contact shadow — so garments come out on visibly different backgrounds and
+ * the wardrobe grid stops looking like a set. Transparency has no such
+ * freedom: the client composites the flat colour itself (flattenOnBackground),
+ * which is also what keeps the JPEG pipeline from encoding alpha as black.
  *
- * Second, the storage pipeline is JPEG end to end (compressImage forces
- * image/jpeg, Storage writes .jpg), and JPEG carries no alpha. So this asks for
- * a painted white background rather than transparency: a cut-out would be
- * flattened on write, and an undefined flatten background comes out black.
+ * The clauses forbidding redrawing are load-bearing, not boilerplate: this
+ * photo feeds the virtual try-on, so a garment the model "improved" produces a
+ * wrong look later.
  */
 const BASE_INSTRUCTION = [
-    'Remove the background from this garment photo and replace it with a plain, uniform white background.',
+    'Cut the garment out of this photo and return it on a fully transparent background, as a PNG with an alpha channel.',
+    'Every pixel that is not part of the garment must be fully transparent. Do not paint, shade or gradient the background.',
     'Keep the garment itself completely unchanged: same colour, same pattern, same print, same texture, same proportions, same shape, same folds.',
     'Do not redraw, restyle, straighten, or reposition the garment. Do not add, remove or invent any detail.',
     'Preserve every logo, label, button, zipper and graphic exactly as it appears.',
+    'Do not add a drop shadow, reflection or contact shadow under the garment.',
     'Keep the garment centred, fully inside the frame, with a small even margin around it.',
-    'Even out harsh shadows and colour casts from the original lighting, but do not change the garment colour itself.',
-    'Return a photorealistic product photo, not an illustration or a render.',
+    'Even out colour casts from the original lighting, but do not change the garment colour itself.',
+    'Return a photorealistic product cut-out, not an illustration or a render.',
 ].join(' ');
 
 /**
