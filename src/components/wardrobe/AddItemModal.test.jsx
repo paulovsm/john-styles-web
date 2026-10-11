@@ -193,4 +193,38 @@ describe('AddItemModal photo sources', () => {
         }));
         expect(saved).not.toHaveProperty('subcategory');
     });
+
+    it('drops the stored original when the photo is replaced by another', async () => {
+        const user = userEvent.setup();
+        const onSave = vi.fn();
+        storageMocks.uploadImage.mockResolvedValue('https://example.com/new.jpg');
+        storageMocks.uploadThumbnail.mockResolvedValue('https://example.com/new-thumb.webp');
+        const cleanedItem = {
+            id: 'blazer-1',
+            name: 'Blazer',
+            image: 'https://example.com/cleaned.jpg',
+            originalImageUrl: 'https://example.com/original.jpg',
+            type: 'blazer',
+            category: 'tops',
+            taxonomyVersion: 1,
+            colors: ['Azul'],
+            styles: ['Casual'],
+        };
+
+        render(<AddItemModal isOpen item={cleanedItem} onClose={() => {}} onSave={onSave} />);
+        expect(screen.getByRole('button', { name: 'wardrobe.addModal.restoreOriginalPhoto' })).toBeInTheDocument();
+
+        await user.click(screen.getByRole('button', { name: 'common.remove' }));
+        await pickPhoto(user, new File(['jpeg'], 'other.jpg', { type: 'image/jpeg' }));
+        await screen.findByRole('img', { name: 'wardrobe.addModal.previewAlt' });
+
+        // The stored original belonged to the replaced photo, not this one.
+        expect(screen.queryByRole('button', { name: 'wardrobe.addModal.restoreOriginalPhoto' })).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole('button', { name: 'wardrobe.addModal.save' }));
+        await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+        // Explicitly empty: updateItem spreads over the old item, so a missing
+        // key would keep pointing at the old photo.
+        expect(onSave.mock.calls[0][0]).toEqual(expect.objectContaining({ originalImageUrl: '' }));
+    });
 });
