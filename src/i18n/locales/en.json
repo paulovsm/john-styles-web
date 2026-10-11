@@ -439,7 +439,11 @@
       "brandPlaceholder": "Optional",
       "cancel": "Cancel",
       "save": "Save Item",
-      "showAllTypes": "Show all types"
+      "showAllTypes": "Show all types",
+      "cleanUpPhoto": "Clean up background",
+      "restoreOriginalPhoto": "Back to original photo",
+      "cleaningPhoto": "Cleaning up the background...",
+      "cleanedPhotoHint": "Background cleaned by AI. Your original photo is kept."
     },
     "errors": {
       "limitReached": "Daily analysis limit reached (5/5). Please try again tomorrow.",
@@ -448,7 +452,9 @@
       "typeRequired": "Select the garment type before saving.",
       "unsupportedImageType": "Unsupported format. Use a JPG, PNG or WebP image.",
       "imageTooLarge": "The image is larger than 8 MB. Choose a smaller file.",
-      "imageProcessingFailed": "We could not process this image. Try another JPG, PNG or WebP file."
+      "imageProcessingFailed": "We could not process this image. Try another JPG, PNG or WebP file.",
+      "cleanupFailed": "Could not clean up the background. Your original photo was kept.",
+      "restoreFailed": "Could not restore the original photo. Please try again."
     },
     "exploreSamples": "Explore with sample pieces",
     "exploreSamplesHint": "Sample pieces to try the app — remove them anytime.",

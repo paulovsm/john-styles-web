@@ -23,6 +23,17 @@ import {
 /** Firestore caps a batched write at 500 operations. */
 const BATCH_LIMIT = 500;
 
+/**
+ * Mirror of PLAN_LIMITS in api/_usage.js, which is the authority: the server
+ * enforces every limit, this copy only draws the counter. It cannot import the
+ * real one because api/_usage.js pulls firebase-admin, which has no business in
+ * a browser bundle — so the two must be kept in step by hand.
+ */
+const PLAN_LIMITS = Object.freeze({
+    free: { wardrobeAnalysis: 5, lookGeneration: 5, chat: 100, backgroundRemoval: 5 },
+    pro: { wardrobeAnalysis: 100, lookGeneration: 100, chat: 1000, backgroundRemoval: 100 },
+});
+
 /** Storage extension per thumbnail format createWardrobeThumbnail can produce. */
 const THUMBNAIL_EXTENSIONS = Object.freeze({
     'image/webp': 'webp',
@@ -329,6 +340,33 @@ class FirestoreService {
     }
 
     /**
+     * Keeps the photo the user actually took when AI cleanup replaces it.
+     *
+     * Follows the same `{itemId}-suffix` convention as the thumbnail so the
+     * delete path can clear it with the rest of the item's files.
+     *
+     * @param {Blob|File} imageBlob
+     * @param {string} itemId
+     * @param {string} [userId]
+     * @returns {Promise<string>} Download URL
+     */
+    async uploadOriginalImage(imageBlob, itemId, userId = null) {
+        try {
+            const uid = userId || this.getCurrentUserId();
+            if (!uid) {
+                throw new Error('Cannot upload image: user not authenticated');
+            }
+
+            const storageRef = ref(storage, `users/${uid}/wardrobe/${itemId}-original.jpg`);
+            await uploadBytes(storageRef, imageBlob);
+            return await getDownloadURL(storageRef);
+        } catch (error) {
+            console.error('Error uploading original image to Storage:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Upload the small variant used by wardrobe grids and carousels. WebP where
      * the browser can encode it, JPEG on WebKit — the extension and content
      * type follow the blob instead of being assumed, so iPhone thumbnails are
@@ -374,6 +412,9 @@ class FirestoreService {
             // browser that can encode webp or from one that fell back to JPEG.
             const storageRefs = [
                 ref(storage, `users/${uid}/wardrobe/${itemId}.jpg`),
+                // Written only when AI cleanup replaced the photo; left out of
+                // this list it would outlive the item and bill storage forever.
+                ref(storage, `users/${uid}/wardrobe/${itemId}-original.jpg`),
                 ...Object.values(THUMBNAIL_EXTENSIONS).map((extension) =>
                     ref(storage, `users/${uid}/wardrobe/${itemId}-thumb.${extension}`)),
             ];
@@ -684,11 +725,16 @@ class FirestoreService {
             if (!uid) return null;
 
             const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-            const docRef = doc(db, 'users', uid, 'data', 'usageLimits');
-            const docSnap = await getDoc(docRef);
+            const [docSnap, profileSnap] = await Promise.all([
+                getDoc(doc(db, 'users', uid, 'data', 'usageLimits')),
+                getDoc(doc(db, 'users', uid, 'data', 'profile')),
+            ]);
 
-            const limits = { wardrobeAnalysis: 5, lookGeneration: 5, chat: 100 };
-            const limit = limits[limitType] || 5;
+            // The plan was ignored here, so a pro user saw the free ceiling on
+            // every counter while the server happily allowed the higher one.
+            const plan = (profileSnap.exists() && profileSnap.data().plan) || 'free';
+            const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
+            const limit = limits[limitType] ?? PLAN_LIMITS.free[limitType] ?? 5;
 
             let used = 0;
             if (docSnap.exists()) {

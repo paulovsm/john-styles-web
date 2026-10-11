@@ -6,7 +6,7 @@ import { firestoreService } from '../../services/storage/firestoreService';
  * Small read-only indicator of the user's remaining daily usage for a feature.
  * Enforcement is server-side; this only displays what the server has recorded.
  *
- * @param {'wardrobeAnalysis'|'lookGeneration'|'chat'} limitType
+ * @param {'wardrobeAnalysis'|'lookGeneration'|'chat'|'backgroundRemoval'} limitType
  * @param {number} [refreshKey] - change this to force a re-fetch (e.g. after an action)
  */
 export default function UsageCounter({ limitType, refreshKey = 0, className = '' }) {

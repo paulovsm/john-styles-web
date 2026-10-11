@@ -11,8 +11,8 @@ import { FieldValue } from 'firebase-admin/firestore';
  * assigning the plan and, eventually, wiring billing — no shape changes.
  */
 export const PLAN_LIMITS = {
-    free: { wardrobeAnalysis: 5, lookGeneration: 5, chat: 100 },
-    pro: { wardrobeAnalysis: 100, lookGeneration: 100, chat: 1000 },
+    free: { wardrobeAnalysis: 5, lookGeneration: 5, chat: 100, backgroundRemoval: 5 },
+    pro: { wardrobeAnalysis: 100, lookGeneration: 100, chat: 1000, backgroundRemoval: 100 },
 };
 
 export const DEFAULT_LIMITS = PLAN_LIMITS.free;
@@ -36,7 +36,7 @@ async function getPlanLimits(db, uid) {
  * Throws UsageLimitError(429) when the daily limit is exhausted.
  *
  * @param {string} uid
- * @param {'wardrobeAnalysis'|'lookGeneration'|'chat'} limitType
+ * @param {'wardrobeAnalysis'|'lookGeneration'|'chat'|'backgroundRemoval'} limitType
  * @returns {Promise<{remaining: number, limit: number}>}
  */
 export async function consumeUsage(uid, limitType) {

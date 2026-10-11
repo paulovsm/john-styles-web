@@ -439,7 +439,11 @@
       "brandPlaceholder": "Opcional",
       "cancel": "Cancelar",
       "save": "Salvar Item",
-      "showAllTypes": "Ver todos os tipos"
+      "showAllTypes": "Ver todos os tipos",
+      "cleanUpPhoto": "Limpar fundo",
+      "restoreOriginalPhoto": "Voltar à foto original",
+      "cleaningPhoto": "Limpando o fundo da foto...",
+      "cleanedPhotoHint": "Fundo limpo pela IA. A foto original fica guardada."
     },
     "errors": {
       "limitReached": "Limite diário de análise atingido (5/5). Por favor, tente novamente amanhã.",
@@ -448,7 +452,9 @@
       "typeRequired": "Selecione o tipo da peça antes de salvar.",
       "unsupportedImageType": "Formato não aceito. Use uma imagem JPG, PNG ou WebP.",
       "imageTooLarge": "A imagem ultrapassa 8 MB. Escolha um arquivo menor.",
-      "imageProcessingFailed": "Não foi possível processar esta imagem. Tente outro arquivo JPG, PNG ou WebP."
+      "imageProcessingFailed": "Não foi possível processar esta imagem. Tente outro arquivo JPG, PNG ou WebP.",
+      "cleanupFailed": "Não foi possível limpar o fundo. A foto original foi mantida.",
+      "restoreFailed": "Não foi possível voltar à foto original. Tente de novo."
     },
     "exploreSamples": "Explorar com peças de exemplo",
     "exploreSamplesHint": "Peças de exemplo para testar o app — você pode removê-las quando quiser.",

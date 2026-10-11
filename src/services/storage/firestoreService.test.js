@@ -98,15 +98,18 @@ describe('wardrobe image storage', () => {
         expect(url).toBe('https://storage.test/users/user-1/wardrobe/item-1-thumb.jpg');
     });
 
-    it('deletes the original and both thumbnail formats, tolerating the absent one', async () => {
+    it('deletes every file an item can leave behind, tolerating the absent ones', async () => {
         storageMocks.deleteObject
             .mockResolvedValueOnce(undefined)
+            // The pre-cleanup photo only exists when AI cleanup ran on this item.
+            .mockRejectedValueOnce({ code: 'storage/object-not-found' })
             .mockResolvedValueOnce(undefined)
             .mockRejectedValueOnce({ code: 'storage/object-not-found' });
 
         await expect(firestoreService.deleteImage('item-1', 'user-1')).resolves.toBe(true);
-        expect(storageMocks.deleteObject).toHaveBeenCalledTimes(3);
+        expect(storageMocks.deleteObject).toHaveBeenCalledTimes(4);
         expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1.jpg');
+        expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1-original.jpg');
         expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1-thumb.webp');
         expect(storageMocks.ref).toHaveBeenCalledWith({}, 'users/user-1/wardrobe/item-1-thumb.jpg');
     });

@@ -124,6 +124,47 @@ export const geminiService = {
     },
 
     /**
+     * Isolates a garment from the background of a catalogue photo.
+     *
+     * Sends the already-compressed file rather than the original: the cleanup
+     * runs after cropping, so this is the same bitmap the user framed.
+     *
+     * @param {File} imageFile
+     * @param {string} [garmentType] canonical type, when the form already knows it
+     * @returns {Promise<string>} data URL of the cleaned photo
+     */
+    async cleanUpPhoto(imageFile, garmentType = '') {
+        try {
+            const image = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(imageFile);
+            });
+
+            const response = await authFetch(`${API_BASE_URL}/gemini-photo-cleanup`, {
+                method: 'POST',
+                body: JSON.stringify({ image, garmentType }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                const enrichedError = new Error(errorData.message || errorData.error || 'Failed to clean up photo');
+                enrichedError.code = errorData.error;
+                enrichedError.retryAfter = errorData.retryAfter;
+                enrichedError.status = response.status;
+                throw enrichedError;
+            }
+
+            const data = await response.json();
+            return data.image;
+        } catch (error) {
+            console.error('Error cleaning up photo with Gemini:', error);
+            throw error;
+        }
+    },
+
+    /**
      * Analyzes a user's profile description to extract structured data.
      * @param {string} text - The user's description of their style.
      * @returns {Promise<Object>} - The structured profile data.

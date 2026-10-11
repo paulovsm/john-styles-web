@@ -439,7 +439,11 @@
       "brandPlaceholder": "Opcional",
       "cancel": "Cancelar",
       "save": "Guardar Artículo",
-      "showAllTypes": "Ver todos los tipos"
+      "showAllTypes": "Ver todos los tipos",
+      "cleanUpPhoto": "Limpiar fondo",
+      "restoreOriginalPhoto": "Volver a la foto original",
+      "cleaningPhoto": "Limpiando el fondo de la foto...",
+      "cleanedPhotoHint": "Fondo limpiado por la IA. Tu foto original se conserva."
     },
     "errors": {
       "limitReached": "Límite diario de análisis alcanzado (5/5). Por favor, inténtalo de nuevo mañana.",
@@ -448,7 +452,9 @@
       "typeRequired": "Selecciona el tipo de prenda antes de guardar.",
       "unsupportedImageType": "Formato no compatible. Usa una imagen JPG, PNG o WebP.",
       "imageTooLarge": "La imagen supera los 8 MB. Elige un archivo más pequeño.",
-      "imageProcessingFailed": "No pudimos procesar esta imagen. Prueba con otro archivo JPG, PNG o WebP."
+      "imageProcessingFailed": "No pudimos procesar esta imagen. Prueba con otro archivo JPG, PNG o WebP.",
+      "cleanupFailed": "No se pudo limpiar el fondo. Se mantuvo tu foto original.",
+      "restoreFailed": "No se pudo volver a la foto original. Inténtalo de nuevo."
     },
     "exploreSamples": "Explorar con prendas de ejemplo",
     "exploreSamplesHint": "Prendas de ejemplo para probar la app — puedes quitarlas cuando quieras.",
